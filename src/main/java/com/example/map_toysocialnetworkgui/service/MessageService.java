@@ -66,6 +66,28 @@ public class MessageService {
     }
 
     /**
+     * saves a reply message sent to every person who can see the original message
+     * @param fromEmail - the sender email
+     * @param messageText - the message's text
+     * @param replyMessageID - the parent message's id
+     * @throws ValidationException - if the message is invalid
+     */
+    public void addReplyAllMessage(String fromEmail, String messageText,Integer replyMessageID) throws ValidationException,
+            AdministrationException{
+
+        Message parentMessage=getMessageBy(replyMessageID);
+        if(!parentMessage.getToEmails().contains(fromEmail))
+            throw new AdministrationException("Error: User is not one of the recipients of the message!;\n");
+        List<String> receivers=parentMessage.getToEmails();
+        receivers.add(parentMessage.getFromEmail());
+        receivers.remove(fromEmail);
+        Message message=new Message(0,fromEmail,receivers,messageText, LocalDateTime.now(),
+                replyMessageID);
+        messageValidator.validate(message);
+        messageRepository.save(message);
+    }
+
+    /**
      * gets a list of all the messages between two users sorted chronologically
      * @param userEmail1 - first user email
      * @param userEmail2 - second user email
