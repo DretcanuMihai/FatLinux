@@ -4,7 +4,6 @@ import com.example.map_toysocialnetworkgui.model.entities.User;
 import com.example.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.example.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.example.map_toysocialnetworkgui.repository.Repository;
-
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +45,7 @@ public class UserService {
 
         User user = new User(email, firstName, lastName, passwordHash, LocalDate.now());
         userValidator.validate(user);
-        if(usersRepo.get(email)!=null)
+        if(usersRepo.get(email) != null)
             throw new AdministrationException("Email already in use!\n");
         usersRepo.save(user);
     }
@@ -58,10 +57,10 @@ public class UserService {
      * @throws ValidationException - if the email is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public User getUser(String email) throws ValidationException,AdministrationException {
+    public User getUser(String email) throws ValidationException, AdministrationException {
         userValidator.validateEmail(email);
-        User user=usersRepo.get(email);
-        if(user==null)
+        User user = usersRepo.get(email);
+        if(user == null)
             throw new AdministrationException("No user with such email!\n");
         return user;
     }
@@ -80,8 +79,8 @@ public class UserService {
 
         User user = new User(email, firstName, lastName, passwordHash, LocalDate.now());
         userValidator.validate(user);
-        User oldUser=usersRepo.get(email);
-        if(oldUser==null)
+        User oldUser = usersRepo.get(email);
+        if(oldUser == null)
             throw new AdministrationException("No user with such email!\n");
         usersRepo.update(new User(email,firstName, lastName, passwordHash,oldUser.getJoinDate()));
     }
@@ -94,7 +93,7 @@ public class UserService {
      */
     public void deleteUser(String email) throws ValidationException,AdministrationException {
         userValidator.validateEmail(email);
-        if(usersRepo.get(email)==null)
+        if(usersRepo.get(email) == null)
             throw new AdministrationException("No user with such email!\n");
         usersRepo.delete(email);
     }
@@ -113,9 +112,24 @@ public class UserService {
      * @throws ValidationException - if any id is invalid
      * @throws AdministrationException - if any email doesn't belong to a user
      */
-    public void verifyEmailList(List<String> emailList) throws ValidationException,AdministrationException{
-        if(emailList==null)
+    public void verifyEmailList(List<String> emailList) throws ValidationException, AdministrationException {
+        if(emailList == null)
             throw new ValidationException("Error: emailList must be non null;\n");
         emailList.forEach(this::getUser);
+    }
+
+    /**
+     * verifies if user email and password hash exists for logging in
+     * @param userEmail - said user's email
+     * @param userPassword - said user's password hash
+     * @throws ValidationException - if said user's email is invalid
+     * @throws AdministrationException - if credentials are invalid
+     */
+    public void userLogin(String userEmail, String userPassword) throws AdministrationException, ValidationException {
+        userValidator.validateEmail(userEmail);
+        User found = usersRepo.get(userEmail);
+
+        if (found == null || found.getPasswordHash() != userPassword.hashCode())
+            throw new AdministrationException("Invalid email or password!\n");
     }
 }
