@@ -214,6 +214,7 @@ public class SuperService {
 
     /**
      * sends a reply message to another message
+     * the receiver will be the sender of the original message
      * @param fromEmail - sender user's email
      * @param messageText - the text of the message
      * @param parentID - the id of the parent message
@@ -224,6 +225,22 @@ public class SuperService {
             throws ValidationException,AdministrationException{
         userService.getUser(fromEmail);
         messageService.addReplyMessage(fromEmail,messageText,parentID);
+    }
+
+    /**
+     * sends a reply message to another message
+     * the receiver will be the sender of the original message and all of the original receivers
+     * with the exception of the replier
+     * @param fromEmail - sender user's email
+     * @param messageText - the text of the message
+     * @param parentID - the id of the parent message
+     * @throws ValidationException if any data is invalid
+     * @throws AdministrationException if any administration problems are found
+     */
+    public void sendReplyAllMessage(String fromEmail, String messageText,Integer parentID)
+            throws ValidationException,AdministrationException{
+        userService.getUser(fromEmail);
+        messageService.addReplyAllMessage(fromEmail,messageText,parentID);
     }
 
     /**
