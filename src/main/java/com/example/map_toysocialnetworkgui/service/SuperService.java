@@ -293,7 +293,7 @@ public class SuperService {
      * @throws ValidationException - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public void login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
+    public void login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
         userService.userLogin(userEmail, userPassword);
     }
 }

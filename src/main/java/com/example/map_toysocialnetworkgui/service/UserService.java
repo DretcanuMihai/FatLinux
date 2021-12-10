@@ -125,11 +125,11 @@ public class UserService {
      * @throws ValidationException - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public void userLogin(String userEmail, String userPassword) throws ValidationException, AdministrationException {
+    public void userLogin(String userEmail, int userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
         User found = usersRepo.get(userEmail);
 
-        if (found == null || found.getPasswordHash() != userPassword.hashCode())
+        if (found == null || found.getPasswordHash() != userPassword)
             throw new AdministrationException("Invalid email or password!\n");
     }
 }
