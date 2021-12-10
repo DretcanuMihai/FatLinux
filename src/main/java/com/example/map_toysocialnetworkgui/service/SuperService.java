@@ -213,7 +213,8 @@ public class SuperService {
     }
 
     /**
-     * sends a root message (a message that isn't a reply) to some users
+     * sends a reply message to another message
+     * the receiver will be the sender of the original message
      * @param fromEmail - sender user's email
      * @param messageText - the text of the message
      * @param parentID - the id of the parent message
@@ -224,6 +225,22 @@ public class SuperService {
             throws ValidationException,AdministrationException{
         userService.getUser(fromEmail);
         messageService.addReplyMessage(fromEmail,messageText,parentID);
+    }
+
+    /**
+     * sends a reply message to another message
+     * the receiver will be the sender of the original message and all of the original receivers
+     * with the exception of the replier
+     * @param fromEmail - sender user's email
+     * @param messageText - the text of the message
+     * @param parentID - the id of the parent message
+     * @throws ValidationException if any data is invalid
+     * @throws AdministrationException if any administration problems are found
+     */
+    public void sendReplyAllMessage(String fromEmail, String messageText,Integer parentID)
+            throws ValidationException,AdministrationException{
+        userService.getUser(fromEmail);
+        messageService.addReplyAllMessage(fromEmail,messageText,parentID);
     }
 
     /**
@@ -284,5 +301,16 @@ public class SuperService {
                     User receiver= userService.getUser(request.getReceiver());
                     return new FriendRequestDTO(request, sender,receiver);
                 }).toList();
+    }
+
+    /**
+     * logs in an user
+     * @param userEmail - said user's email
+     * @param userPassword - said user's password
+     * @throws ValidationException - if said user's email is invalid
+     * @throws AdministrationException - if credentials are invalid
+     */
+    public void login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
+        userService.userLogin(userEmail, userPassword);
     }
 }
