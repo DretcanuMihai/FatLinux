@@ -1,6 +1,7 @@
 package com.example.map_toysocialnetworkgui.model.entities;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Message extends Entity<Integer> {
@@ -24,7 +25,7 @@ public class Message extends Entity<Integer> {
                    Integer parentMessageId) {
         super(id);
         this.fromEmail = fromEmail;
-        this.toEmails = toEmails.stream().toList();
+        this.toEmails = new ArrayList<>(toEmails);
         this.messageText = messageText;
         this.sendTime = sendTime;
         this.parentMessageId = parentMessageId;
@@ -45,7 +46,7 @@ public class Message extends Entity<Integer> {
      * @return - a list of said emails
      */
     public List<String> getToEmails() {
-        return toEmails.stream().toList();
+        return new ArrayList<>(toEmails);
     }
 
     /**
