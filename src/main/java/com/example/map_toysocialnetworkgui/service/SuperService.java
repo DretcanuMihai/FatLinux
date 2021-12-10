@@ -213,7 +213,7 @@ public class SuperService {
     }
 
     /**
-     * sends a root message (a message that isn't a reply) to some users
+     * sends a reply message to another message
      * @param fromEmail - sender user's email
      * @param messageText - the text of the message
      * @param parentID - the id of the parent message
