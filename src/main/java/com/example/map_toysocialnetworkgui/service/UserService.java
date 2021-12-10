@@ -125,7 +125,7 @@ public class UserService {
      * @throws ValidationException - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public void userLogin(String userEmail, String userPassword) throws AdministrationException, ValidationException {
+    public void userLogin(String userEmail, String userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
         User found = usersRepo.get(userEmail);
 

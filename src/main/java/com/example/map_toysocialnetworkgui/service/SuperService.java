@@ -285,4 +285,15 @@ public class SuperService {
                     return new FriendRequestDTO(request, sender,receiver);
                 }).toList();
     }
+
+    /**
+     * logs in an user
+     * @param userEmail - said user's email
+     * @param userPassword - said user's password
+     * @throws ValidationException - if said user's email is invalid
+     * @throws AdministrationException - if credentials are invalid
+     */
+    public void login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
+        userService.userLogin(userEmail, userPassword);
+    }
 }
