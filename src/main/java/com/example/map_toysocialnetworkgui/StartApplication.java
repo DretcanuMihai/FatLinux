@@ -52,12 +52,12 @@ public class StartApplication extends Application {
     private void initLoaders() {
         loginLoader = new FXMLLoader();
         loginLoader.setLocation(getClass().getResource("login-view.fxml"));
-        LoginController loginController = loginLoader.getController();
-        loginController.setService(service);
     }
 
     private void initView(Stage stage) throws IOException {
         Scene scene = new Scene(loginLoader.load(), 450, 277);
+        LoginController loginController = loginLoader.getController();
+        loginController.setService(service);
         stage.setTitle("ToySocialNetworkFATLinux!");
         stage.setScene(scene);
     }
