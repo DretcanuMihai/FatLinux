@@ -1,6 +1,6 @@
-package com.example.map_toysocialnetworkgui.gui;
+package com.example.map_toysocialnetworkgui;
 
-import com.example.map_toysocialnetworkgui.gui.LoginController;
+import com.example.map_toysocialnetworkgui.controllers.LoginController;
 import com.example.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.example.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.example.map_toysocialnetworkgui.model.validators.MessageValidator;
@@ -50,12 +50,12 @@ public class StartApplication extends Application {
         this.service = new SuperService(userService, friendshipService, messageService);
     }
 
-    private void initLoaders() {
+    private void initLoginLoader() {
         loginLoader = new FXMLLoader();
         loginLoader.setLocation(getClass().getResource("login-view.fxml"));
     }
 
-    private void initView(Stage stage) throws IOException {
+    private void initLoginView(Stage stage) throws IOException {
         Scene scene = new Scene(loginLoader.load(), 450, 277);
         LoginController loginController = loginLoader.getController();
         loginController.setService(service);
@@ -66,8 +66,8 @@ public class StartApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         initService();
-        initLoaders();
-        initView(stage);
+        initLoginLoader();
+        initLoginView(stage);
         stage.show();
     }
 

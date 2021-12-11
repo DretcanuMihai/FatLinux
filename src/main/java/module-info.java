@@ -9,4 +9,6 @@ module com.example.map_toysocialnetworkgui {
 
     opens com.example.map_toysocialnetworkgui to javafx.fxml;
     exports com.example.map_toysocialnetworkgui;
+    exports com.example.map_toysocialnetworkgui.controllers;
+    opens com.example.map_toysocialnetworkgui.controllers to javafx.fxml;
 }
