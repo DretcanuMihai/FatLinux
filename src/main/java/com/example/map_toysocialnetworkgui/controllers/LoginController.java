@@ -1,4 +1,4 @@
-package com.example.map_toysocialnetworkgui;
+package com.example.map_toysocialnetworkgui.gui;
 
 import com.example.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.example.map_toysocialnetworkgui.service.AdministrationException;
@@ -23,10 +23,14 @@ public class LoginController {
 
     public void login() {
         try {
-            service.login(emailTextField.getText(), passwordTextField.getText().hashCode());
+            String email=emailTextField.getText();
+            service.login(email, passwordTextField.getText().hashCode());
+            startMainApplication(email);
         } catch (ValidationException | AdministrationException ex) {
             errorLabel.setText(ex.getMessage());
         }
+    }
+    public void startMainApplication(String userEmail){
     }
 
     public void register() {

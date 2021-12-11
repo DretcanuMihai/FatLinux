@@ -1,5 +1,6 @@
-package com.example.map_toysocialnetworkgui;
+package com.example.map_toysocialnetworkgui.gui;
 
+import com.example.map_toysocialnetworkgui.gui.LoginController;
 import com.example.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.example.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.example.map_toysocialnetworkgui.model.validators.MessageValidator;
