@@ -3,6 +3,8 @@ package com.map_toysocialnetworkgui.controllers;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,7 +23,7 @@ public class MainController extends AbstractController {
     UserDTO loggedUser;
     ObservableList<UserDTO> modelUsers = FXCollections.observableArrayList();
     ObservableList<UserDTO> modelFriends = FXCollections.observableArrayList();
-    ObservableList<UserDTO> modelPending = FXCollections.observableArrayList();
+    ObservableList<FriendRequestDTO> modelPending = FXCollections.observableArrayList();
     //FXML
     @FXML
     Label welcomeLabel;
@@ -30,7 +32,7 @@ public class MainController extends AbstractController {
     @FXML
     TableView<UserDTO> usersTable;
     @FXML
-    TableView<UserDTO> pendingTable;
+    TableView<FriendRequestDTO> pendingTable;
     @FXML
     public TableColumn<UserDTO, String> friendsFirstNameColumn;
     @FXML
@@ -79,21 +81,13 @@ public class MainController extends AbstractController {
     }
 
     private void updateModelPending() {
-        modelPending.setAll(service.getFriendRequestsSentToUser(loggedUser.getEmail()).stream()
-                .map(FriendRequestDTO::getSender).collect(Collectors.toList()));
+        modelPending.setAll(service.getFriendRequestsSentToUser(loggedUser.getEmail()));
     }
 
     public void add() {
     }
 
     public void delete() {
-    }
-
-    public void accept() {
-
-    }
-
-    public void decline() {
     }
 
     private void confirm(boolean accepted) {
@@ -105,8 +99,27 @@ public class MainController extends AbstractController {
 
             alert.showAndWait();
         } else {
-            String receiver = pendingTable.getSelectionModel().getSelectedItem().getEmail();
-            service.confirmFriendRequest(loggedUser.getEmail(), receiver, accepted);
+            try {
+                String sender = pendingTable.getSelectionModel().getSelectedItem().getSender().getEmail();
+                service.confirmFriendRequest(sender, loggedUser.getEmail(), accepted);
+                updateModelPending();
+                updateModelFriends();
+            } catch (ValidationException | AdministrationException ex) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Warning!");
+                alert.setHeaderText("Friend request warning");
+                alert.setContentText(ex.getMessage());
+
+                alert.showAndWait();
+            }
         }
+    }
+
+    public void accept() {
+        confirm(true);
+    }
+
+    public void decline() {
+        confirm(false);
     }
 }
