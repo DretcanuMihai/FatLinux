@@ -1,4 +1,4 @@
-module com.example.map_toysocialnetworkgui {
+module com.map_toysocialnetworkgui {
     requires javafx.controls;
     requires javafx.fxml;
 
@@ -7,8 +7,8 @@ module com.example.map_toysocialnetworkgui {
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
 
-    opens com.example.map_toysocialnetworkgui to javafx.fxml;
-    exports com.example.map_toysocialnetworkgui;
-    exports com.example.map_toysocialnetworkgui.controllers;
-    opens com.example.map_toysocialnetworkgui.controllers to javafx.fxml;
+    opens com.map_toysocialnetworkgui to javafx.fxml;
+    exports com.map_toysocialnetworkgui;
+    exports com.map_toysocialnetworkgui.controllers;
+    opens com.map_toysocialnetworkgui.controllers to javafx.fxml;
 }
