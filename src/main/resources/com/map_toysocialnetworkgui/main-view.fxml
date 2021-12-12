@@ -52,8 +52,8 @@
                            <children>
                               <TableView fx:id="friendsTable" prefHeight="214.0" prefWidth="209.0">
                                 <columns>
-                                  <TableColumn prefWidth="103.0" text="First Name" />
-                                  <TableColumn minWidth="0.0" prefWidth="105.0" text="Last Name" />
+                                  <TableColumn fx:id="friendsFirstNameColumn" prefWidth="103.0" text="First Name" />
+                                  <TableColumn fx:id="friendsLastNameColumn" minWidth="0.0" prefWidth="105.0" text="Last Name" />
                                 </columns>
                               </TableView>
                            </children>
@@ -81,8 +81,8 @@
                            <children>
                               <TableView fx:id="pendingTable" prefHeight="214.0" prefWidth="202.0">
                                  <columns>
-                                    <TableColumn prefWidth="105.0" text="First Name" />
-                                    <TableColumn minWidth="0.0" prefWidth="96.0" text="Last Name" />
+                                    <TableColumn fx:id="pendingFirstNameColumn" prefWidth="105.0" text="First Name" />
+                                    <TableColumn fx:id="pendingLastNameColumn" minWidth="0.0" prefWidth="96.0" text="Last Name" />
                                  </columns>
                               </TableView>
                            </children>
@@ -110,8 +110,8 @@
                            <children>
                               <TableView fx:id="usersTable" layoutY="-90.0" prefHeight="215.0" prefWidth="207.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <columns>
-                                    <TableColumn prefWidth="109.0" text="First Name" />
-                                    <TableColumn minWidth="0.0" prefWidth="97.0" text="Last Name" />
+                                    <TableColumn fx:id="usersFirstNameColumn" prefWidth="109.0" text="First Name" />
+                                    <TableColumn fx:id="usersLastNameColumn" minWidth="0.0" prefWidth="97.0" text="Last Name" />
                                  </columns>
                               </TableView>
                            </children>
