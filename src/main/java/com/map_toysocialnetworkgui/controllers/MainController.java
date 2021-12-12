@@ -3,6 +3,8 @@ package com.map_toysocialnetworkgui.controllers;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -79,7 +81,21 @@ public class MainController extends AbstractController {
     }
 
     public void add() {
-
+        String senderEmail=loggedUser.getEmail();
+        UserDTO userDTO=usersTable.getSelectionModel().getSelectedItem();
+        if(userDTO==null){
+            Alert alert=new Alert(Alert.AlertType.WARNING,"No user selected!\n");
+            alert.showAndWait();
+            return;
+        }
+        String receiverEmail=userDTO.getEmail();
+        try {
+            service.sendFriendRequest(senderEmail, receiverEmail);
+        }
+        catch(ValidationException | AdministrationException e){
+            Alert alert=new Alert(Alert.AlertType.WARNING,e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     public void delete() {
