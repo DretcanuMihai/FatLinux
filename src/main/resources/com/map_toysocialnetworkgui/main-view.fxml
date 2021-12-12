@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="450.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.map_toysocialnetworkgui.controllers.MainController">
+   <children>
+      <BorderPane layoutY="4.0" prefHeight="547.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <AnchorPane prefHeight="99.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="120.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="FAT LINUX">
+                           <font>
+                              <Font name="Arial" size="49.0" />
+                           </font>
+                        </Text>
+                        <Label fx:id="welcomeLabel" text="Welcome!">
+                           <font>
+                              <Font size="27.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </top>
+         <left>
+            <AnchorPane prefHeight="244.0" prefWidth="153.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER" fillWidth="false" prefHeight="246.0" prefWidth="243.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Text layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Friends" textAlignment="CENTER" wrappingWidth="205.9638671875" AnchorPane.bottomAnchor="15.678515625000003" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.4361328125000057" AnchorPane.topAnchor="14.259765625">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="381.0" prefWidth="210.0">
+                           <children>
+                              <TableView fx:id="friendsTable" layoutY="2.0" prefHeight="239.0" prefWidth="208.0">
+                                <columns>
+                                  <TableColumn fx:id="friendsFirstNameColumn" prefWidth="104.80002135038376" text="First Name" />
+                                  <TableColumn fx:id="friendsLastNameColumn" minWidth="0.0" prefWidth="103.99996948242188" text="Last Name" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </left>
+         <bottom>
+            <AnchorPane prefHeight="51.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane prefHeight="51.0" prefWidth="259.0">
+                           <children>
+                              <Button fx:id="deleteButton" layoutX="78.0" layoutY="13.0" mnemonicParsing="false" onAction="#delete" text="Delete" />
+                           </children></AnchorPane>
+                        <AnchorPane prefHeight="51.0" prefWidth="253.0">
+                           <children>
+                              <Button fx:id="acceptButton" layoutX="74.0" layoutY="13.0" mnemonicParsing="false" onAction="#accept" text="Accept" />
+                           </children></AnchorPane>
+                        <AnchorPane prefHeight="51.0" prefWidth="250.0">
+                           <children>
+                              <Button fx:id="declineButton" layoutX="71.0" layoutY="13.0" mnemonicParsing="false" onAction="#decline" text="Decline" />
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="51.0" prefWidth="245.0">
+                           <children>
+                              <Button fx:id="addButton" layoutX="77.0" layoutY="13.0" mnemonicParsing="false" onAction="#add" text="Add" textAlignment="CENTER" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+         </bottom>
+         <center>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Text layoutX="89.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Pending" textAlignment="CENTER" wrappingWidth="206.9638671875" AnchorPane.bottomAnchor="16.799999999999997" AnchorPane.leftAnchor="89.0" AnchorPane.rightAnchor="88.83613281250001" AnchorPane.topAnchor="16.0">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="377.0" prefWidth="383.0">
+                           <children>
+                              <TableView fx:id="pendingTable" prefHeight="239.0" prefWidth="385.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <columns>
+                                    <TableColumn fx:id="pendingFirstNameColumn" prefWidth="130.3999481201172" text="First Name" />
+                                    <TableColumn fx:id="pendingLastNameColumn" minWidth="0.0" prefWidth="129.60003662109375" text="Last Name" />
+                                    <TableColumn fx:id="pendingDateColumn" minWidth="0.0" prefWidth="129.60003662109375" text="Date" />
+                                 </columns>
+                              </TableView>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </center>
+         <right>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane prefHeight="49.0" prefWidth="207.0">
+                           <children>
+                              <Text layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Users" textAlignment="CENTER" wrappingWidth="206.9638671875" AnchorPane.bottomAnchor="10.078515625000001" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.23613281249998863" AnchorPane.topAnchor="10.259765625">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="234.0" prefWidth="207.0">
+                           <children>
+                              <TableView fx:id="usersTable" layoutY="4.0" prefHeight="238.0" prefWidth="207.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="4.0">
+                                 <columns>
+                                    <TableColumn fx:id="usersFirstNameColumn" prefWidth="109.0" text="First Name" />
+                                    <TableColumn fx:id="usersLastNameColumn" minWidth="0.0" prefWidth="97.0" text="Last Name" />
+                                 </columns>
+                              </TableView>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </right>
+      </BorderPane>
+   </children>
+</AnchorPane>
