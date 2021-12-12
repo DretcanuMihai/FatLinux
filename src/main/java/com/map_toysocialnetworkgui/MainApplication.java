@@ -92,9 +92,10 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage=stage;
+        primaryStage.setTitle("FatLinuxApplication");
         FXMLLoader loginLoader=initLoader(loginFXMLURL);
         modifyMainWindowWith(loginLoader);
-        stage.show();
+        primaryStage.show();
     }
 
     public static void main(String[] args) {
