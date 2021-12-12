@@ -92,7 +92,6 @@ public class MainController extends AbstractController{
             service.sendFriendRequest(senderEmail, receiverEmail);
         }
         catch(ValidationException | AdministrationException e){
-            Stage stage=new Stage();
             Alert alert=new Alert(Alert.AlertType.WARNING,e.getMessage());
             alert.showAndWait();
         }
