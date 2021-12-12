@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui;
 
 import com.map_toysocialnetworkgui.controllers.AbstractController;
+import com.map_toysocialnetworkgui.controllers.MainController;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.MessageValidator;
@@ -75,22 +76,24 @@ public class MainApplication extends Application {
         return loader;
     }
 
-    private void loadToMainWindowFrom(FXMLLoader loader){
+    private void modifyMainWindowWith(FXMLLoader loader){
         Parent parent=loader.getRoot();
         Scene scene=new Scene(parent);
         primaryStage.setScene(scene);
     }
 
-    public void changeToMain() throws IOException {
+    public void changeToMain(String userEmail) throws IOException {
         FXMLLoader mainLoader=initLoader(mainFXMLURL);
-        loadToMainWindowFrom(mainLoader);
+        MainController controller=mainLoader.getController();
+        controller.init(userEmail);
+        modifyMainWindowWith(mainLoader);
     }
 
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage=stage;
         FXMLLoader loginLoader=initLoader(loginFXMLURL);
-        loadToMainWindowFrom(loginLoader);
+        modifyMainWindowWith(loginLoader);
         stage.show();
     }
 
