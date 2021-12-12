@@ -58,6 +58,24 @@ public class FriendRequestDTO {
         return receiver;
     }
 
+    /**
+     * gets the sender's first name
+     *
+     * @return said first name
+     */
+    public String getSenderFirstName() {
+        return sender.getFirstName();
+    }
+
+    /**
+     * gets the sender's last name
+     *
+     * @return said last name
+     */
+    public String getSenderLastName() {
+        return sender.getLastName();
+    }
+
     @Override
     public String toString() {
         return "FriendshipDTO{" +
