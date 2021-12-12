@@ -1,5 +1,6 @@
 package com.map_toysocialnetworkgui.controllers;
 
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
@@ -87,7 +88,13 @@ public class MainController extends AbstractController{
 
     public void add() {
         String senderEmail=loggedUser.getEmail();
-        String receiverEmail=usersTable.getSelectionModel().getSelectedItem().getEmail();
+        UserDTO userDTO=usersTable.getSelectionModel().getSelectedItem();
+        if(userDTO==null){
+            Alert alert=new Alert(Alert.AlertType.WARNING,"No user selected!\n");
+            alert.showAndWait();
+            return;
+        }
+        String receiverEmail=userDTO.getEmail();
         try {
             service.sendFriendRequest(senderEmail, receiverEmail);
         }
