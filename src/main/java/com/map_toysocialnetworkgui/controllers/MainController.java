@@ -13,15 +13,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class MainController extends AbstractController {
-    // Data
+    //Data
     UserDTO loggedUser;
     ObservableList<UserDTO> modelUsers = FXCollections.observableArrayList();
     ObservableList<UserDTO> modelFriends = FXCollections.observableArrayList();
-    ObservableList<UserDTO> modelPending = FXCollections.observableArrayList();
+    ObservableList<FriendRequestDTO> modelPending = FXCollections.observableArrayList();
     // FXML
     @FXML
     Label welcomeLabel;
@@ -30,19 +31,22 @@ public class MainController extends AbstractController {
     @FXML
     TableView<UserDTO> usersTable;
     @FXML
-    TableView<UserDTO> pendingTable;
+    TableView<FriendRequestDTO> pendingTable;
+
     @FXML
-    public TableColumn<UserDTO,String> friendsFirstNameColumn;
+    public TableColumn<UserDTO, String> friendsFirstNameColumn;
     @FXML
-    public TableColumn<UserDTO,String> friendsLastNameColumn;
+    public TableColumn<UserDTO, String> friendsLastNameColumn;
     @FXML
-    public TableColumn<UserDTO,String> pendingFirstNameColumn;
+    public TableColumn<FriendRequestDTO, String> pendingFirstNameColumn;
     @FXML
-    public TableColumn<UserDTO,String> pendingLastNameColumn;
+    public TableColumn<FriendRequestDTO, String> pendingLastNameColumn;
     @FXML
-    public TableColumn<UserDTO,String> usersFirstNameColumn;
+    public TableColumn<FriendRequestDTO, LocalDateTime> pendingDateColumn;
     @FXML
-    public TableColumn<UserDTO,String> usersLastNameColumn;
+    public TableColumn<UserDTO, String> usersFirstNameColumn;
+    @FXML
+    public TableColumn<UserDTO, String> usersLastNameColumn;
 
     @FXML
     public void initialize() {
@@ -50,8 +54,9 @@ public class MainController extends AbstractController {
         usersLastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         friendsFirstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         friendsLastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        pendingFirstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-        pendingLastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        pendingFirstNameColumn.setCellValueFactory(new PropertyValueFactory<>("senderFirstName"));
+        pendingLastNameColumn.setCellValueFactory(new PropertyValueFactory<>("senderLastName"));
+        pendingDateColumn.setCellValueFactory(new PropertyValueFactory<>("sendTime"));
 
         usersTable.setItems(modelUsers);
         friendsTable.setItems(modelFriends);
@@ -60,7 +65,7 @@ public class MainController extends AbstractController {
 
     public void init(String userEmail) {
         loggedUser=service.getUserDTO(userEmail);
-        welcomeLabel.setText("Welcome, "+loggedUser.getFirstName()+"!");
+        welcomeLabel.setText("Welcome, " + loggedUser.getFirstName() + "!");
         updateModelUsers();
         updateModelFriends();
         updateModelPending();
@@ -76,8 +81,7 @@ public class MainController extends AbstractController {
     }
 
     private void updateModelPending() {
-        modelPending.setAll(service.getFriendRequestsSentToUser(loggedUser.getEmail()).stream()
-                .map(FriendRequestDTO::getSender).collect(Collectors.toList()));
+        modelPending.setAll(service.getFriendRequestsSentToUser(loggedUser.getEmail()));
     }
 
     public void add() {
@@ -113,11 +117,36 @@ public class MainController extends AbstractController {
         }
     }
 
-    public void accept() {
+    private void confirm(boolean accepted) {
+        if (pendingTable.getSelectionModel().getSelectedItem() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error!");
+            alert.setHeaderText("Empty selection error");
+            alert.setContentText("You must select a pending friend request in order to accept it!");
 
+            alert.showAndWait();
+        } else {
+            try {
+                String sender = pendingTable.getSelectionModel().getSelectedItem().getSender().getEmail();
+                service.confirmFriendRequest(sender, loggedUser.getEmail(), accepted);
+                updateModelPending();
+                updateModelFriends();
+            } catch (ValidationException | AdministrationException ex) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Warning!");
+                alert.setHeaderText("Friend request warning");
+                alert.setContentText(ex.getMessage());
+
+                alert.showAndWait();
+            }
+        }
+    }
+
+    public void accept() {
+        confirm(true);
     }
 
     public void decline() {
-
+        confirm(false);
     }
 }
