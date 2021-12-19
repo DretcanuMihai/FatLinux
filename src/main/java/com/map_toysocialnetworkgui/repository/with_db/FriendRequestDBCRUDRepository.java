@@ -1,18 +1,19 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
-import com.map_toysocialnetworkgui.repository.skeletons.Repository;
+import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Repository in database for friend request
  */
-public class FriendRequestDBRepository implements Repository<Pair<String, String>, FriendRequest> {
+public class FriendRequestDBCRUDRepository implements CRUDRepository<Pair<String, String>, FriendRequest> {
     private final String url;
     private final String username;
     private final String password;
@@ -23,14 +24,14 @@ public class FriendRequestDBRepository implements Repository<Pair<String, String
      * @param username - name of database
      * @param password - password of database
      */
-    public FriendRequestDBRepository(String url, String username, String password) {
+    public FriendRequestDBCRUDRepository(String url, String username, String password) {
         this.url = url;
         this.username = username;
         this.password = password;
     }
 
     @Override
-    public void create(FriendRequest friendRequest) {
+    public void save(FriendRequest friendRequest) {
         String sqlSave = "INSERT INTO friend_requests(sender_email, receiver_email, send_time) VALUES (?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
@@ -46,7 +47,7 @@ public class FriendRequestDBRepository implements Repository<Pair<String, String
     }
 
     @Override
-    public FriendRequest read(Pair<String, String> id) {
+    public FriendRequest get(Pair<String, String> id) {
         String sqlFind = "SELECT * FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
         FriendRequest toReturn = null;
 
@@ -102,7 +103,7 @@ public class FriendRequestDBRepository implements Repository<Pair<String, String
     }
 
     @Override
-    public Iterable<FriendRequest> getAll() {
+    public Collection<FriendRequest> getAll() {
         Set<FriendRequest> friendRequsets = new HashSet<>();
         String sql = "SELECT * FROM friend_requests";
 

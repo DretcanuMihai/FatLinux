@@ -2,27 +2,28 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
-import com.map_toysocialnetworkgui.repository.skeletons.Repository;
+import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FriendshipDBRepository implements Repository<UnorderedPair<String>, Friendship> {
+public class FriendshipDBCRUDRepository implements CRUDRepository<UnorderedPair<String>, Friendship> {
     private final String url;
     private final String username;
     private final String password;
 
-    public FriendshipDBRepository(String url, String username, String password) {
+    public FriendshipDBCRUDRepository(String url, String username, String password) {
         this.url = url;
         this.username = username;
         this.password = password;
     }
 
     @Override
-    public void create(Friendship friendship) {
+    public void save(Friendship friendship) {
         String sqlSave = "INSERT INTO friendships(first_user_email, second_user_email, begin_date) values (?,?,?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave= connection.prepareStatement(sqlSave)) {
@@ -38,7 +39,7 @@ public class FriendshipDBRepository implements Repository<UnorderedPair<String>,
     }
 
     @Override
-    public Friendship read(UnorderedPair<String> id) {
+    public Friendship get(UnorderedPair<String> id) {
         String sqlFind = "SELECT * from friendships where (first_user_email=(?) and second_user_email=(?))";
         Friendship toReturn=null;
 
@@ -92,7 +93,7 @@ public class FriendshipDBRepository implements Repository<UnorderedPair<String>,
     }
 
     @Override
-    public Iterable<Friendship> getAll() {
+    public Collection<Friendship> getAll() {
         Set<Friendship> friendships = new HashSet<>();
         String sql="SELECT * from friendships";
         try (Connection connection = DriverManager.getConnection(url, username, password);

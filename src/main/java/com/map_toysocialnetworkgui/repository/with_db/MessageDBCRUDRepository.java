@@ -1,18 +1,18 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
-import com.map_toysocialnetworkgui.repository.skeletons.Repository;
+import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class MessageDBRepository implements Repository<Integer, Message> {
+public class MessageDBCRUDRepository implements CRUDRepository<Integer, Message> {
     private final String url;
     private final String username;
     private final String password;
 
-    public MessageDBRepository(String url, String username, String password) {
+    public MessageDBCRUDRepository(String url, String username, String password) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -68,7 +68,7 @@ public class MessageDBRepository implements Repository<Integer, Message> {
     }
 
     @Override
-    public void create(Message message) {
+    public void save(Message message) {
         String sqlInsertMessage="INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
                 "values (?,?,?,?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -118,7 +118,7 @@ public class MessageDBRepository implements Repository<Integer, Message> {
     }
 
     @Override
-    public Message read(Integer id) {
+    public Message get(Integer id) {
         String sqlGetMessage="SELECT * from messages where message_id=(?)";
         Message message=null;
         try (Connection connection = DriverManager.getConnection(url, username, password)){
@@ -201,7 +201,7 @@ public class MessageDBRepository implements Repository<Integer, Message> {
     }
 
     @Override
-    public Iterable<Message> getAll() {
+    public Collection<Message> getAll() {
         Set<Message> messages=new HashSet<>();
         String sqlMessages="SELECT * from messages";
         try (Connection connection = DriverManager.getConnection(url, username, password)) {

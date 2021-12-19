@@ -1,17 +1,14 @@
-package com.map_toysocialnetworkgui.repository;
+package com.map_toysocialnetworkgui.repository.skeletons;
 
-import com.map_toysocialnetworkgui.model.entities.Entity;
-import com.map_toysocialnetworkgui.model.entities.User;
 
-import java.sql.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * an Abstract Database Repository class
  */
-public abstract class AbstractDBRepository<ID, E extends Entity<ID>> {
+public class AbstractDBRepository {
     /**
      * the database's URL
      */
@@ -28,7 +25,8 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> {
     /**
      * constructs a Repository with a Database described by an url
      * authentication is made with the username and password given
-     * @param url - said url
+     *
+     * @param url      - said url
      * @param username - said username
      * @param password - said password
      */
@@ -40,6 +38,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> {
 
     /**
      * gets a Connection to the database
+     *
      * @return said connection
      * @throws SQLException if any error occurs
      */
