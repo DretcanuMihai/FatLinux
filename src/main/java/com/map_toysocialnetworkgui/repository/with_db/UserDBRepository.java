@@ -106,11 +106,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
         }
     }
 
-    /**
-     * returns a collection of all users
-     *
-     * @return said collection
-     */
+    @Override
     public Collection<User> getAll() {
         Set<User> users = new HashSet<>();
         String sql = "SELECT * FROM users";
