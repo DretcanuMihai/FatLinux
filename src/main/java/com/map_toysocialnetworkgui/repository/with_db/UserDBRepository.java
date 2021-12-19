@@ -87,29 +87,17 @@ public class UserDBRepository {
         }
     }
 
-
     public void update(User user) {
-        String sqlUpdate = "UPDATE users SET first_name = (?), password_hash = (?), join_date = (?), last_name = (?) WHERE email = (?)";
+        String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?), status_code = (?) WHERE email = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
 
             statementUpdate.setString(1, user.getFirstName());
-            statementUpdate.setInt(2, user.getPasswordHash());
-            statementUpdate.setDate(3, Date.valueOf(user.getJoinDate()));
-            statementUpdate.setString(4, user.getLastName());
-            statementUpdate.setString(5, user.getEmail());
-            statementUpdate.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void delete(String id) {
-        String sqlDelete = "DELETE FROM users WHERE email = (?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
-            statementDelete.setString(1, id);
-            statementDelete.execute();
+            statementUpdate.setString(2, user.getLastName());
+            statementUpdate.setInt(3, user.getPasswordHash());
+            int affectedRows=statementUpdate.executeUpdate();
+            if(affectedRows==0)
+                throw new CRUDException("Error: Email not in use!;\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }
