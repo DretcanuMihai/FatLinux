@@ -1,4 +1,4 @@
-package com.map_toysocialnetworkgui.repository.skeletons;
+package com.map_toysocialnetworkgui.repository.skeletons.operation_based;
 
 import com.map_toysocialnetworkgui.model.entities.Entity;
 

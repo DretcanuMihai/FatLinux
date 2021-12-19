@@ -1,6 +1,10 @@
 package com.map_toysocialnetworkgui.repository.skeletons;
 
 import com.map_toysocialnetworkgui.model.entities.Entity;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.ReadOperationRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.UpdateOperationRepository;
 
 /**
  * the interface of a generic repository for entities
