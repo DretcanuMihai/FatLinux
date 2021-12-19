@@ -1,7 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
-import com.map_toysocialnetworkgui.repository.Repository;
+import com.map_toysocialnetworkgui.repository.skeletons.Repository;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.sql.*;
@@ -30,7 +30,7 @@ public class FriendRequestDBRepository implements Repository<Pair<String, String
     }
 
     @Override
-    public void save(FriendRequest friendRequest) {
+    public void create(FriendRequest friendRequest) {
         String sqlSave = "INSERT INTO friend_requests(sender_email, receiver_email, send_time) VALUES (?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
@@ -46,7 +46,7 @@ public class FriendRequestDBRepository implements Repository<Pair<String, String
     }
 
     @Override
-    public FriendRequest get(Pair<String, String> id) {
+    public FriendRequest read(Pair<String, String> id) {
         String sqlFind = "SELECT * FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
         FriendRequest toReturn = null;
 

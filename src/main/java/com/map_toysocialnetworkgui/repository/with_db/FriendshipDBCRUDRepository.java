@@ -2,7 +2,7 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
-import com.map_toysocialnetworkgui.repository.Repository;
+import com.map_toysocialnetworkgui.repository.skeletons.Repository;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.sql.*;
@@ -22,7 +22,7 @@ public class FriendshipDBRepository implements Repository<UnorderedPair<String>,
     }
 
     @Override
-    public void save(Friendship friendship) {
+    public void create(Friendship friendship) {
         String sqlSave = "INSERT INTO friendships(first_user_email, second_user_email, begin_date) values (?,?,?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave= connection.prepareStatement(sqlSave)) {
@@ -38,7 +38,7 @@ public class FriendshipDBRepository implements Repository<UnorderedPair<String>,
     }
 
     @Override
-    public Friendship get(UnorderedPair<String> id) {
+    public Friendship read(UnorderedPair<String> id) {
         String sqlFind = "SELECT * from friendships where (first_user_email=(?) and second_user_email=(?))";
         Friendship toReturn=null;
 

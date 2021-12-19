@@ -1,7 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
-import com.map_toysocialnetworkgui.repository.Repository;
+import com.map_toysocialnetworkgui.repository.skeletons.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -68,7 +68,7 @@ public class MessageDBRepository implements Repository<Integer, Message> {
     }
 
     @Override
-    public void save(Message message) {
+    public void create(Message message) {
         String sqlInsertMessage="INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
                 "values (?,?,?,?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -118,7 +118,7 @@ public class MessageDBRepository implements Repository<Integer, Message> {
     }
 
     @Override
-    public Message get(Integer id) {
+    public Message read(Integer id) {
         String sqlGetMessage="SELECT * from messages where message_id=(?)";
         Message message=null;
         try (Connection connection = DriverManager.getConnection(url, username, password)){
