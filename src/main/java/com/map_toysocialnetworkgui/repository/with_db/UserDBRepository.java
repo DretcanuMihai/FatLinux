@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class UserDBRepository implements Repository<String, User> {
+public class UserDBRepository{
     private final String url;
     private final String username;
     private final String password;
@@ -21,25 +21,6 @@ public class UserDBRepository implements Repository<String, User> {
         this.password = password;
     }
 
-    @Override
-    public void save(User user) {
-        String sqlSave = "INSERT INTO users(email, first_name, password_hash, join_date, last_name) values (?, ?, ?, ?, ?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementSave= connection.prepareStatement(sqlSave)) {
-
-                statementSave.setString(1,user.getEmail());
-                statementSave.setString(2,user.getFirstName());
-                statementSave.setInt(3,user.getPasswordHash());
-                statementSave.setDate(4, Date.valueOf(user.getJoinDate()));
-                statementSave.setString(5, user.getLastName());
-                statementSave.execute();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public User get(String id) {
         String sqlFind = "SELECT * FROM users WHERE email = (?)";
         User toReturn=null;
@@ -63,7 +44,25 @@ public class UserDBRepository implements Repository<String, User> {
         return toReturn;
     }
 
-    @Override
+    public void save(User user) {
+        String sqlSave = "INSERT INTO users(email, first_name, password_hash, join_date, last_name) values (?, ?, ?, ?, ?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementSave= connection.prepareStatement(sqlSave)) {
+
+                statementSave.setString(1,user.getEmail());
+                statementSave.setString(2,user.getFirstName());
+                statementSave.setInt(3,user.getPasswordHash());
+                statementSave.setDate(4, Date.valueOf(user.getJoinDate()));
+                statementSave.setString(5, user.getLastName());
+                statementSave.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     public void update(User user) {
         String sqlUpdate = "UPDATE users SET first_name = (?), password_hash = (?), join_date = (?), last_name = (?) WHERE email = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -80,7 +79,6 @@ public class UserDBRepository implements Repository<String, User> {
         }
     }
 
-    @Override
     public void delete(String id) {
         String sqlDelete = "DELETE FROM users WHERE email = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -92,7 +90,6 @@ public class UserDBRepository implements Repository<String, User> {
         }
     }
 
-    @Override
     public Collection<User> getAll() {
         Set<User> users = new HashSet<>();
         String sql="SELECT * FROM users";
