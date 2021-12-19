@@ -28,7 +28,32 @@ public class User extends Entity<String> {
     private final LocalDate joinDate;
 
     /**
+     * associated account status
+     */
+    private final AccountStatus accountStatus;
+
+    /**
      * Creates a user based on the given information
+     *
+     * @param email        - user's email
+     * @param firstName    - user's first name
+     * @param lastName     - user's last name
+     * @param passwordHash - user's password's hashcode
+     * @param joinDate     - the date the user joined
+     * @param accountStatusCode - said user's account status code
+     */
+    public User(String email, String firstName, String lastName, int passwordHash, LocalDate joinDate,int accountStatusCode) {
+        super(email);
+        this.firstName = firstName;
+        this.passwordHash = passwordHash;
+        this.joinDate = joinDate;
+        this.lastName = lastName;
+        this.accountStatus=AccountStatus.getByCode(accountStatusCode);
+    }
+
+    /**
+     * Creates a user based on the given information - the user's account
+     * is by default active
      *
      * @param email        - user's email
      * @param firstName    - user's first name
@@ -37,11 +62,7 @@ public class User extends Entity<String> {
      * @param joinDate     - the date the user joined
      */
     public User(String email, String firstName, String lastName, int passwordHash, LocalDate joinDate) {
-        super(email);
-        this.firstName = firstName;
-        this.passwordHash = passwordHash;
-        this.joinDate = joinDate;
-        this.lastName = lastName;
+        this(email,firstName,lastName,passwordHash,joinDate,0);
     }
 
     /**
