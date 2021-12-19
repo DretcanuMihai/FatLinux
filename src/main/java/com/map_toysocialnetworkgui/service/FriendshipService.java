@@ -54,7 +54,7 @@ public class FriendshipService {
      */
     public void addFriendship(String userEmail1, String userEmail2) throws ValidationException,AdministrationException {
         Friendship friendship=new Friendship(userEmail1,userEmail2, LocalDate.now());
-        friendshipValidator.validate(friendship);
+        friendshipValidator.validateD(friendship);
         if(friendshipRepo.get(new UnorderedPair<>(userEmail1,userEmail2))!=null)
             throw new AdministrationException("Users are already friends!\n");
         friendshipRepo.save(friendship);

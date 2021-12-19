@@ -26,12 +26,13 @@ public class UserDBRepository {
 
     /**
      * gets the next User from a given Result Set
+     *
      * @param resultSet - said set
      * @return the next user
      * @throws SQLException - if any problems occur
      */
     private User getNextFromSet(ResultSet resultSet) throws SQLException {
-        String email=resultSet.getString("email");
+        String email = resultSet.getString("email");
         String firstName = resultSet.getString("first_name");
         int passwordHash = resultSet.getInt("password_hash");
         LocalDate joinDate = resultSet.getDate("join_date").toLocalDate();
@@ -56,7 +57,7 @@ public class UserDBRepository {
             statementFind.setString(1, email);
             ResultSet result = statementFind.executeQuery();
             if (result.next()) {
-                toReturn=getNextFromSet(result);
+                toReturn = getNextFromSet(result);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -76,11 +77,12 @@ public class UserDBRepository {
 
     /**
      * saves a valid user if one with its email doesn't already exist
+     *
      * @param user - said user
      * @throws CRUDException - if a user with the same email already exists
      */
-    public void save(User user) throws CRUDException{
-        if(contains(user.getEmail()))
+    public void save(User user) throws CRUDException {
+        if (contains(user.getEmail()))
             throw new CRUDException("Error: Email already in use!;\n");
         String sqlSave = "INSERT INTO users(email, first_name, password_hash, join_date, last_name) values (?, ?, ?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -100,6 +102,7 @@ public class UserDBRepository {
 
     /**
      * updates a user's info - First Name, Last Name, password hash and Account Status
+     *
      * @param user - said user
      * @throws CRUDException - if a user with user's email doesn't exist
      */
@@ -111,8 +114,8 @@ public class UserDBRepository {
             statementUpdate.setString(1, user.getFirstName());
             statementUpdate.setString(2, user.getLastName());
             statementUpdate.setInt(3, user.getPasswordHash());
-            int affectedRows=statementUpdate.executeUpdate();
-            if(affectedRows==0)
+            int affectedRows = statementUpdate.executeUpdate();
+            if (affectedRows == 0)
                 throw new CRUDException("Error: Email not in use!;\n");
         } catch (SQLException e) {
             e.printStackTrace();

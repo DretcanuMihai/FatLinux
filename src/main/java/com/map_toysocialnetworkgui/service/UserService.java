@@ -3,7 +3,7 @@ package com.map_toysocialnetworkgui.service;
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
-import com.map_toysocialnetworkgui.repository.Repository;
+import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -16,7 +16,7 @@ public class UserService {
     /**
      * associated users repo
      */
-    private final Repository<String, User> usersRepo;
+    private final UserDBRepository usersRepo;
     /**
      * associated user validator
      */
@@ -27,7 +27,7 @@ public class UserService {
      * @param usersRepo - said user Repo
      * @param userValidator - said user validator
      */
-    public UserService(Repository<String, User> usersRepo, UserValidator userValidator) {
+    public UserService(UserDBRepository usersRepo, UserValidator userValidator) {
         this.usersRepo = usersRepo;
         this.userValidator = userValidator;
     }
@@ -45,7 +45,7 @@ public class UserService {
             throws ValidationException, AdministrationException {
 
         User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
-        userValidator.validate(user);
+        userValidator.validateD(user);
         if(usersRepo.get(email) != null)
             throw new AdministrationException("Email already in use!\n");
         usersRepo.save(user);
@@ -79,7 +79,7 @@ public class UserService {
             throws ValidationException, AdministrationException {
 
         User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
-        userValidator.validate(user);
+        userValidator.validateD(user);
         User oldUser = usersRepo.get(email);
         if(oldUser == null)
             throw new AdministrationException("No user with such email!\n");

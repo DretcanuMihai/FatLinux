@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class FriendRequestValidator implements Validator<FriendRequest> {
     @Override
-    public void validate(FriendRequest entity) throws ValidationException {
+    public void validateD(FriendRequest entity) throws ValidationException {
         String message = "";
         String email1 = entity.getSender();
         String email2=entity.getReceiver();
