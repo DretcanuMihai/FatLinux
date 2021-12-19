@@ -4,8 +4,15 @@ package com.map_toysocialnetworkgui.model.entities;
  * enum describing the status of a user's account
  */
 public enum AccountStatus {
+    /**
+     * describes an active account
+     */
     ACTIVE(0),
+    /**
+     * describes a disabled account
+     */
     DISABLED(1);
+
     /**
      * a unique code that describes the status
      */
@@ -35,6 +42,11 @@ public enum AccountStatus {
         return null;
     }
 
+    /**
+     * returns the code of the status
+     *
+     * @return said code
+     */
     public int getStatusCode() {
         return statusCode;
     }
