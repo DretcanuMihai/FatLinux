@@ -25,6 +25,22 @@ public class UserDBRepository {
     }
 
     /**
+     * gets the next User from a given Result Set
+     * @param resultSet - said set
+     * @return the next user
+     * @throws SQLException - if any problems occur
+     */
+    private User getNextFromSet(ResultSet resultSet) throws SQLException {
+        String email=resultSet.getString("email");
+        String firstName = resultSet.getString("first_name");
+        int passwordHash = resultSet.getInt("password_hash");
+        LocalDate joinDate = resultSet.getDate("join_date").toLocalDate();
+        String lastName = resultSet.getString("last_name");
+        int accountStatusCode = resultSet.getInt("status_code");
+        return new User(email, passwordHash, firstName, lastName, joinDate, accountStatusCode);
+    }
+
+    /**
      * gets the user with specified email from repo
      *
      * @param email - said email
@@ -40,12 +56,7 @@ public class UserDBRepository {
             statementFind.setString(1, email);
             ResultSet result = statementFind.executeQuery();
             if (result.next()) {
-                String firstName = result.getString("first_name");
-                int passwordHash = result.getInt("password_hash");
-                LocalDate joinDate = result.getDate("join_date").toLocalDate();
-                String lastName = result.getString("last_name");
-                int accountStatusCode = result.getInt("status_code");
-                toReturn = new User(email, passwordHash, firstName, lastName, joinDate, accountStatusCode);
+                toReturn=getNextFromSet(result);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -87,6 +98,11 @@ public class UserDBRepository {
         }
     }
 
+    /**
+     * updates a user's info - First Name, Last Name, password hash and Account Status
+     * @param user - said user
+     * @throws CRUDException - if a user with user's email doesn't exist
+     */
     public void update(User user) {
         String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?), status_code = (?) WHERE email = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -103,6 +119,11 @@ public class UserDBRepository {
         }
     }
 
+    /**
+     * returns a collection of all users
+     *
+     * @return said collection
+     */
     public Collection<User> getAll() {
         Set<User> users = new HashSet<>();
         String sql = "SELECT * FROM users";
@@ -111,13 +132,7 @@ public class UserDBRepository {
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                String email = resultSet.getString("email");
-                String firstName = resultSet.getString("first_name");
-                int password = resultSet.getInt("password_hash");
-                Date joinDateSQL = resultSet.getDate("join_date");
-                LocalDate joinDate = joinDateSQL.toLocalDate();
-                String lastName = resultSet.getString("last_name");
-                User user = new User(email, password, firstName, lastName, joinDate);
+                User user = getNextFromSet(resultSet);
                 users.add(user);
             }
             return users;
