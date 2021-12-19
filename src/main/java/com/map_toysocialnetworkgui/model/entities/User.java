@@ -60,7 +60,7 @@ public class User extends Entity<String> {
      * @param joinDate     - the date the user joined
      */
     public User(String email, int passwordHash, String firstName, String lastName, LocalDate joinDate) {
-        this(email, passwordHash, firstName,lastName, joinDate,0);
+        this(email, passwordHash, firstName,lastName, joinDate,AccountStatus.ACTIVE.getStatusCode());
     }
 
     /**

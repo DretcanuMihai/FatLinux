@@ -34,4 +34,8 @@ public enum AccountStatus {
         }
         return null;
     }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
 }
