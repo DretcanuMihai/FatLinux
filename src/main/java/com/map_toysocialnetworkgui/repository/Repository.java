@@ -2,8 +2,6 @@ package com.map_toysocialnetworkgui.repository;
 
 import com.map_toysocialnetworkgui.model.entities.Entity;
 
-import java.util.Collection;
-
 /**
  * the interface of a generic repository for entities
  * @param <ID> - entity id type
@@ -39,5 +37,5 @@ public interface Repository<ID,E extends Entity<ID>> {
      * gets all the entities in the repo
      * @return a collection of said entities
      */
-    Collection<E> getAll();
+    Iterable<E> getAll();
 }

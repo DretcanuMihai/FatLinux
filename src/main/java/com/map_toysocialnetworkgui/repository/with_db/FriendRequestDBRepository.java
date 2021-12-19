@@ -6,7 +6,6 @@ import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -103,7 +102,7 @@ public class FriendRequestDBRepository implements Repository<Pair<String, String
     }
 
     @Override
-    public Collection<FriendRequest> getAll() {
+    public Iterable<FriendRequest> getAll() {
         Set<FriendRequest> friendRequsets = new HashSet<>();
         String sql = "SELECT * FROM friend_requests";
 

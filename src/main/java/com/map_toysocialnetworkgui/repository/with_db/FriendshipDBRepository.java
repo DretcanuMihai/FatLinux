@@ -7,7 +7,6 @@ import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -93,7 +92,7 @@ public class FriendshipDBRepository implements Repository<UnorderedPair<String>,
     }
 
     @Override
-    public Collection<Friendship> getAll() {
+    public Iterable<Friendship> getAll() {
         Set<Friendship> friendships = new HashSet<>();
         String sql="SELECT * from friendships";
         try (Connection connection = DriverManager.getConnection(url, username, password);

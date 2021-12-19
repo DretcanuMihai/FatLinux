@@ -201,7 +201,7 @@ public class MessageDBRepository implements Repository<Integer, Message> {
     }
 
     @Override
-    public Collection<Message> getAll() {
+    public Iterable<Message> getAll() {
         Set<Message> messages=new HashSet<>();
         String sqlMessages="SELECT * from messages";
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
