@@ -51,7 +51,7 @@ public class SuperService {
      */
     public void addUser(String email, String firstName, int passwordHash, String lastName)
             throws ValidationException,AdministrationException {
-        userService.addUser(email, firstName, passwordHash, lastName);
+        userService.createUser(email, firstName, lastName, passwordHash);
     }
 
     /**

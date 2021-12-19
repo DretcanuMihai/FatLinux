@@ -3,6 +3,7 @@ package com.map_toysocialnetworkgui.service;
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.repository.CRUDException;
 import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
 
 import java.time.LocalDate;
@@ -36,18 +37,16 @@ public class UserService {
      * adds a user to the repo
      * @param email - said user's email
      * @param firstName - said user's first name
-     * @param passwordHash - said user's password's hash
      * @param lastName - said user's last name
+     * @param passwordHash - said user's password's hash
      * @throws ValidationException - if the user data is invalid
-     * @throws AdministrationException - if a user with the same email already exists
+     * @throws CRUDException - if the email is already in use
      */
-    public void addUser(String email, String firstName, int passwordHash, String lastName)
-            throws ValidationException, AdministrationException {
+    public void createUser(String email, String firstName, String lastName, int passwordHash)
+            throws ValidationException, CRUDException {
 
         User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
         userValidator.validateD(user);
-        if(usersRepo.get(email) != null)
-            throw new AdministrationException("Email already in use!\n");
         usersRepo.save(user);
     }
 
