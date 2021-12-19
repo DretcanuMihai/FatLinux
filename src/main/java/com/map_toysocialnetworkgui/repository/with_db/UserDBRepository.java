@@ -2,7 +2,6 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 
 import com.map_toysocialnetworkgui.model.entities.User;
-import com.map_toysocialnetworkgui.repository.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -36,7 +35,7 @@ public class UserDBRepository{
                 int passwordHash = result.getInt("password_hash");
                 LocalDate joinDate = result.getDate("join_date").toLocalDate();
                 String lastName = result.getString("last_name");
-                toReturn = new User(email, firstName, lastName, passwordHash, joinDate);
+                toReturn = new User(email, passwordHash, firstName, lastName, joinDate);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -104,7 +103,7 @@ public class UserDBRepository{
                 Date joinDateSQL=resultSet.getDate("join_date");
                 LocalDate joinDate=joinDateSQL.toLocalDate();
                 String lastName = resultSet.getString("last_name");
-                User user = new User(email, firstName, lastName, password, joinDate);
+                User user = new User(email, password, firstName, lastName, joinDate);
                 users.add(user);
             }
             return users;

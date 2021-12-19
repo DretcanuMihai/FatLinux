@@ -44,7 +44,7 @@ public class UserService {
     public void addUser(String email, String firstName, int passwordHash, String lastName)
             throws ValidationException, AdministrationException {
 
-        User user = new User(email, firstName, lastName, passwordHash, LocalDate.now());
+        User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
         userValidator.validate(user);
         if(usersRepo.get(email) != null)
             throw new AdministrationException("Email already in use!\n");
@@ -78,12 +78,12 @@ public class UserService {
     public void updateUser(String email, String firstName, int passwordHash, String lastName)
             throws ValidationException, AdministrationException {
 
-        User user = new User(email, firstName, lastName, passwordHash, LocalDate.now());
+        User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
         userValidator.validate(user);
         User oldUser = usersRepo.get(email);
         if(oldUser == null)
             throw new AdministrationException("No user with such email!\n");
-        usersRepo.update(new User(email,firstName, lastName, passwordHash,oldUser.getJoinDate()));
+        usersRepo.update(new User(email, passwordHash, firstName, lastName, oldUser.getJoinDate()));
     }
 
     /**

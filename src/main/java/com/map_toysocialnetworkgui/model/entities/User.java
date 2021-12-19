@@ -34,15 +34,14 @@ public class User extends Entity<String> {
 
     /**
      * Creates a user based on the given information
-     *
-     * @param email        - user's email
+     *  @param email        - user's email
+     * @param passwordHash - user's password's hashcode
      * @param firstName    - user's first name
      * @param lastName     - user's last name
-     * @param passwordHash - user's password's hashcode
      * @param joinDate     - the date the user joined
      * @param accountStatusCode - said user's account status code
      */
-    public User(String email, String firstName, String lastName, int passwordHash, LocalDate joinDate,int accountStatusCode) {
+    public User(String email, int passwordHash, String firstName, String lastName, LocalDate joinDate, int accountStatusCode) {
         super(email);
         this.firstName = firstName;
         this.passwordHash = passwordHash;
@@ -54,15 +53,14 @@ public class User extends Entity<String> {
     /**
      * Creates a user based on the given information - the user's account
      * is by default active
-     *
-     * @param email        - user's email
+     *  @param email        - user's email
+     * @param passwordHash - user's password's hashcode
      * @param firstName    - user's first name
      * @param lastName     - user's last name
-     * @param passwordHash - user's password's hashcode
      * @param joinDate     - the date the user joined
      */
-    public User(String email, String firstName, String lastName, int passwordHash, LocalDate joinDate) {
-        this(email,firstName,lastName,passwordHash,joinDate,0);
+    public User(String email, int passwordHash, String firstName, String lastName, LocalDate joinDate) {
+        this(email, passwordHash, firstName,lastName, joinDate,0);
     }
 
     /**
