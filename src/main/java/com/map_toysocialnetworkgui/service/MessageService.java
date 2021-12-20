@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.validators.MessageValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.CRUDException;
@@ -113,21 +114,20 @@ public class MessageService {
     }
 
     /**
-     * gets a list of all the messages between two users sorted chronologically
-     *
-     * @param userEmail1 - first user email
-     * @param userEmail2 - second user email
-     * @return said list of messages
-     * @throws ValidationException - if user emails are the same
+     * returns the conversation between two users sorted chronologically
+     * @param email1 - first user's email
+     * @param email2 - second user's email
+     * @return a list of DTOs for said messages
+     * @throws ValidationException if emails are invalid
+     * @throws AdministrationException if no user with such emails exist
      */
-    public List<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) throws ValidationException {
+    public List<MessageDTO> getConversationBetweenUsers(String email1, String email2)
+            throws ValidationException,AdministrationException {
         if (userEmail1.equals(userEmail2))
             throw new ValidationException("Error: user emails must be different;\n");
-        return messageRepo.getAll().stream().filter(message -> {
-            String sender = message.getFromEmail();
-            List<String> toEmails = message.getToEmails();
-            return (sender.equals(userEmail1) && toEmails.contains(userEmail2)) ||
-                    (sender.equals(userEmail2) && toEmails.contains(userEmail1));
-        }).sorted(Comparator.comparing(Message::getSendTime)).toList();
+        userService.getUserInfo(email1);
+        userService.getUserInfo(email2);
+        return messageService.getMessagesBetweenUsersChronologically(email1, email2).stream()
+                .map(MessageDTO::new).toList();
     }
 }

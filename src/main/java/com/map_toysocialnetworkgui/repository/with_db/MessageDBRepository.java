@@ -1,10 +1,13 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
+import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.ReadOperationRepository;
+import com.map_toysocialnetworkgui.service.AdministrationException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -18,7 +21,7 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
     /**
      * constructor
      *
-     * @param url - url of database
+     * @param url      - url of database
      * @param username - username of database
      * @param password - password of database
      */
@@ -56,7 +59,7 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
     private void saveDelivery(Integer messageID, String receiverEmail) {
         String sqlInsertDelivery = "INSERT INTO message_deliveries(message_id, receiver_email) VALUES (?, ?)";
         try (Connection connection = getConnection();
-            PreparedStatement statementInsertDelivery = connection.prepareStatement(sqlInsertDelivery)) {
+             PreparedStatement statementInsertDelivery = connection.prepareStatement(sqlInsertDelivery)) {
 
             statementInsertDelivery.setInt(1, messageID);
             statementInsertDelivery.setString(2, receiverEmail);
@@ -168,13 +171,11 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
     @Override
     public void delete(Integer id) {
         String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
-        try (Connection connection = getConnection()) {
-
-            PreparedStatement statementMessages = connection.prepareStatement(sqlMessages);
+        try (Connection connection = getConnection();
+             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
 
             statementMessages.setInt(1, id);
             statementMessages.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -184,11 +185,10 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
     public Collection<Message> getAll() {
         Set<Message> messages = new HashSet<>();
         String sqlMessages = "SELECT * FROM messages";
-        try (Connection connection = getConnection()) {
+        try (Connection connection = getConnection();
+             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
 
-            PreparedStatement statementMessages = connection.prepareStatement(sqlMessages);
             ResultSet resultSetMessages = statementMessages.executeQuery();
-
             while (resultSetMessages.next()) {
                 Message message = getNextFromSet(resultSetMessages);
                 messages.add(message);
@@ -197,5 +197,37 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
             e.printStackTrace();
         }
         return messages;
+    }
+
+    /**
+     * gets a list of all the messages between two users sorted chronologically
+     *
+     * @param userEmail1 - first user email
+     * @param userEmail2 - second user email
+     * @return said list of messages
+     */
+    public List<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) {
+        List<Message> conversation = new ArrayList<>();
+        String sqlFilterConversationByTime = "SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id\n" +
+                "FROM messages m INNER JOIN message_deliveries md ON m.message_id = md.message_id\n" +
+                "WHERE m.sender_email = (?) AND md.receiver_email = (?)\n" +
+                "\t  OR m.sender_email = (?) AND md.receiver_email = (?)\n" +
+                "ORDER BY send_time ASC";
+        try (Connection connection = getConnection();
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, userEmail1);
+            statementConversation.setString(2, userEmail2);
+            statementConversation.setString(3, userEmail2);
+            statementConversation.setString(4, userEmail1);
+            ResultSet resultSet = statementConversation.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                conversation.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conversation;
     }
 }
