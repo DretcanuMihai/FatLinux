@@ -145,12 +145,14 @@ public class UserService {
      * @param userPassword - said user's password hash
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
+     * @return the user's info
      */
-    public void checkCredentials(String userEmail, int userPassword) throws ValidationException, AdministrationException {
+    public User login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
         User found = usersRepo.tryGet(userEmail);
 
         if (found == null || found.getPasswordHash() != userPassword)
             throw new AdministrationException("Invalid email or password!\n");
+        return found;
     }
 }

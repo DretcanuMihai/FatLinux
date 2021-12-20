@@ -79,6 +79,16 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
+    public User get(String s) throws CRUDException {
+        try {
+            return CRUDRepository.super.get(s);
+        }
+        catch (CRUDException e){
+            throw new CRUDException("Error: Email not in use!;\n");
+        }
+    }
+
+    @Override
     public void update(User user) throws CRUDException {
         String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?), status_code = (?) WHERE email = (?)";
         try (Connection connection = getConnection();

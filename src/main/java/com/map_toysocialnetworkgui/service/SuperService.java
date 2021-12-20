@@ -314,8 +314,10 @@ public class SuperService {
      * @param userPassword - said user's password
      * @throws ValidationException - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
+     * @return said user
      */
-    public void login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
-        userService.checkCredentials(userEmail, userPassword);
+    public UserUIDTO login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
+        User user=userService.login(userEmail, userPassword);
+        return new UserUIDTO(user);
     }
 }

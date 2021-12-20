@@ -20,10 +20,17 @@ public interface ReadOperationRepository<ID, E extends Entity<ID>> {
      */
     E tryGet(ID id);
 
-    default E get(ID id){
+    /**
+     * gets the entity with specified id from repo
+     *
+     * @param id - said id
+     * @return said entity
+     * @throws CRUDException if entity doesn't exist
+     */
+    default E get(ID id)throws CRUDException{
         E entity=tryGet(id);
         if(entity==null)
-            throw new CRUDException("Error: Entity with given ID;\n");
+            throw new CRUDException("Error: Wanted entity doesn't exist;\n");
         return entity;
     }
 
