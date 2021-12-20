@@ -116,7 +116,7 @@ public class UserService {
      * @throws ValidationException     - if said email is invalid
      * @throws AdministrationException - if a user with the specified email address doesn't exist
      */
-    public void changeUserAccountStatus(String email, AccountStatus status) throws ValidationException, AdministrationException {
+    private void changeUserAccountStatus(String email, AccountStatus status) throws ValidationException, AdministrationException {
         userValidator.validateEmail(email);
         usersRepo.updateStatus(email, status);
     }

@@ -55,12 +55,12 @@ public class SuperService {
     }
 
     /**
-     * deletes the user with the given email
+     * disables the user with the given email
      * @param email - user email
      * @throws ValidationException if the email is invalid
      * @throws AdministrationException if a user with said email doesn't exist
      */
-    public void deleteUser(String email)throws ValidationException,AdministrationException {
+    public void disableUserAccount(String email)throws ValidationException,AdministrationException {
         userService.disableUserAccount(email);
     }
 
@@ -229,8 +229,8 @@ public class SuperService {
 
     /**
      * sends a reply message to another message
-     * the receiver will be the sender of the original message and all of the original receivers
-     * with the exception of the replier
+     * the receiver will be the sender of the original message and all the original receivers
+     * except the replier
      * @param fromEmail - sender user's email
      * @param messageText - the text of the message
      * @param parentID - the id of the parent message
@@ -304,7 +304,7 @@ public class SuperService {
     }
 
     /**
-     * logs in an user
+     * logs in a user
      * @param userEmail - said user's email
      * @param userPassword - said user's password
      * @throws ValidationException - if said user's email is invalid
