@@ -2,12 +2,15 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
 import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
-import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.ReadOperationRepository;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class MessageDBCRUDRepository extends AbstractDBRepository implements CRUDRepository<Integer, Message> {
+public class MessageDBCRUDRepository extends AbstractDBRepository implements CreateOperationRepository<Integer, Message>,
+        ReadOperationRepository<Integer, Message>, DeleteOperationRepository<Integer, Message> {
 
     public MessageDBCRUDRepository(String url, String username, String password) {
         super(url, username, password);
@@ -42,8 +45,9 @@ public class MessageDBCRUDRepository extends AbstractDBRepository implements CRU
      */
     private void saveDelivery(Integer messageID, String receiverEmail) {
         String sqlInsertDelivery = "INSERT INTO message_deliveries(message_id, receiver_email) VALUES (?, ?)";
-        try (Connection connection = getConnection()) {
-            PreparedStatement statementInsertDelivery = connection.prepareStatement(sqlInsertDelivery);
+        try (Connection connection = getConnection();
+            PreparedStatement statementInsertDelivery = connection.prepareStatement(sqlInsertDelivery)) {
+
             statementInsertDelivery.setInt(1, messageID);
             statementInsertDelivery.setString(2, receiverEmail);
             statementInsertDelivery.executeUpdate();
@@ -67,10 +71,10 @@ public class MessageDBCRUDRepository extends AbstractDBRepository implements CRU
 
     @Override
     public void save(Message message) {
-        String sqlInsertMessage = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
+        String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
                 "VALUES (?, ?, ?, ?)";
         try (Connection connection = getConnection();
-             PreparedStatement statementInsertMessage = connection.prepareStatement(sqlInsertMessage, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statementInsertMessage = connection.prepareStatement(sqlSave, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             // saves everything except the list of receivers
             statementInsertMessage.setString(1, message.getFromEmail());
@@ -101,9 +105,9 @@ public class MessageDBCRUDRepository extends AbstractDBRepository implements CRU
     private List<String> getReceiverEmailsOf(Integer id) {
         List<String> toEmails = new ArrayList<>();
         String sqlGetMessageDeliveries = "SELECT * FROM message_deliveries WHERE message_id = (?)";
-        try (Connection connection = getConnection()) {
+        try (Connection connection = getConnection();
+             PreparedStatement statementGetMessageDeliveries = connection.prepareStatement(sqlGetMessageDeliveries)) {
 
-            PreparedStatement statementGetMessageDeliveries = connection.prepareStatement(sqlGetMessageDeliveries);
             statementGetMessageDeliveries.setInt(1, id);
             ResultSet resultSetDeliveries = statementGetMessageDeliveries.executeQuery();
             while (resultSetDeliveries.next()) {
@@ -118,15 +122,13 @@ public class MessageDBCRUDRepository extends AbstractDBRepository implements CRU
 
     @Override
     public Message tryGet(Integer id) {
-        String sqlGetMessage = "SELECT * FROM messages WHERE message_id = (?)";
+        String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
         Message message = null;
-        try (Connection connection = getConnection()) {
+        try (Connection connection = getConnection();
+             PreparedStatement statementGetMessage = connection.prepareStatement(sqlFind)) {
 
-            PreparedStatement statementGetMessage = connection.prepareStatement(sqlGetMessage);
             statementGetMessage.setInt(1, id);
-
             ResultSet resultSetMessages = statementGetMessage.executeQuery();
-
             if (resultSetMessages.next()) {
                 message = getNextFromSet(resultSetMessages);
             }
@@ -143,9 +145,9 @@ public class MessageDBCRUDRepository extends AbstractDBRepository implements CRU
      */
     private void deleteDeliveriesOf(Integer id) {
         String sqlDeleteMessageDeliveries = "DELETE FROM message_deliveries WHERE message_id = (?)";
-        try (Connection connection = getConnection()) {
+        try (Connection connection = getConnection();
+             PreparedStatement statementDeleteMessageDeliveries = connection.prepareStatement(sqlDeleteMessageDeliveries)) {
 
-            PreparedStatement statementDeleteMessageDeliveries = connection.prepareStatement(sqlDeleteMessageDeliveries);
             statementDeleteMessageDeliveries.setInt(1, id);
             statementDeleteMessageDeliveries.executeUpdate();
         } catch (SQLException e) {
@@ -161,29 +163,6 @@ public class MessageDBCRUDRepository extends AbstractDBRepository implements CRU
     private void updateDeliveriesOf(Message message) {
         deleteDeliveriesOf(message.getId());
         message.getToEmails().forEach(email -> saveDelivery(message.getId(), email));
-    }
-
-    @Override
-    public void update(Message message) {
-        String sqlUpdateMessage = "UPDATE messages SET sender_email = (?), message_text = (?), send_time = (?), parent_message_id = (?) where message_id = (?)";
-        try (Connection connection = getConnection()) {
-
-            PreparedStatement statementUpdateMessage = connection.prepareStatement(sqlUpdateMessage);
-
-            statementUpdateMessage.setString(1, message.getFromEmail());
-            statementUpdateMessage.setString(2, message.getMessageText());
-            statementUpdateMessage.setTimestamp(3, Timestamp.valueOf(message.getSendTime()));
-            if (message.getParentMessageId() == null)
-                statementUpdateMessage.setNull(4, Types.INTEGER);
-            else
-                statementUpdateMessage.setInt(4, message.getParentMessageId());
-            statementUpdateMessage.setInt(5, message.getId());
-            statementUpdateMessage.executeUpdate();
-            updateDeliveriesOf(message);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
