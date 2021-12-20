@@ -10,6 +10,6 @@ public interface Validator<T> {
      * @param entity - said entity
      * @throws ValidationException if the entity isn't valid
      */
-    void validateD(T entity) throws ValidationException;
+    void validateDefault(T entity) throws ValidationException;
 
 }

@@ -46,7 +46,7 @@ public class UserService {
             throws ValidationException, CRUDException {
 
         User user = new User(dto.getEmail(), dto.getPasswordHash(),dto.getFirstName(),dto.getLastName(),LocalDate.now());
-        userValidator.validateD(user);
+        userValidator.validateDefault(user);
         usersRepo.save(user);
     }
 
@@ -77,7 +77,7 @@ public class UserService {
             throws ValidationException, AdministrationException {
 
         User user = new User(dto.getEmail(), dto.getPasswordHash(),dto.getFirstName(),dto.getLastName(),null);
-        userValidator.validateD(user);
+        userValidator.validateDefault(user);
         usersRepo.updateInfo(user);
     }
 

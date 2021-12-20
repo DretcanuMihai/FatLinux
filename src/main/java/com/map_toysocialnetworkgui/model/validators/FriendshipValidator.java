@@ -16,7 +16,7 @@ public class FriendshipValidator implements Validator<Friendship> {
      * @throws ValidationException - if said entity is not valid
      */
     @Override
-    public void validateD(Friendship entity) throws ValidationException {
+    public void validateDefault(Friendship entity) throws ValidationException {
         String message="";
         String email1=entity.getEmails().getFirst();
         String email2=entity.getEmails().getSecond();

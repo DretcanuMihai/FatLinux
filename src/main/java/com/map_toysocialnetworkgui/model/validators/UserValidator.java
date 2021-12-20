@@ -21,7 +21,7 @@ public class UserValidator implements Validator<User> {
      * @throws ValidationException - if said entity is not valid
      */
     @Override
-    public void validateD(User entity) throws ValidationException {
+    public void validateDefault(User entity) throws ValidationException {
         String message = "";
         String email = entity.getEmail();
         String firstName = entity.getFirstName();

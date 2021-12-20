@@ -42,7 +42,7 @@ public class MessageService {
      */
     public void addRootMessage(String fromEmail, List<String> toEmails, String messageText) throws ValidationException {
         Message message=new Message(0,fromEmail,toEmails,messageText, LocalDateTime.now(),null);
-        messageValidator.validateD(message);
+        messageValidator.validateDefault(message);
         messageCRUDRepository.save(message);
     }
 
@@ -61,7 +61,7 @@ public class MessageService {
             throw new AdministrationException("Error: User is not one of the recipients of the message!;\n");
         Message message=new Message(0,fromEmail,List.of(parentMessage.getFromEmail()),messageText, LocalDateTime.now(),
                 replyMessageID);
-        messageValidator.validateD(message);
+        messageValidator.validateDefault(message);
         messageCRUDRepository.save(message);
     }
 
@@ -83,7 +83,7 @@ public class MessageService {
         receivers.remove(fromEmail);
         Message message=new Message(0,fromEmail,receivers,messageText, LocalDateTime.now(),
                 replyMessageID);
-        messageValidator.validateD(message);
+        messageValidator.validateDefault(message);
         messageCRUDRepository.save(message);
     }
 
