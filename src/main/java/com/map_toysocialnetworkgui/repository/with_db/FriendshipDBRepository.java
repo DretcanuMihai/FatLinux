@@ -2,7 +2,10 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
-import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.operation_based.ReadOperationRepository;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.sql.*;
@@ -11,21 +14,18 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FriendshipDBCRUDRepository implements CRUDRepository<UnorderedPair<String>, Friendship> {
-    private final String url;
-    private final String username;
-    private final String password;
-
-    public FriendshipDBCRUDRepository(String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
+public class FriendshipDBRepository extends AbstractDBRepository
+        implements CreateOperationRepository<UnorderedPair<String>,Friendship>,
+        DeleteOperationRepository<UnorderedPair<String>,Friendship>,
+        ReadOperationRepository<UnorderedPair<String>,Friendship> {
+    public FriendshipDBRepository(String url, String username, String password) {
+        super(url, username, password);
     }
 
     @Override
     public void save(Friendship friendship) {
         String sqlSave = "INSERT INTO friendships(first_user_email, second_user_email, begin_date) values (?,?,?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (Connection connection = getConnection();
              PreparedStatement statementSave= connection.prepareStatement(sqlSave)) {
 
                 statementSave.setString(1,friendship.getEmails().getFirst());
@@ -43,7 +43,7 @@ public class FriendshipDBCRUDRepository implements CRUDRepository<UnorderedPair<
         String sqlFind = "SELECT * from friendships where (first_user_email=(?) and second_user_email=(?))";
         Friendship toReturn=null;
 
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (Connection connection = getConnection();
              PreparedStatement statementFind = connection.prepareStatement(sqlFind)) {
 
             statementFind.setString(1,id.getFirst());
@@ -63,25 +63,9 @@ public class FriendshipDBCRUDRepository implements CRUDRepository<UnorderedPair<
     }
 
     @Override
-    public void update(Friendship friendship) {
-        String sqlUpdate = "UPDATE friendships SET begin_date=(?) where (first_user_email=(?) and second_user_email=(?))";
-
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
-
-            statementUpdate.setDate(1,Date.valueOf(friendship.getBeginDate()));
-            statementUpdate.setString(2,friendship.getEmails().getFirst());
-            statementUpdate.setString(3,friendship.getEmails().getSecond());
-            statementUpdate.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void delete(UnorderedPair<String> id) {
         String sqlDelete = "DELETE FROM friendships where (first_user_email=(?) and second_user_email=(?))";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (Connection connection = getConnection();
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
 
             statementDelete.setString(1,id.getFirst());
@@ -96,7 +80,7 @@ public class FriendshipDBCRUDRepository implements CRUDRepository<UnorderedPair<
     public Collection<Friendship> getAll() {
         Set<Friendship> friendships = new HashSet<>();
         String sql="SELECT * from friendships";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
 

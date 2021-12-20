@@ -5,7 +5,8 @@ import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
-import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
+import com.map_toysocialnetworkgui.repository.with_db.FriendRequestDBRepository;
+import com.map_toysocialnetworkgui.repository.with_db.FriendshipDBRepository;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
@@ -21,26 +22,35 @@ public class FriendshipService {
     /**
      * associated friendship repo
      */
-    private final CRUDRepository<UnorderedPair<String>, Friendship> friendshipRepo;
+    private final FriendshipDBRepository friendshipRepo;
     /**
      * associated friendship validator
      */
     private final FriendshipValidator friendshipValidator;
-    CRUDRepository<Pair<String,String>, FriendRequest> friendRequestCRUDRepository;
-    FriendRequestValidator friendRequestValidator;
+    /**
+     * associated friendrequest repo
+     */
+    private final FriendRequestDBRepository friendRequestRepository;
+    /**
+     * associated friendrequest validator
+     */
+    private final FriendRequestValidator friendRequestValidator;
 
     /**
-     * creates a friendship service based on a friendship repository and validator
-     * @param friendshipRepo - said repository
-     * @param friendshipValidator - said validator
+     * creates a friendship service based on a friendship repository and validator and
+     * friend request repository and validator
+     * @param friendshipRepo - said friend repository
+     * @param friendshipValidator - said friend validator
+     * @param friendRequestRepository - said friend request repository
+     * @param friendRequestValidator - said friend request validator
      */
-    public FriendshipService(CRUDRepository<UnorderedPair<String>, Friendship> friendshipRepo,
-                             FriendshipValidator friendshipValidator, CRUDRepository<Pair<String,String>,
-                                                                                                   FriendRequest> friendRequestCRUDRepository, FriendRequestValidator friendRequestValidator) {
+    public FriendshipService(FriendshipDBRepository friendshipRepo, FriendshipValidator friendshipValidator,
+                             FriendRequestDBRepository friendRequestRepository,
+                             FriendRequestValidator friendRequestValidator) {
 
         this.friendshipRepo = friendshipRepo;
         this.friendshipValidator = friendshipValidator;
-        this.friendRequestCRUDRepository = friendRequestCRUDRepository;
+        this.friendRequestRepository = friendRequestRepository;
         this.friendRequestValidator=friendRequestValidator;
     }
 
@@ -141,13 +151,13 @@ public class FriendshipService {
         friendshipValidator.validateEmails(senderEmail,receiverEmail);
         if(friendshipRepo.tryGet(new UnorderedPair<>(senderEmail,receiverEmail))!=null)
             throw new AdministrationException("Users are already friends;\n");
-        FriendRequest inverse= friendRequestCRUDRepository.tryGet(new Pair<>(receiverEmail,senderEmail));
+        FriendRequest inverse= friendRequestRepository.tryGet(new Pair<>(receiverEmail,senderEmail));
         if(inverse!=null)
             throw new AdministrationException("Can't send request! Receiver already sent request to sender;\n");
-        if(friendRequestCRUDRepository.tryGet(new Pair<>(senderEmail,receiverEmail))!=null)
+        if(friendRequestRepository.tryGet(new Pair<>(senderEmail,receiverEmail))!=null)
             throw new AdministrationException("Friend request from sender to receiver already exists;\n");
         FriendRequest friendRequest=new FriendRequest(senderEmail,receiverEmail, LocalDateTime.now());
-        friendRequestCRUDRepository.save(friendRequest);
+        friendRequestRepository.save(friendRequest);
     }
 
     /**
@@ -162,10 +172,10 @@ public class FriendshipService {
             throws ValidationException,AdministrationException{
 
         friendshipValidator.validateEmails(senderEmail,receiverEmail);
-        FriendRequest friendRequest= friendRequestCRUDRepository.tryGet(new Pair<>(senderEmail,receiverEmail));
+        FriendRequest friendRequest= friendRequestRepository.tryGet(new Pair<>(senderEmail,receiverEmail));
         if(friendRequest==null)
             throw new AdministrationException("No friend request from sender to receiver exists;\n");
-        friendRequestCRUDRepository.delete(new Pair<>(senderEmail,receiverEmail));
+        friendRequestRepository.delete(new Pair<>(senderEmail,receiverEmail));
         if(accepted)
             friendshipRepo.save(new Friendship(senderEmail,receiverEmail,LocalDate.now()));
     }
@@ -175,7 +185,7 @@ public class FriendshipService {
      * @return a collection of said friend requests
      */
     public Collection<FriendRequest> getAllFriendRequests() {
-        return friendRequestCRUDRepository.getAll();
+        return friendRequestRepository.getAll();
     }
 
     /**
@@ -184,7 +194,7 @@ public class FriendshipService {
      * @return a collection of said friend requests
      */
     public Collection<FriendRequest> getFriendRequestsSentToUser(String userEmail) {
-        return friendRequestCRUDRepository.getAll().stream()
+        return friendRequestRepository.getAll().stream()
                 .filter(request->request.getReceiver().equals(userEmail))
                 .toList();
     }
