@@ -2,11 +2,9 @@ package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.entities.User;
-import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.*;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.repository.CRUDException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,17 +39,28 @@ public class SuperService {
     }
 
     /**
-     * Creates a user with the given information
-     * @param email - the user's email
-     * @param passwordHash - the hash of the user's password
-     * @param firstName - the first name of the user
-     * @param lastName - the last name of the user
-     * @throws ValidationException if any of the data is invalid
-     * @throws AdministrationException if a user already exists with the given email
+     * adds a user to the repo
+     *
+     * @param dto - dto containing needed information
+     * @throws ValidationException - if the user data is invalid
+     * @throws CRUDException       - if the email is already in use
      */
-    public void createUserAccount(String email, int passwordHash, String firstName, String lastName)
+    public void createUserAccount(UserServiceDTO dto)
             throws ValidationException,AdministrationException {
-        userService.createUserAccount(email, passwordHash, firstName, lastName);
+        userService.createUserAccount(dto);
+    }
+
+    /**
+     * modifies the account identified by email with the other given information
+     *
+     * @param dto - needed data
+     * @throws ValidationException if any of the data is invalid
+     * @throws AdministrationException if a user with said email doesn't exist
+     */
+    public void updateUser(UserServiceDTO dto)
+            throws ValidationException,AdministrationException {
+
+        userService.updateUserAccountInfo(dto);
     }
 
     /**
@@ -65,17 +74,13 @@ public class SuperService {
     }
 
     /**
-     * modifies the account identified by email with the other given information
-     * @param email - the user's email
-     * @param firstName - the user's first name
-     * @param passwordHash - the hash of the user's password
-     * @param lastName - the user's last name
-     * @throws ValidationException if any of the data is invalid
+     * reactivates the user with the given email
+     * @param email - user email
+     * @throws ValidationException if the email is invalid
      * @throws AdministrationException if a user with said email doesn't exist
      */
-    public void updateUser(String email, String firstName, int passwordHash, String lastName)
-            throws ValidationException,AdministrationException {
-        userService.updateUserAccountInfo(email, passwordHash, firstName, lastName);
+    public void reactivateUserAccount(String email)throws ValidationException,AdministrationException {
+        userService.reactivateUserAccount(email);
     }
 
     /**
@@ -84,18 +89,18 @@ public class SuperService {
      * @return the UserDTO
      * @throws AdministrationException if a user with said email doesn't exist
      */
-    public UserDTO getUserDTO(String email)throws AdministrationException {
-        return new UserDTO(userService.getUserInfo(email));
+    public UserUIDTO getUserDTO(String email)throws AdministrationException {
+        return new UserUIDTO(userService.getUserInfo(email));
     }
 
     /**
      * returns a collection of all user data in the form of UserDTOs
      * @return said collection
      */
-    public Collection<UserDTO> getAllUserDTOs() {
-        Collection<UserDTO> userDTOS=new ArrayList<>();
-        userService.getAllUsers().forEach(user -> userDTOS.add(new UserDTO(user)));
-        return userDTOS;
+    public Collection<UserUIDTO> getAllUserDTOs() {
+        Collection<UserUIDTO> userUIDTOS =new ArrayList<>();
+        userService.getAllUsers().forEach(user -> userUIDTOS.add(new UserUIDTO(user)));
+        return userUIDTOS;
     }
 
     /**
