@@ -9,10 +9,20 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class MessageDBCRUDRepository extends AbstractDBRepository implements CreateOperationRepository<Integer, Message>,
+/**
+ * a message repository that works with a database
+ */
+public class MessageDBRepository extends AbstractDBRepository implements CreateOperationRepository<Integer, Message>,
         ReadOperationRepository<Integer, Message>, DeleteOperationRepository<Integer, Message> {
 
-    public MessageDBCRUDRepository(String url, String username, String password) {
+    /**
+     * constructor
+     *
+     * @param url - url of database
+     * @param username - username of database
+     * @param password - password of database
+     */
+    public MessageDBRepository(String url, String username, String password) {
         super(url, username, password);
     }
 
@@ -153,16 +163,6 @@ public class MessageDBCRUDRepository extends AbstractDBRepository implements Cre
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * updates the deliveries of a message in the database
-     *
-     * @param message - said message - the new deliveries are taken from it
-     */
-    private void updateDeliveriesOf(Message message) {
-        deleteDeliveriesOf(message.getId());
-        message.getToEmails().forEach(email -> saveDelivery(message.getId(), email));
     }
 
     @Override
