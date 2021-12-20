@@ -1,5 +1,6 @@
 package com.map_toysocialnetworkgui.service;
 
+import com.map_toysocialnetworkgui.model.entities.AccountStatus;
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
@@ -69,38 +70,54 @@ public class UserService {
      * updates the data of a user identified by an email
      * @param email - said user's email
      * @param firstName - the new first name
-     * @param passwordHash -  the new password hash
      * @param lastName - the new last name
+     * @param passwordHash -  the new password hash
      * @throws ValidationException - if any of the data is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public void updateUser(String email, String firstName, int passwordHash, String lastName)
+    public void updateUserAccountInfo(String email, String firstName, String lastName, int passwordHash)
             throws ValidationException, AdministrationException {
 
-        User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
+        User user = new User(email, passwordHash, firstName, lastName, null);
         userValidator.validateD(user);
-        User oldUser = usersRepo.get(email);
-        if(oldUser == null)
-            throw new AdministrationException("No user with such email!\n");
-        usersRepo.update(new User(email, passwordHash, firstName, lastName, oldUser.getJoinDate()));
+        usersRepo.updateInfo(user);
     }
 
     /**
-     * deletes a user identified by an email
+     * disables a user identified by an email
      * @param email - said user's email
      * @throws ValidationException - if said email is invalid
      * @throws AdministrationException - if a user with the specified email address doesn't exist
      */
-    public void deleteUser(String email) throws ValidationException,AdministrationException {
-        userValidator.validateEmail(email);
-        if(usersRepo.get(email) == null)
-            throw new AdministrationException("No user with such email!\n");
-        usersRepo.delete(email);
+    public void disableUserAccount(String email) throws ValidationException,AdministrationException {
+        changeUserAccountStatus(email,AccountStatus.DISABLED);
     }
 
     /**
-     * returns an iterable of all the users in repo
-     * @return said iterable
+     * reactivates a user identified by an email
+     * @param email - said user's email
+     * @throws ValidationException - if said email is invalid
+     * @throws AdministrationException - if a user with the specified email address doesn't exist
+     */
+    public void reactivateUserAccount(String email) throws ValidationException,AdministrationException {
+        changeUserAccountStatus(email,AccountStatus.ACTIVE);
+    }
+
+    /**
+     * changes a user's account status
+     * @param email - said user's email
+     * @param status - the new status
+     * @throws ValidationException - if said email is invalid
+     * @throws AdministrationException - if a user with the specified email address doesn't exist
+     */
+    public void changeUserAccountStatus(String email,AccountStatus status) throws ValidationException,AdministrationException {
+        userValidator.validateEmail(email);
+        usersRepo.updateStatus(email,status);
+    }
+
+    /**
+     * returns a collection of all the users in repo
+     * @return said collection
      */
     public Collection<User> getAllUsers() {
         return usersRepo.getAll();
@@ -113,8 +130,6 @@ public class UserService {
      * @throws AdministrationException - if any email doesn't belong to a user
      */
     public void verifyEmailList(List<String> emailList) throws ValidationException, AdministrationException {
-        if(emailList == null)
-            throw new ValidationException("Error: emailList must be non null;\n");
         emailList.forEach(this::getUser);
     }
 
@@ -125,7 +140,7 @@ public class UserService {
      * @throws ValidationException - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public void userLogin(String userEmail, int userPassword) throws ValidationException, AdministrationException {
+    public void checkCredentials(String userEmail, int userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
         User found = usersRepo.get(userEmail);
 

@@ -61,7 +61,7 @@ public class SuperService {
      * @throws AdministrationException if a user with said email doesn't exist
      */
     public void deleteUser(String email)throws ValidationException,AdministrationException {
-        userService.deleteUser(email);
+        userService.disableUserAccount(email);
     }
 
     /**
@@ -75,7 +75,7 @@ public class SuperService {
      */
     public void updateUser(String email, String firstName, int passwordHash, String lastName)
             throws ValidationException,AdministrationException {
-        userService.updateUser(email, firstName, passwordHash, lastName);
+        userService.updateUserAccountInfo(email, firstName, lastName, passwordHash);
     }
 
     /**
@@ -311,6 +311,6 @@ public class SuperService {
      * @throws AdministrationException - if credentials are invalid
      */
     public void login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
-        userService.userLogin(userEmail, userPassword);
+        userService.checkCredentials(userEmail, userPassword);
     }
 }

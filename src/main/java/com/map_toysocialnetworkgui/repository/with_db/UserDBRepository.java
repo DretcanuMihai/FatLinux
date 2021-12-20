@@ -1,9 +1,10 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 
+import com.map_toysocialnetworkgui.model.entities.AccountStatus;
 import com.map_toysocialnetworkgui.model.entities.User;
-import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.CRUDException;
+import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
 
 import java.sql.*;
@@ -15,7 +16,7 @@ import java.util.Set;
 /**
  * a user repository that works with a database
  */
-public class UserDBRepository extends AbstractDBRepository implements CRUDRepository<String,User> {
+public class UserDBRepository extends AbstractDBRepository implements CRUDRepository<String, User> {
 
     public UserDBRepository(String url, String username, String password) {
         super(url, username, password);
@@ -78,7 +79,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public void update(User user) throws CRUDException{
+    public void update(User user) throws CRUDException {
         String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?), status_code = (?) WHERE email = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -86,6 +87,53 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
             statementUpdate.setString(1, user.getFirstName());
             statementUpdate.setString(2, user.getLastName());
             statementUpdate.setInt(3, user.getPasswordHash());
+            statementUpdate.setInt(4, user.getAccountStatus().getStatusCode());
+            statementUpdate.setString(5, user.getEmail());
+            int affectedRows = statementUpdate.executeUpdate();
+            if (affectedRows == 0)
+                throw new CRUDException("Error: Email not in use!;\n");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * updates the user's info (first and last name, password hash)
+     *
+     * @param user - said user and its new info
+     * @throws CRUDException if an entity identified by the same ID doesn't already exist
+     */
+    public void updateInfo(User user) throws CRUDException {
+        String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?) WHERE email = (?)";
+        try (Connection connection = getConnection();
+             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
+
+            statementUpdate.setString(1, user.getFirstName());
+            statementUpdate.setString(2, user.getLastName());
+            statementUpdate.setInt(3, user.getPasswordHash());
+            statementUpdate.setString(4, user.getEmail());
+            int affectedRows = statementUpdate.executeUpdate();
+            if (affectedRows == 0)
+                throw new CRUDException("Error: Email not in use!;\n");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * updates the user's account status
+     *
+     * @param email - said user's email
+     * @param status - the new status
+     * @throws CRUDException if a user with said email doesn't already exist
+     */
+    public void updateStatus(String email, AccountStatus status) throws CRUDException {
+        String sqlUpdate = "UPDATE users SET status_code = (?) WHERE email = (?)";
+        try (Connection connection = getConnection();
+             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
+
+            statementUpdate.setInt(1, status.getStatusCode());
+            statementUpdate.setString(2, email);
             int affectedRows = statementUpdate.executeUpdate();
             if (affectedRows == 0)
                 throw new CRUDException("Error: Email not in use!;\n");
@@ -99,7 +147,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
         String sqlDelete = "DELETE FROM users WHERE email = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
-            statementDelete.setString(1,id);
+            statementDelete.setString(1, id);
             statementDelete.execute();
         } catch (SQLException e) {
             e.printStackTrace();

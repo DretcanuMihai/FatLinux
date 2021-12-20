@@ -30,7 +30,26 @@ public class User extends Entity<String> {
     /**
      * associated account status
      */
-    private final AccountStatus accountStatus;
+    private AccountStatus accountStatus;
+
+    /**
+     * Creates a user based on the given information
+     *
+     * @param email         - user's email
+     * @param passwordHash  - user's password's hashcode
+     * @param firstName     - user's first name
+     * @param lastName      - user's last name
+     * @param joinDate      - the date the user joined
+     * @param accountStatus - said user's account status
+     */
+    public User(String email, int passwordHash, String firstName, String lastName, LocalDate joinDate, AccountStatus accountStatus) {
+        super(email);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.passwordHash = passwordHash;
+        this.joinDate = joinDate;
+        this.accountStatus = accountStatus;
+    }
 
     /**
      * Creates a user based on the given information
@@ -43,12 +62,7 @@ public class User extends Entity<String> {
      * @param accountStatusCode - said user's account status code
      */
     public User(String email, int passwordHash, String firstName, String lastName, LocalDate joinDate, int accountStatusCode) {
-        super(email);
-        this.firstName = firstName;
-        this.passwordHash = passwordHash;
-        this.joinDate = joinDate;
-        this.lastName = lastName;
-        this.accountStatus = AccountStatus.getByCode(accountStatusCode);
+        this(email, passwordHash, firstName, lastName, joinDate, AccountStatus.getByCode(accountStatusCode));
     }
 
     /**
@@ -117,6 +131,15 @@ public class User extends Entity<String> {
      */
     public AccountStatus getAccountStatus() {
         return accountStatus;
+    }
+
+    /**
+     * sets the status of the user's account
+     *
+     * @param accountStatus - the new status
+     */
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
     }
 
     /**
