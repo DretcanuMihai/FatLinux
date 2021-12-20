@@ -60,7 +60,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public User get(String email) {
+    public User tryGet(String email) {
         String sqlFind = "SELECT * FROM users WHERE email = (?)";
         User toReturn = null;
 

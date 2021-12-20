@@ -47,7 +47,7 @@ public class FriendRequestDBCRUDRepository implements CRUDRepository<Pair<String
     }
 
     @Override
-    public FriendRequest get(Pair<String, String> id) {
+    public FriendRequest tryGet(Pair<String, String> id) {
         String sqlFind = "SELECT * FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
         FriendRequest toReturn = null;
 

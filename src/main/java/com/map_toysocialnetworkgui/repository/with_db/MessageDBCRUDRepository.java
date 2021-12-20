@@ -118,7 +118,7 @@ public class MessageDBCRUDRepository implements CRUDRepository<Integer, Message>
     }
 
     @Override
-    public Message get(Integer id) {
+    public Message tryGet(Integer id) {
         String sqlGetMessage="SELECT * from messages where message_id=(?)";
         Message message=null;
         try (Connection connection = DriverManager.getConnection(url, username, password)){

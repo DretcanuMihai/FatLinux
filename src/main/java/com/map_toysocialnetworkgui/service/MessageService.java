@@ -27,7 +27,7 @@ public class MessageService {
      */
     public Message getMessageBy(Integer id) throws ValidationException,AdministrationException{
         messageValidator.validateID(id);
-        Message message= messageCRUDRepository.get(id);
+        Message message= messageCRUDRepository.tryGet(id);
         if(message==null)
             throw new AdministrationException("No message with given parent message id exists!;\n");
         return message;

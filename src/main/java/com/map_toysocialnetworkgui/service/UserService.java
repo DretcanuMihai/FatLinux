@@ -60,7 +60,7 @@ public class UserService {
      */
     public User getUserInfo(String email) throws ValidationException, AdministrationException {
         userValidator.validateEmail(email);
-        User user = usersRepo.get(email);
+        User user = usersRepo.tryGet(email);
         if (user == null)
             throw new AdministrationException("No user with such email!\n");
         return user;
@@ -148,7 +148,7 @@ public class UserService {
      */
     public void checkCredentials(String userEmail, int userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
-        User found = usersRepo.get(userEmail);
+        User found = usersRepo.tryGet(userEmail);
 
         if (found == null || found.getPasswordHash() != userPassword)
             throw new AdministrationException("Invalid email or password!\n");

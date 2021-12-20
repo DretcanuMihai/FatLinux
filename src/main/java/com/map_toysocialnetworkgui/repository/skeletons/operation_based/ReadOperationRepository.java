@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.skeletons.operation_based;
 
 import com.map_toysocialnetworkgui.model.entities.Entity;
+import com.map_toysocialnetworkgui.repository.CRUDException;
 
 import java.util.Collection;
 
@@ -17,7 +18,14 @@ public interface ReadOperationRepository<ID, E extends Entity<ID>> {
      * @param id - said id
      * @return the entity if it exists, null otherwise
      */
-    E get(ID id);
+    E tryGet(ID id);
+
+    default E get(ID id){
+        E entity=tryGet(id);
+        if(entity==null)
+            throw new CRUDException("Error: Entity with given ID;\n");
+        return entity;
+    }
 
     /**
      * gets all the entities in the repo
@@ -33,6 +41,6 @@ public interface ReadOperationRepository<ID, E extends Entity<ID>> {
      * @return true if it exists, false otherwise
      */
     default boolean contains(ID id){
-        return get(id)!=null;
+        return tryGet(id)!=null;
     }
 }

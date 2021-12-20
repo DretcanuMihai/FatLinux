@@ -39,7 +39,7 @@ public class FriendshipDBCRUDRepository implements CRUDRepository<UnorderedPair<
     }
 
     @Override
-    public Friendship get(UnorderedPair<String> id) {
+    public Friendship tryGet(UnorderedPair<String> id) {
         String sqlFind = "SELECT * from friendships where (first_user_email=(?) and second_user_email=(?))";
         Friendship toReturn=null;
 
