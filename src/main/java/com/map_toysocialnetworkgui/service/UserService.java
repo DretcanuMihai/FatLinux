@@ -1,13 +1,15 @@
 package com.map_toysocialnetworkgui.service;
 
+import com.map_toysocialnetworkgui.model.entities.AccountStatus;
 import com.map_toysocialnetworkgui.model.entities.User;
+import com.map_toysocialnetworkgui.model.entities_dto.UserServiceDTO;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
-import com.map_toysocialnetworkgui.repository.Repository;
+import com.map_toysocialnetworkgui.repository.CRUDException;
+import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * a class that incorporates a service that works with user administration
@@ -16,7 +18,7 @@ public class UserService {
     /**
      * associated users repo
      */
-    private final Repository<String, User> usersRepo;
+    private final UserDBRepository usersRepo;
     /**
      * associated user validator
      */
@@ -24,84 +26,100 @@ public class UserService {
 
     /**
      * constructs an userService having a specified user repo and validator
-     * @param usersRepo - said user Repo
+     *
+     * @param usersRepo     - said user Repo
      * @param userValidator - said user validator
      */
-    public UserService(Repository<String, User> usersRepo, UserValidator userValidator) {
+    public UserService(UserDBRepository usersRepo, UserValidator userValidator) {
         this.usersRepo = usersRepo;
         this.userValidator = userValidator;
     }
 
     /**
      * adds a user to the repo
-     * @param email - said user's email
-     * @param firstName - said user's first name
-     * @param passwordHash - said user's password's hash
-     * @param lastName - said user's last name
+     *
+     * @param dto - dto containing needed information
      * @throws ValidationException - if the user data is invalid
-     * @throws AdministrationException - if a user with the same email already exists
+     * @throws CRUDException       - if the email is already in use
      */
-    public void addUser(String email, String firstName, int passwordHash, String lastName)
-            throws ValidationException, AdministrationException {
+    public void createUserAccount(UserServiceDTO dto)
+            throws ValidationException, CRUDException {
 
-        User user = new User(email, firstName, lastName, passwordHash, LocalDate.now());
-        userValidator.validate(user);
-        if(usersRepo.get(email) != null)
-            throw new AdministrationException("Email already in use!\n");
+        User user = new User(dto.getEmail(), dto.getPasswordHash(),dto.getFirstName(),dto.getLastName(),LocalDate.now());
+        userValidator.validateDefault(user);
         usersRepo.save(user);
     }
 
     /**
      * returns a user identified by an email
+     *
      * @param email -  said user's email
      * @return - said user
-     * @throws ValidationException - if the email is invalid
+     * @throws ValidationException     - if the email is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public User getUser(String email) throws ValidationException, AdministrationException {
+    public User getUserInfo(String email) throws ValidationException, AdministrationException {
         userValidator.validateEmail(email);
-        User user = usersRepo.get(email);
-        if(user == null)
+        User user = usersRepo.tryGet(email);
+        if (user == null)
             throw new AdministrationException("No user with such email!\n");
         return user;
     }
 
     /**
      * updates the data of a user identified by an email
-     * @param email - said user's email
-     * @param firstName - the new first name
-     * @param passwordHash -  the new password hash
-     * @param lastName - the new last name
-     * @throws ValidationException - if any of the data is invalid
+     *
+     * @param dto - needed data
+     * @throws ValidationException     - if any of the data is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public void updateUser(String email, String firstName, int passwordHash, String lastName)
+    public void updateUserAccountInfo(UserServiceDTO dto)
             throws ValidationException, AdministrationException {
 
-        User user = new User(email, firstName, lastName, passwordHash, LocalDate.now());
-        userValidator.validate(user);
-        User oldUser = usersRepo.get(email);
-        if(oldUser == null)
-            throw new AdministrationException("No user with such email!\n");
-        usersRepo.update(new User(email,firstName, lastName, passwordHash,oldUser.getJoinDate()));
+        User user = new User(dto.getEmail(), dto.getPasswordHash(),dto.getFirstName(),dto.getLastName(),null);
+        userValidator.validateDefault(user);
+        usersRepo.updateInfo(user);
     }
 
     /**
-     * deletes a user identified by an email
+     * disables a user identified by an email
+     *
      * @param email - said user's email
-     * @throws ValidationException - if said email is invalid
+     * @throws ValidationException     - if said email is invalid
      * @throws AdministrationException - if a user with the specified email address doesn't exist
      */
-    public void deleteUser(String email) throws ValidationException,AdministrationException {
-        userValidator.validateEmail(email);
-        if(usersRepo.get(email) == null)
-            throw new AdministrationException("No user with such email!\n");
-        usersRepo.delete(email);
+    public void disableUserAccount(String email) throws ValidationException, AdministrationException {
+        changeUserAccountStatus(email, AccountStatus.DISABLED);
     }
 
     /**
-     * returns an iterable of all the users in repo
-     * @return said iterable
+     * reactivates a user identified by an email
+     *
+     * @param email - said user's email
+     * @throws ValidationException     - if said email is invalid
+     * @throws AdministrationException - if a user with the specified email address doesn't exist
+     */
+    public void reactivateUserAccount(String email) throws ValidationException, AdministrationException {
+        changeUserAccountStatus(email, AccountStatus.ACTIVE);
+    }
+
+    /**
+     * changes a user's account status (must be valid)
+     *
+     * @param email  - said user's email
+     * @param status - the new status
+     * @throws ValidationException     - if said email is invalid
+     * @throws AdministrationException - if a user with the specified email address doesn't exist
+     */
+    private void changeUserAccountStatus(String email, AccountStatus status) throws ValidationException, AdministrationException {
+        userValidator.validateEmail(email);
+        usersRepo.updateStatus(email, status);
+    }
+
+    /**
+     * returns a collection of all the users in repo
+     *
+     * @return said collection
      */
     public Collection<User> getAllUsers() {
         return usersRepo.getAll();
@@ -109,28 +127,32 @@ public class UserService {
 
     /**
      * verifies if a list of emails contains only emails of existing users
+     *
      * @param emailList - said email list
-     * @throws ValidationException - if any id is invalid
+     * @throws ValidationException     - if any id is invalid
      * @throws AdministrationException - if any email doesn't belong to a user
      */
-    public void verifyEmailList(List<String> emailList) throws ValidationException, AdministrationException {
-        if(emailList == null)
-            throw new ValidationException("Error: emailList must be non null;\n");
-        emailList.forEach(this::getUser);
+    public void verifyEmailCollection(Collection<String> emailList) throws ValidationException, AdministrationException {
+        if(emailList==null)
+            throw new ValidationException("Error: email list must be non null!;\n");
+        emailList.forEach(this::getUserInfo);
     }
 
     /**
      * verifies if user email and password hash exists for logging in
-     * @param userEmail - said user's email
+     *
+     * @param userEmail    - said user's email
      * @param userPassword - said user's password hash
-     * @throws ValidationException - if said user's email is invalid
+     * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
+     * @return the user's info
      */
-    public void userLogin(String userEmail, int userPassword) throws ValidationException, AdministrationException {
+    public User login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
-        User found = usersRepo.get(userEmail);
+        User found = usersRepo.tryGet(userEmail);
 
         if (found == null || found.getPasswordHash() != userPassword)
             throw new AdministrationException("Invalid email or password!\n");
+        return found;
     }
 }

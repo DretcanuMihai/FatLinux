@@ -18,7 +18,7 @@ public class MessageValidator implements Validator<Message> {
      * - if its text is a null pointer or exceeds maximum size
      */
     @Override
-    public void validate(Message entity) throws ValidationException {
+    public void validateDefault(Message entity) throws ValidationException {
         String message="";
         Integer id=entity.getId();
         String fromEmail=entity.getFromEmail();

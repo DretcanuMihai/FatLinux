@@ -1,18 +1,18 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
-import com.map_toysocialnetworkgui.repository.Repository;
+import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class MessageDBRepository implements Repository<Integer, Message> {
+public class MessageDBCRUDRepository implements CRUDRepository<Integer, Message> {
     private final String url;
     private final String username;
     private final String password;
 
-    public MessageDBRepository(String url, String username, String password) {
+    public MessageDBCRUDRepository(String url, String username, String password) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -118,7 +118,7 @@ public class MessageDBRepository implements Repository<Integer, Message> {
     }
 
     @Override
-    public Message get(Integer id) {
+    public Message tryGet(Integer id) {
         String sqlGetMessage="SELECT * from messages where message_id=(?)";
         Message message=null;
         try (Connection connection = DriverManager.getConnection(url, username, password)){

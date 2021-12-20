@@ -1,7 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
-import com.map_toysocialnetworkgui.repository.Repository;
+import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.sql.*;
@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Repository in database for friend request
  */
-public class FriendRequestDBRepository implements Repository<Pair<String, String>, FriendRequest> {
+public class FriendRequestDBCRUDRepository implements CRUDRepository<Pair<String, String>, FriendRequest> {
     private final String url;
     private final String username;
     private final String password;
@@ -24,7 +24,7 @@ public class FriendRequestDBRepository implements Repository<Pair<String, String
      * @param username - name of database
      * @param password - password of database
      */
-    public FriendRequestDBRepository(String url, String username, String password) {
+    public FriendRequestDBCRUDRepository(String url, String username, String password) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -47,7 +47,7 @@ public class FriendRequestDBRepository implements Repository<Pair<String, String
     }
 
     @Override
-    public FriendRequest get(Pair<String, String> id) {
+    public FriendRequest tryGet(Pair<String, String> id) {
         String sqlFind = "SELECT * FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
         FriendRequest toReturn = null;
 

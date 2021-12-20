@@ -2,7 +2,7 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
-import com.map_toysocialnetworkgui.repository.Repository;
+import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.sql.*;
@@ -11,12 +11,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FriendshipDBRepository implements Repository<UnorderedPair<String>, Friendship> {
+public class FriendshipDBCRUDRepository implements CRUDRepository<UnorderedPair<String>, Friendship> {
     private final String url;
     private final String username;
     private final String password;
 
-    public FriendshipDBRepository(String url, String username, String password) {
+    public FriendshipDBCRUDRepository(String url, String username, String password) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -39,7 +39,7 @@ public class FriendshipDBRepository implements Repository<UnorderedPair<String>,
     }
 
     @Override
-    public Friendship get(UnorderedPair<String> id) {
+    public Friendship tryGet(UnorderedPair<String> id) {
         String sqlFind = "SELECT * from friendships where (first_user_email=(?) and second_user_email=(?))";
         Friendship toReturn=null;
 

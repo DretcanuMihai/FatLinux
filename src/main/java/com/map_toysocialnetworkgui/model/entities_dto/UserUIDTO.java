@@ -1,5 +1,6 @@
 package com.map_toysocialnetworkgui.model.entities_dto;
 
+import com.map_toysocialnetworkgui.model.entities.AccountStatus;
 import com.map_toysocialnetworkgui.model.entities.User;
 
 import java.time.LocalDate;
@@ -7,7 +8,7 @@ import java.time.LocalDate;
 /**
  * DTO class for User entity
  */
-public class UserDTO {
+public class UserUIDTO {
     /**
      * email info
      */
@@ -29,15 +30,21 @@ public class UserDTO {
     private final LocalDate joinDate;
 
     /**
+     * account status info
+     */
+    private final AccountStatus status;
+
+    /**
      * creates a user DTO for a user
      *
      * @param user - said user
      */
-    public UserDTO(User user) {
+    public UserUIDTO(User user) {
         email = user.getEmail();
         firstName = user.getFirstName();
         joinDate = user.getJoinDate();
         lastName = user.getLastName();
+        status = user.getAccountStatus();
     }
 
     /**
