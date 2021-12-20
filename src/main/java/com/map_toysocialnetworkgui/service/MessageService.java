@@ -7,7 +7,6 @@ import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.CRUDException;
 import com.map_toysocialnetworkgui.repository.with_db.MessageDBRepository;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -115,19 +114,13 @@ public class MessageService {
 
     /**
      * returns the conversation between two users sorted chronologically
+     *
      * @param email1 - first user's email
      * @param email2 - second user's email
      * @return a list of DTOs for said messages
-     * @throws ValidationException if emails are invalid
-     * @throws AdministrationException if no user with such emails exist
      */
-    public List<MessageDTO> getConversationBetweenUsers(String email1, String email2)
-            throws ValidationException,AdministrationException {
-        if (userEmail1.equals(userEmail2))
-            throw new ValidationException("Error: user emails must be different;\n");
-        userService.getUserInfo(email1);
-        userService.getUserInfo(email2);
-        return messageService.getMessagesBetweenUsersChronologically(email1, email2).stream()
+    public List<MessageDTO> getConversationBetweenUsers(String email1, String email2) {
+        return messageRepo.getMessagesBetweenUsersChronologically(email1, email2).stream()
                 .map(MessageDTO::new).toList();
     }
 }
