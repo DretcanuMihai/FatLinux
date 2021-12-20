@@ -26,7 +26,8 @@ public class UserService {
 
     /**
      * constructs an userService having a specified user repo and validator
-     * @param usersRepo - said user Repo
+     *
+     * @param usersRepo     - said user Repo
      * @param userValidator - said user validator
      */
     public UserService(UserDBRepository usersRepo, UserValidator userValidator) {
@@ -36,12 +37,13 @@ public class UserService {
 
     /**
      * adds a user to the repo
-     * @param email - said user's email
-     * @param firstName - said user's first name
-     * @param lastName - said user's last name
+     *
+     * @param email        - said user's email
+     * @param firstName    - said user's first name
+     * @param lastName     - said user's last name
      * @param passwordHash - said user's password's hash
      * @throws ValidationException - if the user data is invalid
-     * @throws CRUDException - if the email is already in use
+     * @throws CRUDException       - if the email is already in use
      */
     public void createUser(String email, String firstName, String lastName, int passwordHash)
             throws ValidationException, CRUDException {
@@ -53,26 +55,28 @@ public class UserService {
 
     /**
      * returns a user identified by an email
+     *
      * @param email -  said user's email
      * @return - said user
-     * @throws ValidationException - if the email is invalid
+     * @throws ValidationException     - if the email is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
     public User getUser(String email) throws ValidationException, AdministrationException {
         userValidator.validateEmail(email);
         User user = usersRepo.get(email);
-        if(user == null)
+        if (user == null)
             throw new AdministrationException("No user with such email!\n");
         return user;
     }
 
     /**
      * updates the data of a user identified by an email
-     * @param email - said user's email
-     * @param firstName - the new first name
-     * @param lastName - the new last name
+     *
+     * @param email        - said user's email
+     * @param firstName    - the new first name
+     * @param lastName     - the new last name
      * @param passwordHash -  the new password hash
-     * @throws ValidationException - if any of the data is invalid
+     * @throws ValidationException     - if any of the data is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
     public void updateUserAccountInfo(String email, String firstName, String lastName, int passwordHash)
@@ -85,38 +89,42 @@ public class UserService {
 
     /**
      * disables a user identified by an email
+     *
      * @param email - said user's email
-     * @throws ValidationException - if said email is invalid
+     * @throws ValidationException     - if said email is invalid
      * @throws AdministrationException - if a user with the specified email address doesn't exist
      */
-    public void disableUserAccount(String email) throws ValidationException,AdministrationException {
-        changeUserAccountStatus(email,AccountStatus.DISABLED);
+    public void disableUserAccount(String email) throws ValidationException, AdministrationException {
+        changeUserAccountStatus(email, AccountStatus.DISABLED);
     }
 
     /**
      * reactivates a user identified by an email
+     *
      * @param email - said user's email
-     * @throws ValidationException - if said email is invalid
+     * @throws ValidationException     - if said email is invalid
      * @throws AdministrationException - if a user with the specified email address doesn't exist
      */
-    public void reactivateUserAccount(String email) throws ValidationException,AdministrationException {
-        changeUserAccountStatus(email,AccountStatus.ACTIVE);
+    public void reactivateUserAccount(String email) throws ValidationException, AdministrationException {
+        changeUserAccountStatus(email, AccountStatus.ACTIVE);
     }
 
     /**
-     * changes a user's account status
-     * @param email - said user's email
+     * changes a user's account status (must be valid)
+     *
+     * @param email  - said user's email
      * @param status - the new status
-     * @throws ValidationException - if said email is invalid
+     * @throws ValidationException     - if said email is invalid
      * @throws AdministrationException - if a user with the specified email address doesn't exist
      */
-    public void changeUserAccountStatus(String email,AccountStatus status) throws ValidationException,AdministrationException {
+    public void changeUserAccountStatus(String email, AccountStatus status) throws ValidationException, AdministrationException {
         userValidator.validateEmail(email);
-        usersRepo.updateStatus(email,status);
+        usersRepo.updateStatus(email, status);
     }
 
     /**
      * returns a collection of all the users in repo
+     *
      * @return said collection
      */
     public Collection<User> getAllUsers() {
@@ -125,8 +133,9 @@ public class UserService {
 
     /**
      * verifies if a list of emails contains only emails of existing users
+     *
      * @param emailList - said email list
-     * @throws ValidationException - if any id is invalid
+     * @throws ValidationException     - if any id is invalid
      * @throws AdministrationException - if any email doesn't belong to a user
      */
     public void verifyEmailList(List<String> emailList) throws ValidationException, AdministrationException {
@@ -135,9 +144,10 @@ public class UserService {
 
     /**
      * verifies if user email and password hash exists for logging in
-     * @param userEmail - said user's email
+     *
+     * @param userEmail    - said user's email
      * @param userPassword - said user's password hash
-     * @throws ValidationException - if said user's email is invalid
+     * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
     public void checkCredentials(String userEmail, int userPassword) throws ValidationException, AdministrationException {
