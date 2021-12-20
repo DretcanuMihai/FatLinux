@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
+import com.map_toysocialnetworkgui.repository.CRUDException;
 import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
@@ -26,7 +27,9 @@ public class FriendRequestDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public void save(FriendRequest friendRequest) {
+    public void save(FriendRequest friendRequest) throws CRUDException {
+        if(contains(friendRequest.getId()))
+            throw new CRUDException("Error: a friendship already exists between give users;\n");
         String sqlSave = "INSERT INTO friend_requests(sender_email, receiver_email, send_time) VALUES (?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
@@ -66,15 +69,16 @@ public class FriendRequestDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public void delete(Pair<String, String> id) {
+    public void delete(Pair<String, String> id) throws CRUDException{
         String sqlDelete = "DELETE FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
         try (Connection connection = getConnection();
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
 
             statementDelete.setString(1, id.getFirst());
             statementDelete.setString(2, id.getSecond());
-            statementDelete.execute();
-
+            int rows=statementDelete.executeUpdate();
+            if(rows==0)
+                throw new CRUDException("Error: a friendship between given users doesn't exist;\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }
