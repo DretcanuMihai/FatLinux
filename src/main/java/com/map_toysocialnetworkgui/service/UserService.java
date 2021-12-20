@@ -9,7 +9,6 @@ import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * a class that incorporates a service that works with user administration
@@ -39,13 +38,13 @@ public class UserService {
      * adds a user to the repo
      *
      * @param email        - said user's email
+     * @param passwordHash - said user's password's hash
      * @param firstName    - said user's first name
      * @param lastName     - said user's last name
-     * @param passwordHash - said user's password's hash
      * @throws ValidationException - if the user data is invalid
      * @throws CRUDException       - if the email is already in use
      */
-    public void createUser(String email, String firstName, String lastName, int passwordHash)
+    public void createUserAccount(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, CRUDException {
 
         User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
@@ -61,7 +60,7 @@ public class UserService {
      * @throws ValidationException     - if the email is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public User getUser(String email) throws ValidationException, AdministrationException {
+    public User getUserInfo(String email) throws ValidationException, AdministrationException {
         userValidator.validateEmail(email);
         User user = usersRepo.get(email);
         if (user == null)
@@ -73,13 +72,13 @@ public class UserService {
      * updates the data of a user identified by an email
      *
      * @param email        - said user's email
+     * @param passwordHash -  the new password hash
      * @param firstName    - the new first name
      * @param lastName     - the new last name
-     * @param passwordHash -  the new password hash
      * @throws ValidationException     - if any of the data is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public void updateUserAccountInfo(String email, String firstName, String lastName, int passwordHash)
+    public void updateUserAccountInfo(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
         User user = new User(email, passwordHash, firstName, lastName, null);
@@ -138,8 +137,10 @@ public class UserService {
      * @throws ValidationException     - if any id is invalid
      * @throws AdministrationException - if any email doesn't belong to a user
      */
-    public void verifyEmailList(List<String> emailList) throws ValidationException, AdministrationException {
-        emailList.forEach(this::getUser);
+    public void verifyEmailCollection(Collection<String> emailList) throws ValidationException, AdministrationException {
+        if(emailList==null)
+            throw new ValidationException("Error: email list must be non null!;\n");
+        emailList.forEach(this::getUserInfo);
     }
 
     /**

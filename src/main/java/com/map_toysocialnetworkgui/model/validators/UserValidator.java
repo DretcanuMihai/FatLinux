@@ -27,12 +27,13 @@ public class UserValidator implements Validator<User> {
         String firstName = entity.getFirstName();
         String lastName = entity.getLastName();
         int passwordHash = entity.getPasswordHash();
-        if (email.equals("") || !emailPattern.matcher(email).matches() || email.length() > maxSize)
+        if (email == null || email.equals("") || !emailPattern.matcher(email).matches()
+                || email.length() > maxSize)
             message += "Invalid email! Must be non empty, under 50 characters and" +
                     " be a valid email address;\n";
-        if (firstName.equals("") || firstName.length() > maxSize)
+        if (firstName == null || firstName.equals("") || firstName.length() > maxSize)
             message += "Invalid first name! Must be non empty and under 50 characters;\n";
-        if (lastName.equals("") || lastName.length() > maxSize)
+        if (lastName == null || lastName.equals("") || lastName.length() > maxSize)
             message += "Invalid last name! Must be non empty and under 50 characters;\n";
         if (passwordHash == 0)
             message += "Invalid password! Must be non empty;\n";
@@ -49,7 +50,8 @@ public class UserValidator implements Validator<User> {
      * @throws ValidationException - if said email is not valid
      */
     public void validateEmail(String email) throws ValidationException {
-        if (email.equals("") || !emailPattern.matcher(email).matches()  || email.length() > maxSize)
+        if (email == null || email.equals("") || !emailPattern.matcher(email).matches()
+                || email.length() > maxSize)
             throw new ValidationException("""
                     Error:
                     Invalid email! Must be non empty, under 50 characters and be a valid email address;
