@@ -45,7 +45,7 @@ public class SuperService {
      * @throws AdministrationException       - if the email is already in use
      */
     public void createUserAccount(UserServiceDTO dto)
-            throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+            throws ValidationException, AdministrationException {
         userService.createUserAccount(dto);
     }
 
@@ -54,10 +54,10 @@ public class SuperService {
      *
      * @param dto - needed data
      * @throws ValidationException if any of the data is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if a user with said email doesn't exist
+     * @throws AdministrationException if a user with said email doesn't exist
      */
     public void updateUser(UserServiceDTO dto)
-            throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+            throws ValidationException, AdministrationException {
 
         userService.updateUserAccountInfo(dto);
     }

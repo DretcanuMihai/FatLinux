@@ -46,7 +46,9 @@ public class UserService {
 
         User user = new User(dto.getEmail(), dto.getPasswordHash(),dto.getFirstName(),dto.getLastName(),LocalDate.now());
         userValidator.validateDefault(user);
-        usersRepo.save(user);
+        boolean success=usersRepo.save(user);
+        if(!success)
+            throw new AdministrationException("Error: email already in use;\n");
     }
 
     /**
@@ -55,13 +57,13 @@ public class UserService {
      * @param email -  said user's email
      * @return - said user
      * @throws ValidationException     - if the email is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if a user with said email doesn't exist
+     * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public User getUserInfo(String email) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public User getUserInfo(String email) throws ValidationException, AdministrationException {
         userValidator.validateEmail(email);
         User user = usersRepo.get(email);
         if (user == null)
-            throw new com.map_toysocialnetworkgui.service.AdministrationException("No user with such email!\n");
+            throw new AdministrationException("No user with such email!\n");
         return user;
     }
 
