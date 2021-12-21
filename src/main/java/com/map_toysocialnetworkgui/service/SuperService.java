@@ -274,7 +274,7 @@ public class SuperService {
     public void sendFriendRequest(String sender, String receiver)throws ValidationException,AdministrationException{
         userService.getUserInfo(sender);
         userService.getUserInfo(receiver);
-        friendshipService.addFriendRequest(sender,receiver);
+        friendshipService.sendFriendRequest(sender,receiver);
     }
 
     /**

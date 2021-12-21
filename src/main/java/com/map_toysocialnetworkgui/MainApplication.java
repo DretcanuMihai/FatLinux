@@ -6,8 +6,8 @@ import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.MessageValidator;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
-import com.map_toysocialnetworkgui.repository.with_db.FriendRequestDBCRUDRepository;
-import com.map_toysocialnetworkgui.repository.with_db.FriendshipDBCRUDRepository;
+import com.map_toysocialnetworkgui.repository.with_db.FriendRequestDBRepository;
+import com.map_toysocialnetworkgui.repository.with_db.FriendshipDBRepository;
 import com.map_toysocialnetworkgui.repository.with_db.MessageDBRepository;
 import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
 import com.map_toysocialnetworkgui.service.FriendshipService;
@@ -41,11 +41,11 @@ public class MainApplication extends Application {
         // Repositories
         UserDBRepository userRepo = new UserDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres","postgres");
-        FriendshipDBCRUDRepository friendshipRepo = new FriendshipDBCRUDRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
+        FriendshipDBRepository friendshipRepo = new FriendshipDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres","postgres");
         MessageDBRepository messageDBRepository=new MessageDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres","postgres");
-        FriendRequestDBCRUDRepository friendRequestRepository=new FriendRequestDBCRUDRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
+        FriendRequestDBRepository friendRequestRepository=new FriendRequestDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres","postgres");
 
         //Validators
