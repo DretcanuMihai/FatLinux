@@ -2,7 +2,6 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
-import com.map_toysocialnetworkgui.repository.CRUDException;
 import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
@@ -38,9 +37,9 @@ public class FriendshipDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public void save(Friendship friendship) throws CRUDException {
+    public void save(Friendship friendship) throws AdministrationException {
         if (contains(friendship.getId()))
-            throw new CRUDException("Error: a friendship already exists between give users;\n");
+            throw new AdministrationException("Error: a friendship already exists between give users;\n");
         String sqlSave = "INSERT INTO friendships(first_user_email, second_user_email, begin_date) values (?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
@@ -77,7 +76,7 @@ public class FriendshipDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public void delete(UnorderedPair<String> id) throws CRUDException {
+    public void delete(UnorderedPair<String> id) throws AdministrationException {
         String sqlDelete = "DELETE FROM friendships where (first_user_email=(?) and second_user_email=(?))";
         try (Connection connection = getConnection();
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
@@ -86,7 +85,7 @@ public class FriendshipDBRepository extends AbstractDBRepository
             statementDelete.setString(2, id.getSecond());
             int rows = statementDelete.executeUpdate();
             if (rows == 0)
-                throw new CRUDException("Error: a friendship between given users doesn't exist;\n");
+                throw new AdministrationException("Error: a friendship between given users doesn't exist;\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }

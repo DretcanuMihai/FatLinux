@@ -3,7 +3,6 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.AccountStatus;
 import com.map_toysocialnetworkgui.model.entities.User;
-import com.map_toysocialnetworkgui.repository.CRUDException;
 import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
 
@@ -40,9 +39,9 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public void save(User user) throws CRUDException {
+    public void save(User user) throws AdministrationException {
         if (contains(user.getEmail()))
-            throw new CRUDException("Error: Email already in use!;\n");
+            throw new AdministrationException("Error: Email already in use!;\n");
         String sqlSave = "INSERT INTO users(email, first_name, password_hash, join_date, last_name) values (?, ?, ?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
@@ -79,17 +78,17 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public User get(String s) throws CRUDException {
+    public User get(String s) throws AdministrationException {
         try {
             return CRUDRepository.super.get(s);
         }
-        catch (CRUDException e){
-            throw new CRUDException("Error: Email not in use!;\n");
+        catch (AdministrationException e){
+            throw new AdministrationException("Error: Email not in use!;\n");
         }
     }
 
     @Override
-    public void update(User user) throws CRUDException {
+    public void update(User user) throws AdministrationException {
         String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?), status_code = (?) WHERE email = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -101,7 +100,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
             statementUpdate.setString(5, user.getEmail());
             int affectedRows = statementUpdate.executeUpdate();
             if (affectedRows == 0)
-                throw new CRUDException("Error: Email not in use!;\n");
+                throw new AdministrationException("Error: Email not in use!;\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -111,9 +110,9 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
      * updates the user's info (first and last name, password hash)
      *
      * @param user - said user and its new info
-     * @throws CRUDException if an entity identified by the same ID doesn't already exist
+     * @throws AdministrationException if an entity identified by the same ID doesn't already exist
      */
-    public void updateInfo(User user) throws CRUDException {
+    public void updateInfo(User user) throws AdministrationException {
         String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?) WHERE email = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -124,7 +123,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
             statementUpdate.setString(4, user.getEmail());
             int affectedRows = statementUpdate.executeUpdate();
             if (affectedRows == 0)
-                throw new CRUDException("Error: Email not in use!;\n");
+                throw new AdministrationException("Error: Email not in use!;\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -135,9 +134,9 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
      *
      * @param email - said user's email
      * @param status - the new status
-     * @throws CRUDException if a user with said email doesn't already exist
+     * @throws AdministrationException if a user with said email doesn't already exist
      */
-    public void updateStatus(String email, AccountStatus status) throws CRUDException {
+    public void updateStatus(String email, AccountStatus status) throws AdministrationException {
         String sqlUpdate = "UPDATE users SET status_code = (?) WHERE email = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -146,7 +145,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
             statementUpdate.setString(2, email);
             int affectedRows = statementUpdate.executeUpdate();
             if (affectedRows == 0)
-                throw new CRUDException("Error: Email not in use!;\n");
+                throw new AdministrationException("Error: Email not in use!;\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }

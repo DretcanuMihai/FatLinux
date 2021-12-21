@@ -4,7 +4,6 @@ import com.map_toysocialnetworkgui.model.entities.Message;
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.validators.MessageValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
-import com.map_toysocialnetworkgui.repository.CRUDException;
 import com.map_toysocialnetworkgui.repository.with_db.MessageDBRepository;
 
 import java.time.LocalDateTime;
@@ -42,13 +41,13 @@ public class MessageService {
      * @param id - said id
      * @return said message
      * @throws ValidationException     - if id is invalid
-     * @throws AdministrationException - if no message with requested id exists
+     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if no message with requested id exists
      */
-    public Message getMessageBy(Integer id) throws ValidationException, AdministrationException {
+    public Message getMessageBy(Integer id) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
         messageValidator.validateID(id);
         Message message = messageRepo.tryGet(id);
         if (message == null)
-            throw new AdministrationException("No message with given parent message id exists!;\n");
+            throw new com.map_toysocialnetworkgui.service.AdministrationException("No message with given parent message id exists!;\n");
         return message;
     }
 
@@ -59,9 +58,9 @@ public class MessageService {
      * @param toEmails    - a list of the recipients of the message
      * @param messageText - the message's text
      * @throws ValidationException - if the message is invalid
-     * @throws CRUDException       - if the id is already in use
+     * @throws AdministrationException       - if the id is already in use
      */
-    public void addRootMessage(String fromEmail, List<String> toEmails, String messageText) throws ValidationException, CRUDException {
+    public void addRootMessage(String fromEmail, List<String> toEmails, String messageText) throws ValidationException, AdministrationException {
         Message message = new Message(0, fromEmail, toEmails, messageText, LocalDateTime.now(), null);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
@@ -74,15 +73,15 @@ public class MessageService {
      * @param messageText    - the message's text
      * @param replyMessageID - the parent message's id
      * @throws ValidationException     - if the message is invalid
-     * @throws AdministrationException - if the user is not one of the recipients
-     * @throws CRUDException           - if the id is already in use
+     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if the user is not one of the recipients
+     * @throws AdministrationException           - if the id is already in use
      */
     public void addReplyMessage(String fromEmail, String messageText, Integer replyMessageID) throws ValidationException,
-            AdministrationException, CRUDException {
+            com.map_toysocialnetworkgui.service.AdministrationException, AdministrationException {
 
         Message parentMessage = getMessageBy(replyMessageID);
         if (!parentMessage.getToEmails().contains(fromEmail))
-            throw new AdministrationException("Error: User is not one of the recipients of the message!;\n");
+            throw new com.map_toysocialnetworkgui.service.AdministrationException("Error: User is not one of the recipients of the message!;\n");
         Message message = new Message(0, fromEmail, List.of(parentMessage.getFromEmail()), messageText, LocalDateTime.now(),
                 replyMessageID);
         messageValidator.validateDefault(message);
@@ -96,15 +95,15 @@ public class MessageService {
      * @param messageText    - the message's text
      * @param replyMessageID - the parent message's id
      * @throws ValidationException     - if the message is invalid
-     * @throws AdministrationException - if the user is not one of the recipients
-     * @throws CRUDException           - if the id is already in use
+     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if the user is not one of the recipients
+     * @throws AdministrationException           - if the id is already in use
      */
     public void addReplyAllMessage(String fromEmail, String messageText, Integer replyMessageID) throws ValidationException,
-            AdministrationException, CRUDException {
+            com.map_toysocialnetworkgui.service.AdministrationException, AdministrationException {
 
         Message parentMessage = getMessageBy(replyMessageID);
         if (!parentMessage.getToEmails().contains(fromEmail))
-            throw new AdministrationException("Error: User is not one of the recipients of the message!;\n");
+            throw new com.map_toysocialnetworkgui.service.AdministrationException("Error: User is not one of the recipients of the message!;\n");
         List<String> receivers = parentMessage.getToEmails();
         receivers.add(parentMessage.getFromEmail());
         receivers.remove(fromEmail);

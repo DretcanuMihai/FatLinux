@@ -1,7 +1,6 @@
 package com.map_toysocialnetworkgui.repository.skeletons.operation_based;
 
 import com.map_toysocialnetworkgui.model.entities.Entity;
-import com.map_toysocialnetworkgui.repository.CRUDException;
 
 import java.util.Collection;
 
@@ -25,12 +24,12 @@ public interface ReadOperationRepository<ID, E extends Entity<ID>> {
      *
      * @param id - said id
      * @return said entity
-     * @throws CRUDException if entity doesn't exist
+     * @throws AdministrationException if entity doesn't exist
      */
-    default E get(ID id)throws CRUDException{
+    default E get(ID id)throws AdministrationException {
         E entity=tryGet(id);
         if(entity==null)
-            throw new CRUDException("Error: Wanted entity doesn't exist;\n");
+            throw new AdministrationException("Error: Wanted entity doesn't exist;\n");
         return entity;
     }
 
