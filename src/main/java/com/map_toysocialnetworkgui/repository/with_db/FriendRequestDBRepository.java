@@ -116,9 +116,6 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
         return friendRequests;
     }
 
-    /**
-     * updating a friend request doesn't make sense for the moment
-     */
     @Override
     public boolean update(FriendRequest friendRequest) {
         boolean toReturn = false;

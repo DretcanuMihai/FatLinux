@@ -5,7 +5,7 @@ import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 public interface FriendRequestRepositoryInterface extends
-        CRUDRepository<Pair<String,String>,FriendRequest> {
+        CRUDRepository<Pair<String, String>, FriendRequest> {
 
 
     /**

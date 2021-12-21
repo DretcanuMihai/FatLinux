@@ -2,21 +2,15 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
-import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
-import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
-import com.map_toysocialnetworkgui.repository.skeletons.operation_based.ReadOperationRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendshipRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FriendshipDBRepository extends ConnectionGetter
-        implements CreateOperationRepository<UnorderedPair<String>, Friendship>,
-        DeleteOperationRepository<UnorderedPair<String>, Friendship>,
-        ReadOperationRepository<UnorderedPair<String>, Friendship> {
+public class FriendshipDBRepository implements FriendshipRepositoryInterface {
 
     /**
      * the database's URL
@@ -39,7 +33,9 @@ public class FriendshipDBRepository extends ConnectionGetter
      * @param password - password of database
      */
     public FriendshipDBRepository(String url, String username, String password) {
-        super(url, username, password);
+        this.url = url;
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -59,27 +55,30 @@ public class FriendshipDBRepository extends ConnectionGetter
     @Override
     public boolean save(Friendship friendship) {
         if (contains(friendship.getId()))
-            throw new AdministrationException("Error: a friendship already exists between give users;\n");
+            return false;
+        boolean toReturn = false;
         String sqlSave = "INSERT INTO friendships(first_user_email, second_user_email, begin_date) values (?,?,?)";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
 
             statementSave.setString(1, friendship.getEmails().getFirst());
             statementSave.setString(2, friendship.getEmails().getSecond());
             statementSave.setDate(3, Date.valueOf(friendship.getBeginDate()));
             statementSave.execute();
+            toReturn = true;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return toReturn;
     }
 
     @Override
     public Friendship get(UnorderedPair<String> id) {
-        String sqlFind = "SELECT * from friendships where (first_user_email=(?) and second_user_email=(?))";
         Friendship toReturn = null;
+        String sqlFind = "SELECT * from friendships where (first_user_email=(?) and second_user_email=(?))";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementFind = connection.prepareStatement(sqlFind)) {
 
             statementFind.setString(1, id.getFirst());
@@ -96,26 +95,10 @@ public class FriendshipDBRepository extends ConnectionGetter
     }
 
     @Override
-    public boolean delete(UnorderedPair<String> id) {
-        String sqlDelete = "DELETE FROM friendships where (first_user_email=(?) and second_user_email=(?))";
-        try (Connection connection = getConnection();
-             PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
-
-            statementDelete.setString(1, id.getFirst());
-            statementDelete.setString(2, id.getSecond());
-            int rows = statementDelete.executeUpdate();
-            if (rows == 0)
-                throw new AdministrationException("Error: a friendship between given users doesn't exist;\n");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public Iterable<Friendship> getAll() {
         Set<Friendship> friendships = new HashSet<>();
         String sql = "SELECT * from friendships";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
 
@@ -130,16 +113,46 @@ public class FriendshipDBRepository extends ConnectionGetter
         return friendships;
     }
 
-    /**
-     * gets all existing friendships to which a user belongs
-     *
-     * @param userEmail - said user's email
-     * @return a collection of said friendships
-     */
-    public Collection<Friendship> getUserFriendships(String userEmail) {
+    @Override
+    public boolean update(Friendship friendship) {
+        boolean toReturn = false;
+        String sqlUpdate = "UPDATE friendships SET begin_date=(?) WHERE first_user_email = (?) and second_user_email=(?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
+
+            statementUpdate.setDate(1, Date.valueOf(friendship.getBeginDate()));
+            statementUpdate.setString(2, friendship.getEmails().getFirst());
+            statementUpdate.setString(3, friendship.getEmails().getSecond());
+            int affectedRows = statementUpdate.executeUpdate();
+            toReturn = (affectedRows != 0);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
+    @Override
+    public boolean delete(UnorderedPair<String> id) {
+        boolean toReturn = false;
+        String sqlDelete = "DELETE FROM friendships where (first_user_email=(?) and second_user_email=(?))";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
+
+            statementDelete.setString(1, id.getFirst());
+            statementDelete.setString(2, id.getSecond());
+            int rows = statementDelete.executeUpdate();
+            toReturn = (rows != 0);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
+    @Override
+    public Iterable<Friendship> getUserFriendships(String userEmail) {
         Set<Friendship> friendships = new HashSet<>();
         String sql = "SELECT * from friendships where first_user_email=(?) or second_user_email=(?)";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, userEmail);
@@ -157,18 +170,12 @@ public class FriendshipDBRepository extends ConnectionGetter
         return friendships;
     }
 
-    /**
-     * gets all existing friendships to which a user belongs, friendships created in a given month
-     *
-     * @param userEmail - said user's email
-     * @param month     - said month's number
-     * @return a collection of said friendships
-     */
-    public Collection<Friendship> getUserFriendshipsFromMonth(String userEmail, int month) {
+    @Override
+    public Iterable<Friendship> getUserFriendshipsFromMonth(String userEmail, int month) {
         Set<Friendship> friendships = new HashSet<>();
         String sql = "SELECT * from friendships where ((first_user_email= (?) or second_user_email=(?)) " +
                 "and EXTRACT(MONTH FROM begin_date) = (?)) ";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, userEmail);
