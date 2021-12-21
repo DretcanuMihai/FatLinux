@@ -9,6 +9,7 @@ import com.map_toysocialnetworkgui.repository.with_db.MessageDBRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * a class that incorporates a service that works with message administration
@@ -119,8 +120,11 @@ public class MessageService {
      * @param email1 - first user's email
      * @param email2 - second user's email
      * @return a list of DTOs for said messages
+     * @throws ValidationException if the emails are the same
      */
-    public List<MessageDTO> getConversationBetweenUsers(String email1, String email2) {
+    public List<MessageDTO> getConversationBetweenUsers(String email1, String email2) throws ValidationException {
+        if (Objects.equals(email1, email2))
+            throw new ValidationException("Error: user emails must be different;\n");
         return messageRepo.getMessagesBetweenUsersChronologically(email1, email2).stream()
                 .map(MessageDTO::new).toList();
     }

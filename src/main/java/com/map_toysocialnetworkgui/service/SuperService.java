@@ -254,12 +254,10 @@ public class SuperService {
      * @param email1 - first user's email
      * @param email2 - second user's email
      * @return a list of DTOs for said messages
-     * @throws ValidationException if emails are the same
      * @throws AdministrationException if the users do not exist
+     * @throws ValidationException if emails are the same
      */
     public List<MessageDTO> getConversation(String email1, String email2) throws ValidationException, AdministrationException {
-        if (email1.equals(email2))
-            throw new ValidationException("Error: user emails must be different;\n");
         userService.getUserInfo(email1);
         userService.getUserInfo(email2);
 
