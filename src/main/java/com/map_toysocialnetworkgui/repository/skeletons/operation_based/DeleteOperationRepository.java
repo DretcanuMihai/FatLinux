@@ -13,7 +13,7 @@ public interface DeleteOperationRepository<ID, E extends Entity<ID>> {
      * deletes the entity with the given id from the repository
      *
      * @param id - said id
-     * @throws AdministrationException if an entity identified by the same ID doesn't already exist
+     * @return true if the operation was successful, false otherwise
      */
-    void delete(ID id) throws AdministrationException;
+    boolean delete(ID id);
 }

@@ -17,21 +17,7 @@ public interface ReadOperationRepository<ID, E extends Entity<ID>> {
      * @param id - said id
      * @return the entity if it exists, null otherwise
      */
-    E tryGet(ID id);
-
-    /**
-     * gets the entity with specified id from repo
-     *
-     * @param id - said id
-     * @return said entity
-     * @throws AdministrationException if entity doesn't exist
-     */
-    default E get(ID id)throws AdministrationException {
-        E entity=tryGet(id);
-        if(entity==null)
-            throw new AdministrationException("Error: Wanted entity doesn't exist;\n");
-        return entity;
-    }
+    E get(ID id);
 
     /**
      * gets all the entities in the repo
@@ -46,7 +32,7 @@ public interface ReadOperationRepository<ID, E extends Entity<ID>> {
      * @param id - said id
      * @return true if it exists, false otherwise
      */
-    default boolean contains(ID id){
-        return tryGet(id)!=null;
+    default boolean contains(ID id) {
+        return get(id) != null;
     }
 }

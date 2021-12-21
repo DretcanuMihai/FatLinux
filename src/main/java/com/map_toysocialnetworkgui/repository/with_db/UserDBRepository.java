@@ -39,7 +39,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public void save(User user) throws AdministrationException {
+    public boolean save(User user) {
         if (contains(user.getEmail()))
             throw new AdministrationException("Error: Email already in use!;\n");
         String sqlSave = "INSERT INTO users(email, first_name, password_hash, join_date, last_name) values (?, ?, ?, ?, ?)";
@@ -59,7 +59,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public User tryGet(String email) {
+    public User get(String email) {
         String sqlFind = "SELECT * FROM users WHERE email = (?)";
         User toReturn = null;
 
@@ -88,7 +88,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public void update(User user) throws AdministrationException {
+    public boolean update(User user) {
         String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?), status_code = (?) WHERE email = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -152,7 +152,7 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public void delete(String id) {
+    public boolean delete(String id) {
         String sqlDelete = "DELETE FROM users WHERE email = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {

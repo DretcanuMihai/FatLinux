@@ -59,7 +59,7 @@ public class UserService {
      */
     public User getUserInfo(String email) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
         userValidator.validateEmail(email);
-        User user = usersRepo.tryGet(email);
+        User user = usersRepo.get(email);
         if (user == null)
             throw new com.map_toysocialnetworkgui.service.AdministrationException("No user with such email!\n");
         return user;
@@ -148,7 +148,7 @@ public class UserService {
      */
     public User login(String userEmail, int userPassword) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
         userValidator.validateEmail(userEmail);
-        User found = usersRepo.tryGet(userEmail);
+        User found = usersRepo.get(userEmail);
 
         if (found == null || found.getPasswordHash() != userPassword)
             throw new com.map_toysocialnetworkgui.service.AdministrationException("Invalid email or password!\n");

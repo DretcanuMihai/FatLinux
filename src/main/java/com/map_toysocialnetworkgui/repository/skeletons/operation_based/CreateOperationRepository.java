@@ -10,10 +10,10 @@ import com.map_toysocialnetworkgui.model.entities.Entity;
  */
 public interface CreateOperationRepository<ID, E extends Entity<ID>> {
     /**
-     * saves an entity in the repo if no other entity with the same ID exists
+     * saves an entity in the repo
      *
      * @param e - said entity
-     * @throws AdministrationException if an entity identified by the same ID already exists
+     * @return true if the operation was successful, false otherwise
      */
-    void save(E e) throws AdministrationException;
+    boolean save(E e);
 }

@@ -13,7 +13,7 @@ public interface UpdateOperationRepository<ID, E extends Entity<ID>> {
      * updates the entry in repo with the same id as an entity with said entity
      *
      * @param e - said entity
-     * @throws AdministrationException if an entity identified by the same ID doesn't already exist
+     * @return true if the operation was successful, false otherwise
      */
-    void update(E e) throws AdministrationException;
+    boolean update(E e);
 }

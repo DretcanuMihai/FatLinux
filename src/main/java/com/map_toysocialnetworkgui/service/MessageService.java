@@ -45,7 +45,7 @@ public class MessageService {
      */
     public Message getMessageBy(Integer id) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
         messageValidator.validateID(id);
-        Message message = messageRepo.tryGet(id);
+        Message message = messageRepo.get(id);
         if (message == null)
             throw new com.map_toysocialnetworkgui.service.AdministrationException("No message with given parent message id exists!;\n");
         return message;

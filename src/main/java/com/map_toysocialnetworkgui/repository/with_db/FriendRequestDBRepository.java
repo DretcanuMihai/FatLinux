@@ -40,7 +40,7 @@ public class FriendRequestDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public void save(FriendRequest friendRequest) throws AdministrationException {
+    public boolean save(FriendRequest friendRequest) {
         if (contains(friendRequest.getId()))
             throw new AdministrationException("Error: a friend request already exists from the sender to the receiver;\n");
         String sqlSave = "INSERT INTO friend_requests(sender_email, receiver_email, send_time) VALUES (?, ?, ?)";
@@ -58,7 +58,7 @@ public class FriendRequestDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public FriendRequest tryGet(Pair<String, String> id) {
+    public FriendRequest get(Pair<String, String> id) {
         String sqlFind = "SELECT * FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
         FriendRequest toReturn = null;
 
@@ -79,7 +79,7 @@ public class FriendRequestDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public void delete(Pair<String, String> id) throws AdministrationException {
+    public boolean delete(Pair<String, String> id) {
         String sqlDelete = "DELETE FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
         try (Connection connection = getConnection();
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {

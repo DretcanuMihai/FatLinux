@@ -1,13 +1,11 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
-import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
-import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.ReadOperationRepository;
-import com.map_toysocialnetworkgui.service.AdministrationException;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -83,7 +81,7 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
     }
 
     @Override
-    public void save(Message message) {
+    public boolean save(Message message) {
         String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
                 "VALUES (?, ?, ?, ?)";
         try (Connection connection = getConnection();
@@ -134,7 +132,7 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
     }
 
     @Override
-    public Message tryGet(Integer id) {
+    public Message get(Integer id) {
         String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
         Message message = null;
         try (Connection connection = getConnection();
@@ -152,7 +150,7 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
     }
 
     @Override
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
         String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {

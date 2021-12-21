@@ -37,7 +37,7 @@ public class FriendshipDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public void save(Friendship friendship) throws AdministrationException {
+    public boolean save(Friendship friendship) {
         if (contains(friendship.getId()))
             throw new AdministrationException("Error: a friendship already exists between give users;\n");
         String sqlSave = "INSERT INTO friendships(first_user_email, second_user_email, begin_date) values (?,?,?)";
@@ -55,7 +55,7 @@ public class FriendshipDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public Friendship tryGet(UnorderedPair<String> id) {
+    public Friendship get(UnorderedPair<String> id) {
         String sqlFind = "SELECT * from friendships where (first_user_email=(?) and second_user_email=(?))";
         Friendship toReturn = null;
 
@@ -76,7 +76,7 @@ public class FriendshipDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public void delete(UnorderedPair<String> id) throws AdministrationException {
+    public boolean delete(UnorderedPair<String> id) {
         String sqlDelete = "DELETE FROM friendships where (first_user_email=(?) and second_user_email=(?))";
         try (Connection connection = getConnection();
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
