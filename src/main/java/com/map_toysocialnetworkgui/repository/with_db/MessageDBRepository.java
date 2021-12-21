@@ -1,19 +1,19 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
-import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
-import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
-import com.map_toysocialnetworkgui.repository.skeletons.operation_based.ReadOperationRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * a message repository that works with a database
  */
-public class MessageDBRepository extends ConnectionGetter implements CreateOperationRepository<Integer, Message>,
-        ReadOperationRepository<Integer, Message>, DeleteOperationRepository<Integer, Message> {
+public class MessageDBRepository implements MessageRepositoryInterface {
 
     /**
      * the database's URL
@@ -36,9 +36,9 @@ public class MessageDBRepository extends ConnectionGetter implements CreateOpera
      * @param password - password of database
      */
     public MessageDBRepository(String url, String username, String password) {
-        this.url=url;
-        this.username=username;
-        this.password=password;
+        this.url = url;
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -96,12 +96,12 @@ public class MessageDBRepository extends ConnectionGetter implements CreateOpera
 
     @Override
     public boolean save(Message message) {
+        boolean toReturn = false;
         String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
                 "VALUES (?, ?, ?, ?)";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementInsertMessage = connection.prepareStatement(sqlSave, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            // saves everything except the list of receivers
             statementInsertMessage.setString(1, message.getFromEmail());
             statementInsertMessage.setString(2, message.getMessageText());
             statementInsertMessage.setTimestamp(3, Timestamp.valueOf(message.getSendTime()));
@@ -115,10 +115,12 @@ public class MessageDBRepository extends ConnectionGetter implements CreateOpera
             // saves the list of receivers
             int id = getMessageIDGeneratedBy(statementInsertMessage);
             message.getToEmails().forEach(email -> saveDelivery(id, email));
+            toReturn = true;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return toReturn;
     }
 
     /**
@@ -130,7 +132,7 @@ public class MessageDBRepository extends ConnectionGetter implements CreateOpera
     private List<String> getReceiverEmailsOf(Integer id) {
         List<String> toEmails = new ArrayList<>();
         String sqlGetMessageDeliveries = "SELECT * FROM message_deliveries WHERE message_id = (?)";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementGetMessageDeliveries = connection.prepareStatement(sqlGetMessageDeliveries)) {
 
             statementGetMessageDeliveries.setInt(1, id);
@@ -149,7 +151,7 @@ public class MessageDBRepository extends ConnectionGetter implements CreateOpera
     public Message get(Integer id) {
         String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
         Message message = null;
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementGetMessage = connection.prepareStatement(sqlFind)) {
 
             statementGetMessage.setInt(1, id);
@@ -164,23 +166,31 @@ public class MessageDBRepository extends ConnectionGetter implements CreateOpera
     }
 
     @Override
+    public boolean update(Message message) {
+        return false;
+    }
+
+    @Override
     public boolean delete(Integer id) {
+        boolean toReturn = false;
         String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
 
             statementMessages.setInt(1, id);
-            statementMessages.executeUpdate();
+            int rows = statementMessages.executeUpdate();
+            toReturn = (rows != 0);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return toReturn;
     }
 
     @Override
     public Iterable<Message> getAll() {
         Set<Message> messages = new HashSet<>();
         String sqlMessages = "SELECT * FROM messages";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
 
             ResultSet resultSetMessages = statementMessages.executeQuery();
@@ -194,21 +204,16 @@ public class MessageDBRepository extends ConnectionGetter implements CreateOpera
         return messages;
     }
 
-    /**
-     * gets a list of all the messages between two users sorted chronologically
-     *
-     * @param userEmail1 - first user email
-     * @param userEmail2 - second user email
-     * @return said list of messages
-     */
-    public List<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) {
+    @Override
+    public Iterable<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) {
         List<Message> conversation = new ArrayList<>();
-        String sqlFilterConversationByTime = "SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id\n" +
-                "FROM messages m INNER JOIN message_deliveries md ON m.message_id = md.message_id\n" +
-                "WHERE m.sender_email = (?) AND md.receiver_email = (?)\n" +
-                "\t  OR m.sender_email = (?) AND md.receiver_email = (?)\n" +
-                "ORDER BY send_time ASC";
-        try (Connection connection = getConnection();
+        String sqlFilterConversationByTime = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                FROM messages m INNER JOIN message_deliveries md\s
+                ON m.message_id = md.message_id\s
+                WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
+                ORDER BY send_time""";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
 
             statementConversation.setString(1, userEmail1);
