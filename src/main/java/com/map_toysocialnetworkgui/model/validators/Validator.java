@@ -11,5 +11,4 @@ public interface Validator<T> {
      * @throws ValidationException if the entity isn't valid
      */
     void validateDefault(T entity) throws ValidationException;
-
 }

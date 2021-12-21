@@ -250,19 +250,20 @@ public class SuperService {
 
     /**
      * returns the conversation between two users sorted chronologically
+     *
      * @param email1 - first user's email
      * @param email2 - second user's email
      * @return a list of DTOs for said messages
-     * @throws ValidationException if emails are invalid
-     * @throws AdministrationException if no user with such emails exist
+     * @throws AdministrationException if the users do not exist
+     * @throws ValidationException if emails are the same
      */
-    public List<MessageDTO> getConversationBetweenUsers(String email1, String email2)
-            throws ValidationException,AdministrationException {
+    public List<MessageDTO> getConversation(String email1, String email2) throws ValidationException, AdministrationException {
         userService.getUserInfo(email1);
         userService.getUserInfo(email2);
-        return messageService.getMessagesBetweenUsersChronologically(email1, email2).stream()
-                .map(MessageDTO::new).toList();
+
+        return messageService.getConversationBetweenUsers(email1, email2);
     }
+
     /**
      * sends a friend request from sender to receiver
      * @param sender - sender's email
