@@ -18,6 +18,13 @@ import java.util.Set;
  */
 public class UserDBRepository extends AbstractDBRepository implements UserRepositoryInterface {
 
+    /**
+     * constructor
+     *
+     * @param url      - url of database
+     * @param username - username of database
+     * @param password - password of database
+     */
     public UserDBRepository(String url, String username, String password) {
         super(url, username, password);
     }

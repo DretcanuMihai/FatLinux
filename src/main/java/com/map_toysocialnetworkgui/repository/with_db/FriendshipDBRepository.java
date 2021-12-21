@@ -18,6 +18,14 @@ public class FriendshipDBRepository extends AbstractDBRepository
         implements CreateOperationRepository<UnorderedPair<String>, Friendship>,
         DeleteOperationRepository<UnorderedPair<String>, Friendship>,
         ReadOperationRepository<UnorderedPair<String>, Friendship> {
+
+    /**
+     * constructor
+     *
+     * @param url      - url of database
+     * @param username - username of database
+     * @param password - password of database
+     */
     public FriendshipDBRepository(String url, String username, String password) {
         super(url, username, password);
     }

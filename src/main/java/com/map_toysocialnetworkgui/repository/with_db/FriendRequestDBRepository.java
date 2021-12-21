@@ -21,6 +21,13 @@ public class FriendRequestDBRepository extends AbstractDBRepository
         DeleteOperationRepository<Pair<String, String>, FriendRequest>,
         ReadOperationRepository<Pair<String, String>, FriendRequest> {
 
+    /**
+     * constructor
+     *
+     * @param url      - url of database
+     * @param username - username of database
+     * @param password - password of database
+     */
     public FriendRequestDBRepository(String url, String username, String password) {
         super(url, username, password);
     }
