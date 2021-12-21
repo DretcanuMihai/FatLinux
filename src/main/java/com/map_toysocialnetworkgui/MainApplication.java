@@ -8,7 +8,7 @@ import com.map_toysocialnetworkgui.model.validators.MessageValidator;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.map_toysocialnetworkgui.repository.with_db.FriendRequestDBRepository;
 import com.map_toysocialnetworkgui.repository.with_db.FriendshipDBRepository;
-import com.map_toysocialnetworkgui.repository.with_db.MessageDBCRUDRepository;
+import com.map_toysocialnetworkgui.repository.with_db.MessageDBRepository;
 import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
 import com.map_toysocialnetworkgui.service.FriendshipService;
 import com.map_toysocialnetworkgui.service.MessageService;
@@ -43,7 +43,7 @@ public class MainApplication extends Application {
                 "postgres","postgres");
         FriendshipDBRepository friendshipRepo = new FriendshipDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres","postgres");
-        MessageDBCRUDRepository messageDBRepository=new MessageDBCRUDRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
+        MessageDBRepository messageDBRepository=new MessageDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres","postgres");
         FriendRequestDBRepository friendRequestRepository=new FriendRequestDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres","postgres");
