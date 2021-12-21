@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
+import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.repository.CRUDException;
 import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
@@ -26,10 +27,24 @@ public class FriendRequestDBRepository extends AbstractDBRepository
         super(url, username, password);
     }
 
+    /**
+     * gets the next Friend Request from a given Result Set
+     *
+     * @param result - said set
+     * @return the next friend request
+     * @throws SQLException - if any problems occur
+     */
+    private FriendRequest getNextFromSet(ResultSet result) throws SQLException {
+        String email1 = result.getString("sender_email");
+        String email2 = result.getString("receiver_email");
+        LocalDateTime sendTime = result.getTimestamp("send_time").toLocalDateTime();
+        return new FriendRequest(email1, email2, sendTime);
+    }
+
     @Override
     public void save(FriendRequest friendRequest) throws CRUDException {
         if(contains(friendRequest.getId()))
-            throw new CRUDException("Error: a friendship already exists between give users;\n");
+            throw new CRUDException("Error: a friend request already exists from the sender to the receiver;\n");
         String sqlSave = "INSERT INTO friend_requests(sender_email, receiver_email, send_time) VALUES (?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
@@ -56,10 +71,7 @@ public class FriendRequestDBRepository extends AbstractDBRepository
             statementFind.setString(2, id.getSecond());
             ResultSet result=statementFind.executeQuery();
             if(result.next()) {
-                String email1 = result.getString("sender_email");
-                String email2 = result.getString("receiver_email");
-                LocalDateTime sendTime = result.getTimestamp("send_time").toLocalDateTime();
-                toReturn = new FriendRequest(email1, email2, sendTime);
+                toReturn = getNextFromSet(result);
             }
 
         } catch (SQLException e) {
@@ -78,7 +90,8 @@ public class FriendRequestDBRepository extends AbstractDBRepository
             statementDelete.setString(2, id.getSecond());
             int rows=statementDelete.executeUpdate();
             if(rows==0)
-                throw new CRUDException("Error: a friendship between given users doesn't exist;\n");
+                throw new CRUDException("Error: a friend request with the given " +
+                        "sender and receiver doesn't exist\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -94,10 +107,7 @@ public class FriendRequestDBRepository extends AbstractDBRepository
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                String email1 = resultSet.getString("sender_email");
-                String email2 = resultSet.getString("receiver_email");
-                LocalDateTime sendDate = resultSet.getTimestamp("send_time").toLocalDateTime();
-                FriendRequest friendRequest = new FriendRequest(email1, email2, sendDate);
+                FriendRequest friendRequest = getNextFromSet(resultSet);
                 friendRequests.add(friendRequest);
             }
             return friendRequests;

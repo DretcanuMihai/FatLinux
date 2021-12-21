@@ -13,7 +13,6 @@ import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.function.Predicate;
 
 /**
  * a class that incorporates a service that works with friendship administration
@@ -28,11 +27,11 @@ public class FriendshipService {
      */
     private final FriendshipValidator friendshipValidator;
     /**
-     * associated friendrequest repo
+     * associated friend request repo
      */
     private final FriendRequestDBRepository friendRequestRepository;
     /**
-     * associated friendrequest validator
+     * associated friend request validator
      */
     private final FriendRequestValidator friendRequestValidator;
 
@@ -82,7 +81,7 @@ public class FriendshipService {
         friendshipValidator.validateEmails(userEmail1,userEmail2);
         Friendship friendship=friendshipRepo.tryGet(new UnorderedPair<>(userEmail1,userEmail2));
         if(friendship==null)
-            throw new AdministrationException("Users aren't friends!\n");
+            throw new AdministrationException("Error: Users aren't friends!\n");
         return friendship;
     }
 
@@ -96,8 +95,6 @@ public class FriendshipService {
      */
     public void deleteFriendship(String userEmail1, String userEmail2) throws ValidationException,AdministrationException {
         friendshipValidator.validateEmails(userEmail1,userEmail2);
-        if(friendshipRepo.tryGet(new UnorderedPair<>(userEmail1,userEmail2))==null)
-            throw new AdministrationException("Users aren't friends!\n");
         friendshipRepo.delete(new UnorderedPair<>(userEmail1,userEmail2));
     }
 
@@ -116,8 +113,7 @@ public class FriendshipService {
      * @return a collection of said friendships
      */
     public Collection<Friendship> getUserFriendships(String userEmail) {
-        return friendshipRepo.getAll().stream().filter(friendship -> (friendship.getEmails().getFirst().equals(userEmail) ||
-                friendship.getEmails().getSecond().equals(userEmail))).toList();
+        return friendshipRepo.getUserFriendships(userEmail);
     }
 
     /**
@@ -129,13 +125,9 @@ public class FriendshipService {
      */
     public Collection<Friendship> getUserFriendshipsFromMonth(String userEmail, int month) throws ValidationException {
         if (month < 1 || month > 12)
-            throw new ValidationException("Invalid month!\n");
+            throw new ValidationException("Error: Invalid month!\n");
 
-        Predicate<Friendship> predicateMonth = friendship -> friendship.getBeginDate().getMonth().getValue() == month;
-        Predicate<Friendship> predicateUser = friendship -> friendship.getEmails().getFirst().equals(userEmail)
-                || friendship.getEmails().getSecond().equals(userEmail);
-
-        return friendshipRepo.getAll().stream().filter(predicateMonth.and(predicateUser)).toList();
+        return friendshipRepo.getUserFriendshipsFromMonth(userEmail,month);
     }
 
     /**
@@ -145,15 +137,13 @@ public class FriendshipService {
      * @throws ValidationException - if sender Email and receiver are the same
      * @throws AdministrationException - if friend request already exists or if inverse exists
      */
-    public void addFriendRequest(String senderEmail, String receiverEmail) throws ValidationException,AdministrationException {
-        friendshipValidator.validateEmails(senderEmail,receiverEmail);
+    public void sendFriendRequest(String senderEmail, String receiverEmail) throws ValidationException,AdministrationException {
+        friendRequestValidator.validateEmails(senderEmail,receiverEmail);
         if(friendshipRepo.tryGet(new UnorderedPair<>(senderEmail,receiverEmail))!=null)
-            throw new AdministrationException("Users are already friends;\n");
+            throw new AdministrationException("Error: Users are already friends;\n");
         FriendRequest inverse= friendRequestRepository.tryGet(new Pair<>(receiverEmail,senderEmail));
         if(inverse!=null)
-            throw new AdministrationException("Can't send request! Receiver already sent request to sender;\n");
-        if(friendRequestRepository.tryGet(new Pair<>(senderEmail,receiverEmail))!=null)
-            throw new AdministrationException("Friend request from sender to receiver already exists;\n");
+            throw new AdministrationException("Error: Can't send request! Receiver already sent request to sender;\n");
         FriendRequest friendRequest=new FriendRequest(senderEmail,receiverEmail, LocalDateTime.now());
         friendRequestRepository.save(friendRequest);
     }
@@ -169,7 +159,7 @@ public class FriendshipService {
     public void confirmFriendRequest(String senderEmail, String receiverEmail,boolean accepted)
             throws ValidationException,AdministrationException{
 
-        friendshipValidator.validateEmails(senderEmail,receiverEmail);
+        friendRequestValidator.validateEmails(senderEmail,receiverEmail);
         FriendRequest friendRequest= friendRequestRepository.tryGet(new Pair<>(senderEmail,receiverEmail));
         if(friendRequest==null)
             throw new AdministrationException("No friend request from sender to receiver exists;\n");

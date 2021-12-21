@@ -23,6 +23,20 @@ public class FriendshipDBRepository extends AbstractDBRepository
         super(url, username, password);
     }
 
+    /**
+     * gets the next Friendship from a given Result Set
+     *
+     * @param resultSet - said set
+     * @return the next friendship
+     * @throws SQLException - if any problems occur
+     */
+    private Friendship getNextFromSet(ResultSet resultSet) throws SQLException {
+        String email1 = resultSet.getString("first_user_email");
+        String email2= resultSet.getString("second_user_email");
+        LocalDate beginDate=resultSet.getDate("begin_date").toLocalDate();
+        return new Friendship(email1,email2,beginDate);
+    }
+
     @Override
     public void save(Friendship friendship) throws CRUDException {
         if(contains(friendship.getId()))
@@ -53,10 +67,7 @@ public class FriendshipDBRepository extends AbstractDBRepository
             statementFind.setString(2,id.getSecond());
             ResultSet result=statementFind.executeQuery();
             if(result.next()){
-                String email1=result.getString("first_user_email");
-                String email2=result.getString("second_user_email");
-                LocalDate joinDate=result.getDate("begin_date").toLocalDate();
-                toReturn=new Friendship(email1,email2,joinDate);
+                toReturn=getNextFromSet(result);
             }
 
         } catch (SQLException e) {
@@ -90,10 +101,63 @@ public class FriendshipDBRepository extends AbstractDBRepository
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                String email1 = resultSet.getString("first_user_email");
-                String email2= resultSet.getString("second_user_email");
-                LocalDate beginDate=resultSet.getDate("begin_date").toLocalDate();
-                Friendship friendship=new Friendship(email1,email2,beginDate);
+                Friendship friendship=getNextFromSet(resultSet);
+                friendships.add(friendship);
+            }
+            return friendships;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return friendships;
+    }
+
+    /**
+     * gets all existing friendships to which a user belongs
+     *
+     * @param userEmail - said user's email
+     * @return a collection of said friendships
+     */
+    public Collection<Friendship> getUserFriendships(String userEmail) {
+        Set<Friendship> friendships = new HashSet<>();
+        String sql="SELECT * from friendships where first_user_email=(?) or second_user_email=(?)";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1,userEmail);
+            statement.setString(2,userEmail);
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Friendship friendship=getNextFromSet(resultSet);
+                friendships.add(friendship);
+            }
+            return friendships;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return friendships;
+    }
+
+    /**
+     * gets all existing friendships to which a user belongs, friendships created in a given month
+     * @param userEmail - said user's email
+     * @param month - said month's number
+     * @return a collection of said friendships
+     */
+    public Collection<Friendship> getUserFriendshipsFromMonth(String userEmail, int month) {
+        Set<Friendship> friendships = new HashSet<>();
+        String sql="SELECT * from friendships where ((first_user_email= (?) or second_user_email=(?)) " +
+                "and EXTRACT(MONTH FROM begin_date) = (?)) ";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1,userEmail);
+            statement.setString(2,userEmail);
+            statement.setInt(3,month);
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Friendship friendship=getNextFromSet(resultSet);
                 friendships.add(friendship);
             }
             return friendships;
