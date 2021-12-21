@@ -2,7 +2,6 @@ package com.map_toysocialnetworkgui.repository.with_db;
 
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
-import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.ReadOperationRepository;
@@ -14,10 +13,23 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FriendshipDBRepository extends AbstractDBRepository
+public class FriendshipDBRepository extends ConnectionGetter
         implements CreateOperationRepository<UnorderedPair<String>, Friendship>,
         DeleteOperationRepository<UnorderedPair<String>, Friendship>,
         ReadOperationRepository<UnorderedPair<String>, Friendship> {
+
+    /**
+     * the database's URL
+     */
+    private final String url;
+    /**
+     * the database's username
+     */
+    private final String username;
+    /**
+     * the database's password
+     */
+    private final String password;
 
     /**
      * constructor
@@ -100,7 +112,7 @@ public class FriendshipDBRepository extends AbstractDBRepository
     }
 
     @Override
-    public Collection<Friendship> getAll() {
+    public Iterable<Friendship> getAll() {
         Set<Friendship> friendships = new HashSet<>();
         String sql = "SELECT * from friendships";
         try (Connection connection = getConnection();

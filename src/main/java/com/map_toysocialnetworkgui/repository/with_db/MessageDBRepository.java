@@ -1,7 +1,6 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
-import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.CreateOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.DeleteOperationRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.operation_based.ReadOperationRepository;
@@ -13,8 +12,21 @@ import java.util.*;
 /**
  * a message repository that works with a database
  */
-public class MessageDBRepository extends AbstractDBRepository implements CreateOperationRepository<Integer, Message>,
+public class MessageDBRepository extends ConnectionGetter implements CreateOperationRepository<Integer, Message>,
         ReadOperationRepository<Integer, Message>, DeleteOperationRepository<Integer, Message> {
+
+    /**
+     * the database's URL
+     */
+    private final String url;
+    /**
+     * the database's username
+     */
+    private final String username;
+    /**
+     * the database's password
+     */
+    private final String password;
 
     /**
      * constructor
@@ -24,7 +36,9 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
      * @param password - password of database
      */
     public MessageDBRepository(String url, String username, String password) {
-        super(url, username, password);
+        this.url=url;
+        this.username=username;
+        this.password=password;
     }
 
     /**
@@ -56,7 +70,7 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
      */
     private void saveDelivery(Integer messageID, String receiverEmail) {
         String sqlInsertDelivery = "INSERT INTO message_deliveries(message_id, receiver_email) VALUES (?, ?)";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementInsertDelivery = connection.prepareStatement(sqlInsertDelivery)) {
 
             statementInsertDelivery.setInt(1, messageID);
@@ -163,7 +177,7 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
     }
 
     @Override
-    public Collection<Message> getAll() {
+    public Iterable<Message> getAll() {
         Set<Message> messages = new HashSet<>();
         String sqlMessages = "SELECT * FROM messages";
         try (Connection connection = getConnection();
