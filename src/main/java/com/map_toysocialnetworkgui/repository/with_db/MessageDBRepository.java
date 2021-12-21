@@ -165,9 +165,56 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         return message;
     }
 
+    /**
+     * deletes all the deliveries of a given message
+     * @param id - the message's id
+     */
+    private void deleteDeliveriesOf(Integer id){
+        String sqlDeleteMessageDeliveries="DELETE from message_deliveries where message_id=(?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+
+            PreparedStatement statementDeleteMessageDeliveries= connection.prepareStatement(sqlDeleteMessageDeliveries);
+            statementDeleteMessageDeliveries.setInt(1,id);
+            statementDeleteMessageDeliveries.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * updates the deliveries of a message in the database
+     * @param message - said message - the new deliveries are taken from it
+     */
+    private void updateDeliveriesOf(Message message){
+        deleteDeliveriesOf(message.getId());
+        message.getToEmails().forEach(email-> saveDelivery(message.getId(),email));
+    }
+
     @Override
     public boolean update(Message message) {
-        return false;
+        boolean toReturn=false;
+        String sqlUpdateMessage="UPDATE messages set sender_email=(?),message_text=(?),send_time=(?),parent_message_id=(?) where message_id=(?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+
+            PreparedStatement statementUpdateMessage = connection.prepareStatement(sqlUpdateMessage);
+
+            statementUpdateMessage.setString(1,message.getFromEmail());
+            statementUpdateMessage.setString(2,message.getMessageText());
+            statementUpdateMessage.setTimestamp(3,Timestamp.valueOf(message.getSendTime()));
+            if(message.getParentMessageId()==null)
+                statementUpdateMessage.setNull(4,Types.INTEGER);
+            else
+                statementUpdateMessage.setInt(4,message.getParentMessageId());
+
+            statementUpdateMessage.setInt(5,message.getId());
+            int rows=statementUpdateMessage.executeUpdate();
+            updateDeliveriesOf(message);
+            toReturn=(rows!=0);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
     }
 
     @Override
