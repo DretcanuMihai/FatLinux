@@ -151,23 +151,6 @@ public class MessageDBRepository extends AbstractDBRepository implements CreateO
         return message;
     }
 
-    /**
-     * deletes all the deliveries of a given message
-     *
-     * @param id - the message's id
-     */
-    private void deleteDeliveriesOf(Integer id) {
-        String sqlDeleteMessageDeliveries = "DELETE FROM message_deliveries WHERE message_id = (?)";
-        try (Connection connection = getConnection();
-             PreparedStatement statementDeleteMessageDeliveries = connection.prepareStatement(sqlDeleteMessageDeliveries)) {
-
-            statementDeleteMessageDeliveries.setInt(1, id);
-            statementDeleteMessageDeliveries.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void delete(Integer id) {
         String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
