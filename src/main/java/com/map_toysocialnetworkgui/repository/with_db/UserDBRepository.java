@@ -5,6 +5,7 @@ import com.map_toysocialnetworkgui.model.entities.AccountStatus;
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
 import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import java.util.Set;
 /**
  * a user repository that works with a database
  */
-public class UserDBRepository extends AbstractDBRepository implements CRUDRepository<String, User> {
+public class UserDBRepository extends AbstractDBRepository implements UserRepositoryInterface {
 
     public UserDBRepository(String url, String username, String password) {
         super(url, username, password);
@@ -40,28 +41,32 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
 
     @Override
     public boolean save(User user) {
-        if (contains(user.getEmail()))
-            throw new AdministrationException("Error: Email already in use!;\n");
-        String sqlSave = "INSERT INTO users(email, first_name, password_hash, join_date, last_name) values (?, ?, ?, ?, ?)";
+        if(contains(user.getEmail()))
+            return false;
+        boolean toReturn=false;
+        String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date,status_code) values (?, ?, ?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
 
             statementSave.setString(1, user.getEmail());
-            statementSave.setString(2, user.getFirstName());
-            statementSave.setInt(3, user.getPasswordHash());
-            statementSave.setDate(4, Date.valueOf(user.getJoinDate()));
-            statementSave.setString(5, user.getLastName());
+            statementSave.setInt(2, user.getPasswordHash());
+            statementSave.setString(3, user.getFirstName());
+            statementSave.setString(4, user.getLastName());
+            statementSave.setDate(5, Date.valueOf(user.getJoinDate()));
+            statementSave.setInt(6, user.getAccountStatus().getStatusCode());
             statementSave.execute();
+            toReturn=true;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return toReturn;
     }
 
     @Override
     public User get(String email) {
-        String sqlFind = "SELECT * FROM users WHERE email = (?)";
         User toReturn = null;
+        String sqlFind = "SELECT * FROM users WHERE email = (?)";
 
         try (Connection connection = getConnection();
              PreparedStatement statementFind = connection.prepareStatement(sqlFind)) {
@@ -78,89 +83,39 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public User get(String s) throws AdministrationException {
-        try {
-            return CRUDRepository.super.get(s);
-        }
-        catch (AdministrationException e){
-            throw new AdministrationException("Error: Email not in use!;\n");
-        }
-    }
-
-    @Override
     public boolean update(User user) {
-        String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?), status_code = (?) WHERE email = (?)";
+        boolean toReturn=false;
+        String sqlUpdate = "UPDATE users SET password_hash = (?),first_name = (?), last_name = (?),join_date=(?), status_code = (?) WHERE email = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
 
-            statementUpdate.setString(1, user.getFirstName());
-            statementUpdate.setString(2, user.getLastName());
-            statementUpdate.setInt(3, user.getPasswordHash());
-            statementUpdate.setInt(4, user.getAccountStatus().getStatusCode());
-            statementUpdate.setString(5, user.getEmail());
+            statementUpdate.setInt(1, user.getPasswordHash());
+            statementUpdate.setString(2, user.getFirstName());
+            statementUpdate.setString(3, user.getLastName());
+            statementUpdate.setDate(4, Date.valueOf(user.getJoinDate()));
+            statementUpdate.setInt(5, user.getAccountStatus().getStatusCode());
+            statementUpdate.setString(6, user.getEmail());
             int affectedRows = statementUpdate.executeUpdate();
-            if (affectedRows == 0)
-                throw new AdministrationException("Error: Email not in use!;\n");
+            toReturn=(affectedRows!=0);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * updates the user's info (first and last name, password hash)
-     *
-     * @param user - said user and its new info
-     * @throws AdministrationException if an entity identified by the same ID doesn't already exist
-     */
-    public void updateInfo(User user) throws AdministrationException {
-        String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?) WHERE email = (?)";
-        try (Connection connection = getConnection();
-             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
-
-            statementUpdate.setString(1, user.getFirstName());
-            statementUpdate.setString(2, user.getLastName());
-            statementUpdate.setInt(3, user.getPasswordHash());
-            statementUpdate.setString(4, user.getEmail());
-            int affectedRows = statementUpdate.executeUpdate();
-            if (affectedRows == 0)
-                throw new AdministrationException("Error: Email not in use!;\n");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * updates the user's account status
-     *
-     * @param email - said user's email
-     * @param status - the new status
-     * @throws AdministrationException if a user with said email doesn't already exist
-     */
-    public void updateStatus(String email, AccountStatus status) throws AdministrationException {
-        String sqlUpdate = "UPDATE users SET status_code = (?) WHERE email = (?)";
-        try (Connection connection = getConnection();
-             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
-
-            statementUpdate.setInt(1, status.getStatusCode());
-            statementUpdate.setString(2, email);
-            int affectedRows = statementUpdate.executeUpdate();
-            if (affectedRows == 0)
-                throw new AdministrationException("Error: Email not in use!;\n");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        return toReturn;
     }
 
     @Override
     public boolean delete(String id) {
+        boolean toReturn=false;
         String sqlDelete = "DELETE FROM users WHERE email = (?)";
         try (Connection connection = getConnection();
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
             statementDelete.setString(1, id);
-            statementDelete.execute();
+            int rows=statementDelete.executeUpdate();
+            toReturn=(rows!=0);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return toReturn;
     }
 
     @Override
