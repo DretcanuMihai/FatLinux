@@ -11,19 +11,15 @@ public class MessageValidator implements Validator<Message> {
      * validates a message
      *
      * @param entity - said entity
-     * @throws ValidationException - if the message is invalid
-     *                             - if toEmails has emails that repeat or the sender email is in the toEmails
+     * @throws ValidationException - if toEmails has emails that repeat or the sender email is in the toEmails
      *                             - if its text is a null pointer or exceeds maximum size
      */
     @Override
     public void validateDefault(Message entity) throws ValidationException {
         String message = "";
-        Integer id = entity.getId();
         String fromEmail = entity.getFromEmail();
         List<String> toEmails = entity.getToEmails();
         String text = entity.getMessageText();
-        if (id == null)
-            message += "Invalid id for message! Must be non null;\n";
         if (toEmails.size() != new HashSet<>(toEmails).size() || toEmails.contains(fromEmail))
             message += "Invalid list of recipient emails! Emails must be different and shouldn't contain the sender" +
                     " email;\n";

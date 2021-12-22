@@ -15,7 +15,6 @@ public class UserValidator implements Validator<User> {
      * validates the user entity if:
      * ->its email is non-null, non-empty but under 50 characters, and is a valid email
      * ->its first name and last name are non-null, non-empty and under 50 characters
-     * ->its passwordHash is not 0
      *
      * @param entity - said entity
      * @throws ValidationException - if said entity is not valid
@@ -26,7 +25,6 @@ public class UserValidator implements Validator<User> {
         String email = entity.getEmail();
         String firstName = entity.getFirstName();
         String lastName = entity.getLastName();
-        int passwordHash = entity.getPasswordHash();
         if (email == null || email.equals("") || !emailPattern.matcher(email).matches()
                 || email.length() > maxSize)
             message += "Invalid email! Must be non empty, under 50 characters and" +
@@ -35,8 +33,6 @@ public class UserValidator implements Validator<User> {
             message += "Invalid first name! Must be non empty and under 50 characters;\n";
         if (lastName == null || lastName.equals("") || lastName.length() > maxSize)
             message += "Invalid last name! Must be non empty and under 50 characters;\n";
-        if (passwordHash == 0)
-            message += "Invalid password! Must be non empty;\n";
         if (!message.equals("")) {
             message = "Error:\n" + message;
             throw new ValidationException(message);

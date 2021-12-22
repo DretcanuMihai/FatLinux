@@ -1,25 +1,43 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 
-import com.map_toysocialnetworkgui.model.entities.AccountStatus;
 import com.map_toysocialnetworkgui.model.entities.User;
-import com.map_toysocialnetworkgui.repository.CRUDException;
-import com.map_toysocialnetworkgui.repository.skeletons.AbstractDBRepository;
-import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * a user repository that works with a database
  */
-public class UserDBRepository extends AbstractDBRepository implements CRUDRepository<String, User> {
+public class UserDBRepository implements UserRepositoryInterface {
 
+    /**
+     * the database's URL
+     */
+    private final String url;
+    /**
+     * the database's username
+     */
+    private final String username;
+    /**
+     * the database's password
+     */
+    private final String password;
+
+    /**
+     * constructor
+     *
+     * @param url      - url of database
+     * @param username - username of database
+     * @param password - password of database
+     */
     public UserDBRepository(String url, String username, String password) {
-        super(url, username, password);
+        this.url = url;
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -35,36 +53,38 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
         int passwordHash = resultSet.getInt("password_hash");
         LocalDate joinDate = resultSet.getDate("join_date").toLocalDate();
         String lastName = resultSet.getString("last_name");
-        int accountStatusCode = resultSet.getInt("status_code");
-        return new User(email, passwordHash, firstName, lastName, joinDate, accountStatusCode);
+        return new User(email, passwordHash, firstName, lastName, joinDate);
     }
 
     @Override
-    public void save(User user) throws CRUDException {
+    public boolean save(User user) {
         if (contains(user.getEmail()))
-            throw new CRUDException("Error: Email already in use!;\n");
-        String sqlSave = "INSERT INTO users(email, first_name, password_hash, join_date, last_name) values (?, ?, ?, ?, ?)";
-        try (Connection connection = getConnection();
+            return false;
+        boolean toReturn = false;
+        String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date) values (?, ?, ?, ?, ?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
 
             statementSave.setString(1, user.getEmail());
-            statementSave.setString(2, user.getFirstName());
-            statementSave.setInt(3, user.getPasswordHash());
-            statementSave.setDate(4, Date.valueOf(user.getJoinDate()));
-            statementSave.setString(5, user.getLastName());
+            statementSave.setInt(2, user.getPasswordHash());
+            statementSave.setString(3, user.getFirstName());
+            statementSave.setString(4, user.getLastName());
+            statementSave.setDate(5, Date.valueOf(user.getJoinDate()));
             statementSave.execute();
+            toReturn = true;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return toReturn;
     }
 
     @Override
-    public User tryGet(String email) {
-        String sqlFind = "SELECT * FROM users WHERE email = (?)";
+    public User get(String email) {
         User toReturn = null;
+        String sqlFind = "SELECT * FROM users WHERE email = (?)";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementFind = connection.prepareStatement(sqlFind)) {
 
             statementFind.setString(1, email);
@@ -79,96 +99,45 @@ public class UserDBRepository extends AbstractDBRepository implements CRUDReposi
     }
 
     @Override
-    public User get(String s) throws CRUDException {
-        try {
-            return CRUDRepository.super.get(s);
-        }
-        catch (CRUDException e){
-            throw new CRUDException("Error: Email not in use!;\n");
-        }
-    }
-
-    @Override
-    public void update(User user) throws CRUDException {
-        String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?), status_code = (?) WHERE email = (?)";
-        try (Connection connection = getConnection();
+    public boolean update(User user) {
+        boolean toReturn = false;
+        String sqlUpdate = "UPDATE users SET password_hash = (?),first_name = (?), last_name = (?),join_date=(?) WHERE email = (?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
 
-            statementUpdate.setString(1, user.getFirstName());
-            statementUpdate.setString(2, user.getLastName());
-            statementUpdate.setInt(3, user.getPasswordHash());
-            statementUpdate.setInt(4, user.getAccountStatus().getStatusCode());
+            statementUpdate.setInt(1, user.getPasswordHash());
+            statementUpdate.setString(2, user.getFirstName());
+            statementUpdate.setString(3, user.getLastName());
+            statementUpdate.setDate(4, Date.valueOf(user.getJoinDate()));
             statementUpdate.setString(5, user.getEmail());
             int affectedRows = statementUpdate.executeUpdate();
-            if (affectedRows == 0)
-                throw new CRUDException("Error: Email not in use!;\n");
+            toReturn = (affectedRows != 0);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * updates the user's info (first and last name, password hash)
-     *
-     * @param user - said user and its new info
-     * @throws CRUDException if an entity identified by the same ID doesn't already exist
-     */
-    public void updateInfo(User user) throws CRUDException {
-        String sqlUpdate = "UPDATE users SET first_name = (?), last_name = (?), password_hash = (?) WHERE email = (?)";
-        try (Connection connection = getConnection();
-             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
-
-            statementUpdate.setString(1, user.getFirstName());
-            statementUpdate.setString(2, user.getLastName());
-            statementUpdate.setInt(3, user.getPasswordHash());
-            statementUpdate.setString(4, user.getEmail());
-            int affectedRows = statementUpdate.executeUpdate();
-            if (affectedRows == 0)
-                throw new CRUDException("Error: Email not in use!;\n");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * updates the user's account status
-     *
-     * @param email - said user's email
-     * @param status - the new status
-     * @throws CRUDException if a user with said email doesn't already exist
-     */
-    public void updateStatus(String email, AccountStatus status) throws CRUDException {
-        String sqlUpdate = "UPDATE users SET status_code = (?) WHERE email = (?)";
-        try (Connection connection = getConnection();
-             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
-
-            statementUpdate.setInt(1, status.getStatusCode());
-            statementUpdate.setString(2, email);
-            int affectedRows = statementUpdate.executeUpdate();
-            if (affectedRows == 0)
-                throw new CRUDException("Error: Email not in use!;\n");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        return toReturn;
     }
 
     @Override
-    public void delete(String id) {
+    public boolean delete(String id) {
+        boolean toReturn = false;
         String sqlDelete = "DELETE FROM users WHERE email = (?)";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
             statementDelete.setString(1, id);
-            statementDelete.execute();
+            int rows = statementDelete.executeUpdate();
+            toReturn = (rows != 0);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return toReturn;
     }
 
     @Override
-    public Collection<User> getAll() {
+    public Iterable<User> getAll() {
         Set<User> users = new HashSet<>();
         String sql = "SELECT * FROM users";
-        try (Connection connection = getConnection();
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
 
