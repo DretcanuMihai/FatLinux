@@ -2,7 +2,7 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.collections.FXCollections;
@@ -19,24 +19,24 @@ import java.util.stream.Collectors;
 
 public class MainController extends AbstractController {
     //Data
-    UserDTO loggedUser;
-    ObservableList<UserDTO> modelUsers = FXCollections.observableArrayList();
-    ObservableList<UserDTO> modelFriends = FXCollections.observableArrayList();
+    UserUIDTO loggedUser;
+    ObservableList<UserUIDTO> modelUsers = FXCollections.observableArrayList();
+    ObservableList<UserUIDTO> modelFriends = FXCollections.observableArrayList();
     ObservableList<FriendRequestDTO> modelPending = FXCollections.observableArrayList();
     // FXML
     @FXML
     Label welcomeLabel;
     @FXML
-    TableView<UserDTO> friendsTable;
+    TableView<UserUIDTO> friendsTable;
     @FXML
-    TableView<UserDTO> usersTable;
+    TableView<UserUIDTO> usersTable;
     @FXML
     TableView<FriendRequestDTO> pendingTable;
 
     @FXML
-    public TableColumn<UserDTO, String> friendsFirstNameColumn;
+    public TableColumn<UserUIDTO, String> friendsFirstNameColumn;
     @FXML
-    public TableColumn<UserDTO, String> friendsLastNameColumn;
+    public TableColumn<UserUIDTO, String> friendsLastNameColumn;
     @FXML
     public TableColumn<FriendRequestDTO, String> pendingFirstNameColumn;
     @FXML
@@ -44,9 +44,9 @@ public class MainController extends AbstractController {
     @FXML
     public TableColumn<FriendRequestDTO, LocalDateTime> pendingDateColumn;
     @FXML
-    public TableColumn<UserDTO, String> usersFirstNameColumn;
+    public TableColumn<UserUIDTO, String> usersFirstNameColumn;
     @FXML
-    public TableColumn<UserDTO, String> usersLastNameColumn;
+    public TableColumn<UserUIDTO, String> usersLastNameColumn;
 
     @FXML
     public void initialize() {
@@ -63,8 +63,8 @@ public class MainController extends AbstractController {
         pendingTable.setItems(modelPending);
     }
 
-    public void init(String userEmail) {
-        loggedUser=service.getUserDTO(userEmail);
+    public void init(UserUIDTO user) {
+        loggedUser=user;
         welcomeLabel.setText("Welcome, " + loggedUser.getFirstName() + "!");
         updateModelUsers();
         updateModelFriends();
@@ -86,13 +86,13 @@ public class MainController extends AbstractController {
 
     public void add() {
         String senderEmail=loggedUser.getEmail();
-        UserDTO userDTO=usersTable.getSelectionModel().getSelectedItem();
-        if(userDTO==null){
+        UserUIDTO userUIDTO =usersTable.getSelectionModel().getSelectedItem();
+        if(userUIDTO ==null){
             Alert alert=new Alert(Alert.AlertType.WARNING,"No user selected!\n");
             alert.showAndWait();
             return;
         }
-        String receiverEmail=userDTO.getEmail();
+        String receiverEmail= userUIDTO.getEmail();
         try {
             service.sendFriendRequest(senderEmail, receiverEmail);
         }

@@ -10,17 +10,17 @@ public class User extends Entity<String> {
     /**
      * associated first name
      */
-    private final String firstName;
+    private String firstName;
 
     /**
      * associated last name
      */
-    private final String lastName;
+    private String lastName;
 
     /**
      * associated passwordHash
      */
-    private final int passwordHash;
+    private int passwordHash;
 
     /**
      * associated join date
@@ -30,18 +30,18 @@ public class User extends Entity<String> {
     /**
      * Creates a user based on the given information
      *
-     * @param email        - user's email
-     * @param firstName    - user's first name
-     * @param lastName     - user's last name
-     * @param passwordHash - user's password's hashcode
-     * @param joinDate     - the date the user joined
+     * @param email         - user's email
+     * @param passwordHash  - user's password's hashcode
+     * @param firstName     - user's first name
+     * @param lastName      - user's last name
+     * @param joinDate      - the date the user joined
      */
-    public User(String email, String firstName, String lastName, int passwordHash, LocalDate joinDate) {
+    public User(String email, int passwordHash, String firstName, String lastName, LocalDate joinDate) {
         super(email);
         this.firstName = firstName;
+        this.lastName = lastName;
         this.passwordHash = passwordHash;
         this.joinDate = joinDate;
-        this.lastName = lastName;
     }
 
     /**
@@ -63,6 +63,15 @@ public class User extends Entity<String> {
     }
 
     /**
+     * sets the user's first name
+     *
+     * @param firstName - new first name
+     */
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    /**
      * gets the user's last name
      *
      * @return said last name
@@ -72,12 +81,30 @@ public class User extends Entity<String> {
     }
 
     /**
+     * set the user's last name
+     *
+     * @param lastName - new last name
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    /**
      * gets user's password's hash
      *
      * @return said hash
      */
     public int getPasswordHash() {
         return passwordHash;
+    }
+
+    /**
+     * sets the user's password's hash
+     *
+     * @param passwordHash - new password hash
+     */
+    public void setPasswordHash(int passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     /**

@@ -17,7 +17,7 @@ public class FriendshipDTO {
     /**
      * users info
      */
-    private final UserDTO user1, user2;
+    private final UserUIDTO user1, user2;
 
     /**
      * creates a Friendship DTO for a friendship between two users
@@ -29,8 +29,8 @@ public class FriendshipDTO {
      */
     public FriendshipDTO(Friendship friendship, User user1, User user2) {
         this.beginDate = friendship.getBeginDate();
-        this.user1 = new UserDTO(user1);
-        this.user2 = new UserDTO(user2);
+        this.user1 = new UserUIDTO(user1);
+        this.user2 = new UserUIDTO(user2);
     }
 
     /**
@@ -47,7 +47,7 @@ public class FriendshipDTO {
      *
      * @return said DTO
      */
-    public UserDTO getUser1() {
+    public UserUIDTO getUser1() {
         return user1;
     }
 
@@ -56,7 +56,7 @@ public class FriendshipDTO {
      *
      * @return said DTO
      */
-    public UserDTO getUser2() {
+    public UserUIDTO getUser2() {
         return user2;
     }
 
