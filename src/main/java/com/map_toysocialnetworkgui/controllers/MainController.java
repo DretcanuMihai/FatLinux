@@ -85,19 +85,24 @@ public class MainController extends AbstractController {
     }
 
     public void add() {
-        String senderEmail=loggedUser.getEmail();
-        UserUIDTO userUIDTO =usersTable.getSelectionModel().getSelectedItem();
-        if(userUIDTO ==null){
-            Alert alert=new Alert(Alert.AlertType.WARNING,"No user selected!\n");
+        String senderEmail = loggedUser.getEmail();
+        UserUIDTO userUIDTO = usersTable.getSelectionModel().getSelectedItem();
+        if(userUIDTO == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error!");
+            alert.setHeaderText("Empty selection error!");
+            alert.setContentText("You must select an user from the list in order to add a friend!");
             alert.showAndWait();
             return;
         }
-        String receiverEmail= userUIDTO.getEmail();
+        String receiverEmail = userUIDTO.getEmail();
         try {
             service.sendFriendRequest(senderEmail, receiverEmail);
-        }
-        catch(ValidationException | AdministrationException e){
-            Alert alert=new Alert(Alert.AlertType.WARNING,e.getMessage());
+        } catch (ValidationException | AdministrationException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning!");
+            alert.setHeaderText("Friend request warning!");
+            alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
     }
@@ -108,7 +113,6 @@ public class MainController extends AbstractController {
             alert.setTitle("Error!");
             alert.setHeaderText("Empty selection error");
             alert.setContentText("You must select a friend from friends table in order to remove it!");
-
             alert.showAndWait();
         } else {
             String toDelete = friendsTable.getSelectionModel().getSelectedItem().getEmail();
@@ -123,7 +127,6 @@ public class MainController extends AbstractController {
             alert.setTitle("Error!");
             alert.setHeaderText("Empty selection error");
             alert.setContentText("You must select a pending friend request in order to accept it!");
-
             alert.showAndWait();
         } else {
             try {
@@ -136,7 +139,6 @@ public class MainController extends AbstractController {
                 alert.setTitle("Warning!");
                 alert.setHeaderText("Friend request warning");
                 alert.setContentText(ex.getMessage());
-
                 alert.showAndWait();
             }
         }

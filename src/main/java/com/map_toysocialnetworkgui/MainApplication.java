@@ -41,60 +41,60 @@ public class MainApplication extends Application {
     private void initService() {
         // Repositories
         UserDBRepository userRepo = new UserDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
-                "postgres","postgres");
+                "postgres", "postgres");
         FriendshipDBRepository friendshipRepo = new FriendshipDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
-                "postgres","postgres");
+                "postgres", "postgres");
         MessageDBRepository messageDBRepository=new MessageDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
-                "postgres","postgres");
+                "postgres", "postgres");
         FriendRequestDBRepository friendRequestRepository=new FriendRequestDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
-                "postgres","postgres");
+                "postgres", "postgres");
 
         //Validators
-        UserValidator userValidator=new UserValidator();
-        FriendshipValidator friendshipValidator=new FriendshipValidator();
-        MessageValidator messageValidator=new MessageValidator();
-        FriendRequestValidator friendRequestValidator=new FriendRequestValidator();
+        UserValidator userValidator = new UserValidator();
+        FriendshipValidator friendshipValidator = new FriendshipValidator();
+        MessageValidator messageValidator = new MessageValidator();
+        FriendRequestValidator friendRequestValidator = new FriendRequestValidator();
 
         //Services
-        UserService userService=new UserService(userRepo, userValidator);
-        FriendshipService friendshipService=new FriendshipService(friendshipRepo, friendshipValidator,
+        UserService userService = new UserService(userRepo, userValidator);
+        FriendshipService friendshipService = new FriendshipService(friendshipRepo, friendshipValidator,
                 friendRequestRepository, friendRequestValidator);
-        MessageService messageService=new MessageService(messageDBRepository,messageValidator);
+        MessageService messageService = new MessageService(messageDBRepository, messageValidator);
         this.service = new SuperService(userService, friendshipService, messageService);
     }
 
     private void initURLs(){
-        loginFXMLURL=getClass().getResource("login-view.fxml");
-        mainFXMLURL=getClass().getResource("main-view.fxml");
+        loginFXMLURL = getClass().getResource("views/login-view.fxml");
+        mainFXMLURL = getClass().getResource("views/main-view.fxml");
     }
 
     private FXMLLoader initLoader(URL url) throws IOException {
-        FXMLLoader loader=new FXMLLoader(url);
+        FXMLLoader loader = new FXMLLoader(url);
         loader.load();
-        AbstractController controller=loader.getController();
+        AbstractController controller = loader.getController();
         controller.setService(service);
         controller.setApplication(this);
         return loader;
     }
 
     private void modifyMainWindowWith(FXMLLoader loader){
-        Parent parent=loader.getRoot();
-        Scene scene=new Scene(parent);
+        Parent parent = loader.getRoot();
+        Scene scene = new Scene(parent);
         primaryStage.setScene(scene);
     }
 
     public void changeToMain(UserUIDTO user) throws IOException {
-        FXMLLoader mainLoader=initLoader(mainFXMLURL);
-        MainController controller=mainLoader.getController();
+        FXMLLoader mainLoader = initLoader(mainFXMLURL);
+        MainController controller = mainLoader.getController();
         controller.init(user);
         modifyMainWindowWith(mainLoader);
     }
 
     @Override
     public void start(Stage stage) throws IOException {
-        primaryStage=stage;
+        primaryStage = stage;
         primaryStage.setTitle("FatLinuxApplication");
-        FXMLLoader loginLoader=initLoader(loginFXMLURL);
+        FXMLLoader loginLoader = initLoader(loginFXMLURL);
         modifyMainWindowWith(loginLoader);
         primaryStage.show();
     }

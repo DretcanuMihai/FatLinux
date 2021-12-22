@@ -154,7 +154,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     @Override
     public Iterable<FriendRequest> getFriendRequestsSentToUser(String userEmail) {
         Set<FriendRequest> friendRequests = new HashSet<>();
-        String sql = "SELECT * FROM friend_requests where receiver_email=(?)";
+        String sql = "SELECT * FROM friend_requests WHERE receiver_email = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {

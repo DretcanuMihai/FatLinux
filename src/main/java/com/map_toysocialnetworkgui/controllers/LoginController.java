@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
 import java.io.IOException;
 
 public class LoginController extends AbstractController{
@@ -21,8 +20,8 @@ public class LoginController extends AbstractController{
 
     public void login() throws IOException {
         try {
-            String email=emailTextField.getText();
-            UserUIDTO user=service.login(email, passwordTextField.getText().hashCode());
+            String email = emailTextField.getText();
+            UserUIDTO user = service.login(email, passwordTextField.getText().hashCode());
             errorLabel.setText("");
             application.changeToMain(user);
         } catch (ValidationException | AdministrationException ex) {

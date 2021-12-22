@@ -50,7 +50,9 @@ public class UserValidator implements Validator<User> {
                 || email.length() > maxSize)
             throw new ValidationException("""
                     Error:
-                    Invalid email! Must be non empty, under 50 characters and be a valid email address;
+                    Invalid email! Must be non empty,
+                    under 50 characters
+                    and be a valid email address;
                     """);
     }
 }

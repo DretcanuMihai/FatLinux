@@ -252,19 +252,21 @@ public class SuperService {
 
     /**
      * confirms a friend request based on accepted status
+     *
      * @param sender - sender's email
      * @param receiver - receiver's email
      * @param accepted - acceptance status (true is accept, false decline)
      * @throws ValidationException - if any data is invalid
      * @throws AdministrationException - if any administrative problem occurs
      */
-    public void confirmFriendRequest(String sender, String receiver, boolean accepted)throws ValidationException, AdministrationException {
-        userService.verifyEmailCollection(List.of(sender,receiver));
-        friendshipService.confirmFriendRequest(sender,receiver,accepted);
+    public void confirmFriendRequest(String sender, String receiver, boolean accepted) throws ValidationException, AdministrationException {
+        userService.verifyEmailCollection(List.of(sender, receiver));
+        friendshipService.confirmFriendRequest(sender, receiver, accepted);
     }
 
     /**
      * gets a collection of DTOs of all the friend requests sent to a user
+     *
      * @param userEmail - said user's email
      * @return said collection
      * @throws ValidationException if the user email is invalid
@@ -272,18 +274,19 @@ public class SuperService {
      */
     public Collection<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail)
             throws ValidationException, AdministrationException {
-        User sender=userService.getUserInfo(userEmail);
-        Collection<FriendRequestDTO> friendRequestDTOS=new ArrayList<>();
+        User receiver = userService.getUserInfo(userEmail);
+        Collection<FriendRequestDTO> friendRequestDTOS = new ArrayList<>();
         friendshipService.getFriendRequestsSentToUser(userEmail).forEach(
                 request-> {
-                    User receiver= userService.getUserInfo(request.getReceiver());
-                    friendRequestDTOS.add(new FriendRequestDTO(request, sender,receiver));
+                    User sender = userService.getUserInfo(request.getSender());
+                    friendRequestDTOS.add(new FriendRequestDTO(request, sender, receiver));
                 });
         return friendRequestDTOS;
     }
 
     /**
      * logs in a user
+     *
      * @param userEmail - said user's email
      * @param userPassword - said user's password
      * @throws ValidationException - if said user's email is invalid
@@ -291,7 +294,7 @@ public class SuperService {
      * @return said user
      */
     public UserUIDTO login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
-        User user=userService.login(userEmail,userPassword);
+        User user = userService.login(userEmail,userPassword);
         return new UserUIDTO(user);
     }
 }
