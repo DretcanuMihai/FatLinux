@@ -5,7 +5,7 @@ import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.entities_dto.UserServiceDTO;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
-import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class UserService {
     /**
      * associated users repo
      */
-    private final UserDBRepository usersRepo;
+    private final UserRepositoryInterface usersRepo;
     /**
      * associated user validator
      */
@@ -31,7 +31,7 @@ public class UserService {
      * @param usersRepo     - said user Repo
      * @param userValidator - said user validator
      */
-    public UserService(UserDBRepository usersRepo, UserValidator userValidator) {
+    public UserService(UserRepositoryInterface usersRepo, UserValidator userValidator) {
         this.usersRepo = usersRepo;
         this.userValidator = userValidator;
     }
@@ -177,18 +177,20 @@ public class UserService {
     /**
      * verifies if user email and password hash exists for logging in
      *
-     * @param userEmail    - said user's email
-     * @param userPassword - said user's password hash
+     *
+     * @param dto - contains username and password hash
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      * @return the user's info
      */
-    public User login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
-        userValidator.validateEmail(userEmail);
-        User found = usersRepo.get(userEmail);
+    public User login(UserServiceDTO dto) throws ValidationException, AdministrationException {
+        if(dto==null)
+            throw new ValidationException("Error: dto must be not null;\n");
+        userValidator.validateEmail(dto.getEmail());
+        User found = usersRepo.get(dto.getEmail());
 
-        if (found == null || found.getPasswordHash() != userPassword)
-            throw new AdministrationException("Invalid email or password!\n");
+        if (found == null || found.getPasswordHash() != dto.getPasswordHash())
+            throw new AdministrationException("Error: Invalid email or password!\n");
         return found;
     }
 }

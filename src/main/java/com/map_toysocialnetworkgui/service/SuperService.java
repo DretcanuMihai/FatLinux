@@ -66,7 +66,7 @@ public class SuperService {
      * disables the user with the given email
      * @param email - user email
      * @throws ValidationException if the email is invalid
-     * @throws AdministrationException if a user with said email doesn't exist
+     * @throws AdministrationException if a user with said email doesn't exist or account is already disabled
      */
     public void disableUserAccount(String email)throws ValidationException, AdministrationException {
         userService.disableUserAccount(email);
@@ -76,7 +76,7 @@ public class SuperService {
      * reactivates the user with the given email
      * @param email - user email
      * @throws ValidationException if the email is invalid
-     * @throws AdministrationException if a user with said email doesn't exist
+     * @throws AdministrationException if a user with said email doesn't exist or account is already active
      */
     public void reactivateUserAccount(String email)throws ValidationException, AdministrationException {
         userService.reactivateUserAccount(email);
@@ -86,9 +86,10 @@ public class SuperService {
      * returns the UserDTO with the information of the user identified by email
      * @param email - the user's email
      * @return the UserDTO
+     * @throws ValidationException if email is invalid
      * @throws AdministrationException if a user with said email doesn't exist
      */
-    public UserUIDTO getUserDTO(String email)throws AdministrationException {
+    public UserUIDTO getUserDTO(String email)throws ValidationException, AdministrationException {
         return new UserUIDTO(userService.getUserInfo(email));
     }
 
@@ -310,14 +311,13 @@ public class SuperService {
 
     /**
      * logs in a user
-     * @param userEmail - said user's email
-     * @param userPassword - said user's password
+     * @param dto - contains email and password hash
      * @throws ValidationException - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      * @return said user
      */
-    public UserUIDTO login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
-        User user=userService.login(userEmail, userPassword);
+    public UserUIDTO login(UserServiceDTO dto) throws ValidationException, AdministrationException {
+        User user=userService.login(dto);
         return new UserUIDTO(user);
     }
 }
