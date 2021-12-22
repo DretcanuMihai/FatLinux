@@ -29,6 +29,7 @@ public class MainApplication extends Application {
     // Loader files
     URL loginFXMLURL;
     URL mainFXMLURL;
+    URL registerFXMLURL;
     // Stages
     Stage primaryStage;
 
@@ -66,6 +67,7 @@ public class MainApplication extends Application {
     private void initURLs(){
         loginFXMLURL = getClass().getResource("views/login-view.fxml");
         mainFXMLURL = getClass().getResource("views/main-view.fxml");
+        registerFXMLURL = getClass().getResource("views/register-view.fxml");
     }
 
     private FXMLLoader initLoader(URL url) throws IOException {
@@ -88,6 +90,11 @@ public class MainApplication extends Application {
         MainController controller = mainLoader.getController();
         controller.init(user);
         modifyMainWindowWith(mainLoader);
+    }
+
+    public void changeToRegister() throws IOException {
+        FXMLLoader registerLoader = initLoader(registerFXMLURL);
+        modifyMainWindowWith(registerLoader);
     }
 
     @Override

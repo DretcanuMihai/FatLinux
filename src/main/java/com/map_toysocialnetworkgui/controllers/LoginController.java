@@ -17,7 +17,6 @@ public class LoginController extends AbstractController{
     @FXML
     Label errorLabel;
 
-
     public void login() throws IOException {
         try {
             String email = emailTextField.getText();
@@ -29,6 +28,7 @@ public class LoginController extends AbstractController{
         }
     }
 
-    public void register() {
+    public void register() throws IOException {
+        application.changeToRegister();
     }
 }
