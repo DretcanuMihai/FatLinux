@@ -272,12 +272,12 @@ public class SuperService {
      */
     public Collection<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail)
             throws ValidationException, AdministrationException {
-        User sender=userService.getUserInfo(userEmail);
+        User receiver=userService.getUserInfo(userEmail);
         Collection<FriendRequestDTO> friendRequestDTOS=new ArrayList<>();
         friendshipService.getFriendRequestsSentToUser(userEmail).forEach(
                 request-> {
-                    User receiver= userService.getUserInfo(request.getReceiver());
-                    friendRequestDTOS.add(new FriendRequestDTO(request, sender,receiver));
+                    User sender= userService.getUserInfo(request.getSender());
+                    friendRequestDTOS.add(new FriendRequestDTO(request,sender,receiver));
                 });
         return friendRequestDTOS;
     }

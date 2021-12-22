@@ -5,8 +5,8 @@ import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
-import com.map_toysocialnetworkgui.repository.with_db.FriendRequestDBRepository;
-import com.map_toysocialnetworkgui.repository.with_db.FriendshipDBRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendshipRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
@@ -20,7 +20,7 @@ public class FriendshipService {
     /**
      * associated friendship repo
      */
-    private final FriendshipDBRepository friendshipRepo;
+    private final FriendshipRepositoryInterface friendshipRepo;
     /**
      * associated friendship validator
      */
@@ -28,7 +28,7 @@ public class FriendshipService {
     /**
      * associated friend request repo
      */
-    private final FriendRequestDBRepository friendRequestRepository;
+    private final FriendRequestRepositoryInterface friendRequestRepository;
     /**
      * associated friend request validator
      */
@@ -43,8 +43,8 @@ public class FriendshipService {
      * @param friendRequestRepository - said friend request repository
      * @param friendRequestValidator  - said friend request validator
      */
-    public FriendshipService(FriendshipDBRepository friendshipRepo, FriendshipValidator friendshipValidator,
-                             FriendRequestDBRepository friendRequestRepository,
+    public FriendshipService(FriendshipRepositoryInterface friendshipRepo, FriendshipValidator friendshipValidator,
+                             FriendRequestRepositoryInterface friendRequestRepository,
                              FriendRequestValidator friendRequestValidator) {
 
         this.friendshipRepo = friendshipRepo;

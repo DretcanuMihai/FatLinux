@@ -4,7 +4,7 @@ import com.map_toysocialnetworkgui.model.entities.Message;
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.validators.MessageValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
-import com.map_toysocialnetworkgui.repository.with_db.MessageDBRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +17,7 @@ public class MessageService {
     /**
      * associated message repo
      */
-    private final MessageDBRepository messageRepo;
+    private final MessageRepositoryInterface messageRepo;
 
     /**
      * associated message validator
@@ -30,7 +30,7 @@ public class MessageService {
      * @param messageRepo      - said message repo
      * @param messageValidator - said message validator
      */
-    public MessageService(MessageDBRepository messageRepo, MessageValidator messageValidator) {
+    public MessageService(MessageRepositoryInterface messageRepo, MessageValidator messageValidator) {
         this.messageRepo = messageRepo;
         this.messageValidator = messageValidator;
     }
