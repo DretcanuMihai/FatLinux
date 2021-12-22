@@ -66,9 +66,9 @@ public class SuperService {
      * disables the user with the given email
      * @param email - user email
      * @throws ValidationException if the email is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if a user with said email doesn't exist
+     * @throws AdministrationException if a user with said email doesn't exist
      */
-    public void disableUserAccount(String email)throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public void disableUserAccount(String email)throws ValidationException, AdministrationException {
         userService.disableUserAccount(email);
     }
 
@@ -76,9 +76,9 @@ public class SuperService {
      * reactivates the user with the given email
      * @param email - user email
      * @throws ValidationException if the email is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if a user with said email doesn't exist
+     * @throws AdministrationException if a user with said email doesn't exist
      */
-    public void reactivateUserAccount(String email)throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public void reactivateUserAccount(String email)throws ValidationException, AdministrationException {
         userService.reactivateUserAccount(email);
     }
 
@@ -86,9 +86,9 @@ public class SuperService {
      * returns the UserDTO with the information of the user identified by email
      * @param email - the user's email
      * @return the UserDTO
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if a user with said email doesn't exist
+     * @throws AdministrationException if a user with said email doesn't exist
      */
-    public UserUIDTO getUserDTO(String email)throws com.map_toysocialnetworkgui.service.AdministrationException {
+    public UserUIDTO getUserDTO(String email)throws AdministrationException {
         return new UserUIDTO(userService.getUserInfo(email));
     }
 
@@ -107,11 +107,11 @@ public class SuperService {
      * @param email1 first user's email
      * @param email2 second user's email
      * @throws ValidationException if emails are invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if no users with said emails exist or if a friendship already
+     * @throws AdministrationException if no users with said emails exist or if a friendship already
      * exists between them
      */
     public void addFriendship(String email1, String email2)
-            throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+            throws ValidationException, AdministrationException {
         userService.getUserInfo(email1);
         userService.getUserInfo(email2);
         friendshipService.addFriendship(email1,email2);
@@ -123,9 +123,9 @@ public class SuperService {
      * @param email1 first user's email
      * @param email2 second user's email
      * @throws ValidationException if emails are invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if no users with said emails exist or if they aren't friends
+     * @throws AdministrationException if no users with said emails exist or if they aren't friends
      */
-    public void deleteFriendship(String email1,String email2)throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public void deleteFriendship(String email1,String email2)throws ValidationException, AdministrationException {
         userService.getUserInfo(email1);
         userService.getUserInfo(email2);
         friendshipService.deleteFriendship(email1,email2);
@@ -163,9 +163,9 @@ public class SuperService {
      * @param userEmail - the user's email
      * @return said collection
      * @throws ValidationException if email is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if user doesn't exist
+     * @throws AdministrationException if user doesn't exist
      */
-    public Collection<FriendshipDTO> getAllFriendshipDTOsOfUser(String userEmail) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public Collection<FriendshipDTO> getAllFriendshipDTOsOfUser(String userEmail) throws ValidationException, AdministrationException {
         User user = userService.getUserInfo(userEmail);
 
         return friendshipService.getUserFriendships(userEmail).stream().map(friendship -> {
@@ -185,7 +185,7 @@ public class SuperService {
      * @param month - month in which the friendship was created
      * @return a collection of said friendshipDTOs
      * @throws ValidationException if month is invalid or userEmail is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if user doesn't exist
+     * @throws AdministrationException if user doesn't exist
      */
     public Collection<FriendshipDTO> getAllFriendshipDTOsOfUserFromMonth(String userEmail, int month) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
         User user = userService.getUserInfo(userEmail);
@@ -207,7 +207,7 @@ public class SuperService {
      * @param toEmails - recipient users' emails
      * @param messageText - the text of the message
      * @throws ValidationException if any data is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if any administration problems are found
+     * @throws AdministrationException if any administration problems are found
      */
     public void sendRootMessage(String fromEmail, List<String> toEmails, String messageText)
             throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
@@ -223,10 +223,10 @@ public class SuperService {
      * @param messageText - the text of the message
      * @param parentID - the id of the parent message
      * @throws ValidationException if any data is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if any administration problems are found
+     * @throws AdministrationException if any administration problems are found
      */
     public void sendReplyMessage(String fromEmail, String messageText,Integer parentID)
-            throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+            throws ValidationException, AdministrationException {
         userService.getUserInfo(fromEmail);
         messageService.addReplyMessage(fromEmail,messageText,parentID);
     }
@@ -239,10 +239,10 @@ public class SuperService {
      * @param messageText - the text of the message
      * @param parentID - the id of the parent message
      * @throws ValidationException if any data is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if any administration problems are found
+     * @throws AdministrationException if any administration problems are found
      */
     public void sendReplyAllMessage(String fromEmail, String messageText,Integer parentID)
-            throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+            throws ValidationException, AdministrationException {
         userService.getUserInfo(fromEmail);
         messageService.addReplyAllMessage(fromEmail,messageText,parentID);
     }
@@ -253,10 +253,10 @@ public class SuperService {
      * @param email1 - first user's email
      * @param email2 - second user's email
      * @return a list of DTOs for said messages
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException if the users do not exist
+     * @throws AdministrationException if the users do not exist
      * @throws ValidationException if emails are the same
      */
-    public List<MessageDTO> getConversation(String email1, String email2) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public List<MessageDTO> getConversation(String email1, String email2) throws ValidationException, AdministrationException {
         userService.getUserInfo(email1);
         userService.getUserInfo(email2);
 
@@ -268,9 +268,9 @@ public class SuperService {
      * @param sender - sender's email
      * @param receiver - receiver's email
      * @throws ValidationException - if any data is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if any administration error occurs
+     * @throws AdministrationException - if any administration error occurs
      */
-    public void sendFriendRequest(String sender, String receiver)throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public void sendFriendRequest(String sender, String receiver)throws ValidationException, AdministrationException {
         userService.getUserInfo(sender);
         userService.getUserInfo(receiver);
         friendshipService.sendFriendRequest(sender,receiver);
@@ -282,9 +282,9 @@ public class SuperService {
      * @param receiver - receiver's email
      * @param accepted - acceptance status (true is accept, false decline)
      * @throws ValidationException - if any data is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if any administrative problem occurs
+     * @throws AdministrationException - if any administrative problem occurs
      */
-    public void confirmFriendRequest(String sender, String receiver, boolean accepted)throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public void confirmFriendRequest(String sender, String receiver, boolean accepted)throws ValidationException, AdministrationException {
         userService.getUserInfo(sender);
         userService.getUserInfo(receiver);
         friendshipService.confirmFriendRequest(sender,receiver,accepted);
@@ -295,10 +295,10 @@ public class SuperService {
      * @param userEmail - said user's email
      * @return said collection
      * @throws ValidationException if the user email is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if the user doesn't exist
+     * @throws AdministrationException - if the user doesn't exist
      */
     public Collection<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail)
-            throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+            throws ValidationException, AdministrationException {
         userService.getUserInfo(userEmail);
         return friendshipService.getFriendRequestsSentToUser(userEmail).stream()
                 .map(request-> {
@@ -313,10 +313,10 @@ public class SuperService {
      * @param userEmail - said user's email
      * @param userPassword - said user's password
      * @throws ValidationException - if said user's email is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if credentials are invalid
+     * @throws AdministrationException - if credentials are invalid
      * @return said user
      */
-    public UserUIDTO login(String userEmail, int userPassword) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public UserUIDTO login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
         User user=userService.login(userEmail, userPassword);
         return new UserUIDTO(user);
     }

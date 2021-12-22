@@ -10,17 +10,17 @@ public class User extends Entity<String> {
     /**
      * associated first name
      */
-    private final String firstName;
+    private String firstName;
 
     /**
      * associated last name
      */
-    private final String lastName;
+    private String lastName;
 
     /**
      * associated passwordHash
      */
-    private final int passwordHash;
+    private int passwordHash;
 
     /**
      * associated join date
@@ -98,6 +98,15 @@ public class User extends Entity<String> {
     }
 
     /**
+     * sets the user's first name
+     *
+     * @param firstName - new first name
+     */
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    /**
      * gets the user's last name
      *
      * @return said last name
@@ -107,12 +116,30 @@ public class User extends Entity<String> {
     }
 
     /**
+     * set the user's last name
+     *
+     * @param lastName - new last name
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    /**
      * gets user's password's hash
      *
      * @return said hash
      */
     public int getPasswordHash() {
         return passwordHash;
+    }
+
+    /**
+     * sets the user's password's hash
+     *
+     * @param passwordHash - new password hash
+     */
+    public void setPasswordHash(int passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     /**
