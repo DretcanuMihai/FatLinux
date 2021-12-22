@@ -63,8 +63,8 @@ public class MainController extends AbstractController {
         pendingTable.setItems(modelPending);
     }
 
-    public void init(String userEmail) {
-        loggedUser=service.getUserDTO(userEmail);
+    public void init(UserUIDTO user) {
+        loggedUser=user;
         welcomeLabel.setText("Welcome, " + loggedUser.getFirstName() + "!");
         updateModelUsers();
         updateModelFriends();

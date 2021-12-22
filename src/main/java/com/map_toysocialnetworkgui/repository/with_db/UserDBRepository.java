@@ -53,8 +53,7 @@ public class UserDBRepository implements UserRepositoryInterface {
         int passwordHash = resultSet.getInt("password_hash");
         LocalDate joinDate = resultSet.getDate("join_date").toLocalDate();
         String lastName = resultSet.getString("last_name");
-        int accountStatusCode = resultSet.getInt("status_code");
-        return new User(email, passwordHash, firstName, lastName, joinDate, accountStatusCode);
+        return new User(email, passwordHash, firstName, lastName, joinDate);
     }
 
     @Override
@@ -62,7 +61,7 @@ public class UserDBRepository implements UserRepositoryInterface {
         if (contains(user.getEmail()))
             return false;
         boolean toReturn = false;
-        String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date,status_code) values (?, ?, ?, ?, ?)";
+        String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date) values (?, ?, ?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
 
@@ -71,7 +70,6 @@ public class UserDBRepository implements UserRepositoryInterface {
             statementSave.setString(3, user.getFirstName());
             statementSave.setString(4, user.getLastName());
             statementSave.setDate(5, Date.valueOf(user.getJoinDate()));
-            statementSave.setInt(6, user.getAccountStatus().getStatusCode());
             statementSave.execute();
             toReturn = true;
 
@@ -103,7 +101,7 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public boolean update(User user) {
         boolean toReturn = false;
-        String sqlUpdate = "UPDATE users SET password_hash = (?),first_name = (?), last_name = (?),join_date=(?), status_code = (?) WHERE email = (?)";
+        String sqlUpdate = "UPDATE users SET password_hash = (?),first_name = (?), last_name = (?),join_date=(?) WHERE email = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
 
@@ -111,8 +109,7 @@ public class UserDBRepository implements UserRepositoryInterface {
             statementUpdate.setString(2, user.getFirstName());
             statementUpdate.setString(3, user.getLastName());
             statementUpdate.setDate(4, Date.valueOf(user.getJoinDate()));
-            statementUpdate.setInt(5, user.getAccountStatus().getStatusCode());
-            statementUpdate.setString(6, user.getEmail());
+            statementUpdate.setString(5, user.getEmail());
             int affectedRows = statementUpdate.executeUpdate();
             toReturn = (affectedRows != 0);
         } catch (SQLException e) {

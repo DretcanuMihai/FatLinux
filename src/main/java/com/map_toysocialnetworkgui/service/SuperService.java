@@ -63,33 +63,13 @@ public class SuperService {
     }
 
     /**
-     * disables the user with the given email
+     * deletes the user with the given email
      * @param email - user email
      * @throws ValidationException if the email is invalid
-     * @throws AdministrationException if a user with said email doesn't exist or account is already disabled
-     */
-    public void disableUserAccount(String email)throws ValidationException, AdministrationException {
-        userService.disableUserAccount(email);
-    }
-
-    /**
-     * reactivates the user with the given email
-     * @param email - user email
-     * @throws ValidationException if the email is invalid
-     * @throws AdministrationException if a user with said email doesn't exist or account is already active
-     */
-    public void reactivateUserAccount(String email)throws ValidationException, AdministrationException {
-        userService.reactivateUserAccount(email);
-    }
-
-    /**
-     * returns the UserDTO with the information of the user identified by email
-     * @param email - the user's email
-     * @return the UserDTO
      * @throws AdministrationException if a user with said email doesn't exist
      */
-    public UserUIDTO getUserDTO(String email)throws ValidationException, AdministrationException {
-        return new UserUIDTO(userService.getUserInfo(email));
+    public void deleteUserAccount(String email)throws ValidationException, AdministrationException {
+        userService.deleteUserAccount(email);
     }
 
     /**
@@ -103,44 +83,34 @@ public class SuperService {
     }
 
     /**
-     * creates a friendship between two users identified by their emails
-     * @param email1 first user's email
-     * @param email2 second user's email
-     * @throws ValidationException if emails are invalid
-     * @throws AdministrationException if no users with said emails exist or if a friendship already
-     * exists between them
-     */
-    public void addFriendship(String email1, String email2)
-            throws ValidationException, AdministrationException {
-        userService.getUserInfo(email1);
-        userService.getUserInfo(email2);
-        friendshipService.addFriendship(email1,email2);
-    }
-
-    /**
      * ඞ
      * deletes a friendship between two users identified by their emails
-     * @param email1 first user's email
-     * @param email2 second user's email
+     * @param requester requester's email
+     * @param friendEmail friend's email
      * @throws ValidationException if emails are invalid
-     * @throws AdministrationException if no users with said emails exist or if they aren't friends
+     * @throws AdministrationException if no users with said emails exist or if they aren't friend or
+     *                                 if the requester is disabled
      */
-    public void deleteFriendship(String email1,String email2)throws ValidationException, AdministrationException {
-        userService.getUserInfo(email1);
-        userService.getUserInfo(email2);
-        friendshipService.deleteFriendship(email1,email2);
+    public void deleteFriendship(String requester,String friendEmail)throws ValidationException, AdministrationException {
+        userService.verifyEmailCollection(List.of(requester,friendEmail));
+        friendshipService.deleteFriendship(requester,friendEmail);
     }
 
     /**
      * returns information of friendship between two users identified by email
-     * @param email1 - first user's email
-     * @param email2 - second user's email
+     * @param requester - first user's email
+     * @param friendEmail - second user's email
      * @return a FriendshipDTO with said information
+     * @throws ValidationException if any validation error occurs
+     * @throws AdministrationException if any administration error occurs
      */
-    public FriendshipDTO getFriendshipDTO(String email1, String email2) {
-        User user1=userService.getUserInfo(email1);
-        User user2=userService.getUserInfo(email2);
-        Friendship friendship=friendshipService.getFriendship(email1,email2);
+    public FriendshipDTO getFriendshipDTO(String requester, String friendEmail)
+            throws ValidationException,AdministrationException{
+
+        userService.verifyEmailCollection(List.of(requester,friendEmail));
+        User user1=userService.getUserInfo(requester);
+        User user2=userService.getUserInfo(friendEmail);
+        Friendship friendship=friendshipService.getFriendship(requester,friendEmail);
         return new FriendshipDTO(friendship,user1,user2);
     }
 
@@ -148,6 +118,7 @@ public class SuperService {
      * returns a collection of all friendship data in the form of FriendshipDTOs
      * @return said collection
      */
+    @Deprecated
     public Collection<FriendshipDTO> getAllFriendshipDTOs() {
         Collection<FriendshipDTO> friendshipDTOS=new ArrayList<>();
         friendshipService.getAllFriendships().forEach(friendship -> {
@@ -168,15 +139,17 @@ public class SuperService {
     public Collection<FriendshipDTO> getAllFriendshipDTOsOfUser(String userEmail) throws ValidationException, AdministrationException {
         User user = userService.getUserInfo(userEmail);
 
-        return friendshipService.getUserFriendships(userEmail).stream().map(friendship -> {
+        Collection<FriendshipDTO> friendshipDTOS=new ArrayList<>();
+        friendshipService.getUserFriendships(userEmail).forEach(friendship -> {
             String friendEmail = friendship.getEmails().getFirst();
 
             if(friendEmail.equals(userEmail))
                 friendEmail = friendship.getEmails().getSecond();
 
             User friend = userService.getUserInfo(friendEmail);
-            return new FriendshipDTO(friendship, user, friend);
-        }).toList();
+            friendshipDTOS.add(new FriendshipDTO(friendship, user, friend));
+        });
+        return friendshipDTOS;
     }
 
     /**
@@ -190,61 +163,61 @@ public class SuperService {
     public Collection<FriendshipDTO> getAllFriendshipDTOsOfUserFromMonth(String userEmail, int month) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
         User user = userService.getUserInfo(userEmail);
 
-        return friendshipService.getUserFriendshipsFromMonth(userEmail, month).stream().map(friendship -> {
+        Collection<FriendshipDTO> friendshipDTOS=new ArrayList<>();
+        friendshipService.getUserFriendshipsFromMonth(userEmail, month).forEach(friendship -> {
             String friendEmail = friendship.getEmails().getFirst();
 
             if(friendEmail.equals(userEmail))
                 friendEmail = friendship.getEmails().getSecond();
 
             User friend = userService.getUserInfo(friendEmail);
-            return new FriendshipDTO(friendship, user, friend);
-        }).toList();
+            friendshipDTOS.add(new FriendshipDTO(friendship, user, friend));
+        });
+        return friendshipDTOS;
     }
 
     /**
      * sends a root message (a message that isn't a reply) to some users
-     * @param fromEmail - sender user's email
-     * @param toEmails - recipient users' emails
-     * @param messageText - the text of the message
+     * @param dto - needed info
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendRootMessage(String fromEmail, List<String> toEmails, String messageText)
+    public void sendRootMessage(MessageDTO dto)
             throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
-        userService.getUserInfo(fromEmail);
-        userService.verifyEmailCollection(toEmails);
-        messageService.addRootMessage(fromEmail,toEmails,messageText);
+
+        if(dto==null)
+            throw new ValidationException("Error:dto shouldn't be null;\n");
+
+        userService.getUserInfo(dto.getFromEmail());
+        userService.verifyEmailCollection(dto.getToEmails());
+        messageService.addRootMessage(dto);
     }
 
     /**
      * sends a reply message to another message
      * the receiver will be the sender of the original message
-     * @param fromEmail - sender user's email
-     * @param messageText - the text of the message
-     * @param parentID - the id of the parent message
+     * @param dto - needed info
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendReplyMessage(String fromEmail, String messageText,Integer parentID)
+    public void sendReplyMessage(MessageDTO dto)
             throws ValidationException, AdministrationException {
-        userService.getUserInfo(fromEmail);
-        messageService.addReplyMessage(fromEmail,messageText,parentID);
+        userService.getUserInfo(dto.getFromEmail());
+        messageService.addReplyMessage(dto);
     }
 
     /**
      * sends a reply message to another message
      * the receiver will be the sender of the original message and all the original receivers
      * except the replier
-     * @param fromEmail - sender user's email
-     * @param messageText - the text of the message
-     * @param parentID - the id of the parent message
+     * @param dto - needed data
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendReplyAllMessage(String fromEmail, String messageText,Integer parentID)
+    public void sendReplyAllMessage(MessageDTO dto)
             throws ValidationException, AdministrationException {
-        userService.getUserInfo(fromEmail);
-        messageService.addReplyAllMessage(fromEmail,messageText,parentID);
+        userService.getUserInfo(dto.getFromEmail());
+        messageService.addReplyAllMessage(dto);
     }
 
     /**
@@ -259,8 +232,10 @@ public class SuperService {
     public List<MessageDTO> getConversation(String email1, String email2) throws ValidationException, AdministrationException {
         userService.getUserInfo(email1);
         userService.getUserInfo(email2);
-
-        return messageService.getConversationBetweenUsers(email1, email2);
+        List<MessageDTO> messageDTOS=new ArrayList<>();
+        messageService.getConversationBetweenUsers(email1, email2).
+                forEach(message -> messageDTOS.add(new MessageDTO(message)));
+        return messageDTOS;
     }
 
     /**
@@ -271,8 +246,7 @@ public class SuperService {
      * @throws AdministrationException - if any administration error occurs
      */
     public void sendFriendRequest(String sender, String receiver)throws ValidationException, AdministrationException {
-        userService.getUserInfo(sender);
-        userService.getUserInfo(receiver);
+        userService.verifyEmailCollection(List.of(sender,receiver));
         friendshipService.sendFriendRequest(sender,receiver);
     }
 
@@ -285,8 +259,7 @@ public class SuperService {
      * @throws AdministrationException - if any administrative problem occurs
      */
     public void confirmFriendRequest(String sender, String receiver, boolean accepted)throws ValidationException, AdministrationException {
-        userService.getUserInfo(sender);
-        userService.getUserInfo(receiver);
+        userService.verifyEmailCollection(List.of(sender,receiver));
         friendshipService.confirmFriendRequest(sender,receiver,accepted);
     }
 
@@ -299,13 +272,14 @@ public class SuperService {
      */
     public Collection<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail)
             throws ValidationException, AdministrationException {
-        userService.getUserInfo(userEmail);
-        return friendshipService.getFriendRequestsSentToUser(userEmail).stream()
-                .map(request-> {
-                    User sender= userService.getUserInfo(request.getSender());
+        User sender=userService.getUserInfo(userEmail);
+        Collection<FriendRequestDTO> friendRequestDTOS=new ArrayList<>();
+        friendshipService.getFriendRequestsSentToUser(userEmail).forEach(
+                request-> {
                     User receiver= userService.getUserInfo(request.getReceiver());
-                    return new FriendRequestDTO(request, sender,receiver);
-                }).toList();
+                    friendRequestDTOS.add(new FriendRequestDTO(request, sender,receiver));
+                });
+        return friendRequestDTOS;
     }
 
     /**

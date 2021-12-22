@@ -41,27 +41,26 @@ public class MessageService {
      * @param id - said id
      * @return said message
      * @throws ValidationException     - if id is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if no message with requested id exists
+     * @throws AdministrationException - if no message with requested id exists
      */
-    public Message getMessageBy(Integer id) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public Message getMessage(Integer id) throws ValidationException, AdministrationException {
         messageValidator.validateID(id);
         Message message = messageRepo.get(id);
         if (message == null)
-            throw new com.map_toysocialnetworkgui.service.AdministrationException("No message with given parent message id exists!;\n");
+            throw new AdministrationException("No message with given id exists!;\n");
         return message;
     }
 
     /**
      * saves a root message
      *
-     * @param fromEmail   - the sender email
-     * @param toEmails    - a list of the recipients of the message
-     * @param messageText - the message's text
+     *
+     * @param dto - needed data
      * @throws ValidationException - if the message is invalid
      * @throws AdministrationException       - if the id is already in use
      */
-    public void addRootMessage(String fromEmail, List<String> toEmails, String messageText) throws ValidationException, AdministrationException {
-        Message message = new Message(0, fromEmail, toEmails, messageText, LocalDateTime.now(), null);
+    public void addRootMessage(MessageDTO dto) throws ValidationException, AdministrationException {
+        Message message = new Message(null, dto.getFromEmail(),dto.getToEmails(),dto.getMessageText(), LocalDateTime.now(), null);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
     }
@@ -69,21 +68,19 @@ public class MessageService {
     /**
      * saves a reply message
      *
-     * @param fromEmail      - the sender email
-     * @param messageText    - the message's text
-     * @param replyMessageID - the parent message's id
+     *
+     * @param dto - needed data
      * @throws ValidationException     - if the message is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if the user is not one of the recipients
-     * @throws AdministrationException           - if the id is already in use
+     * @throws AdministrationException - if the user is not a recipient
      */
-    public void addReplyMessage(String fromEmail, String messageText, Integer replyMessageID) throws ValidationException,
-            com.map_toysocialnetworkgui.service.AdministrationException, AdministrationException {
+    public void addReplyMessage(MessageDTO dto)
+            throws ValidationException, AdministrationException {
 
-        Message parentMessage = getMessageBy(replyMessageID);
-        if (!parentMessage.getToEmails().contains(fromEmail))
-            throw new com.map_toysocialnetworkgui.service.AdministrationException("Error: User is not one of the recipients of the message!;\n");
-        Message message = new Message(0, fromEmail, List.of(parentMessage.getFromEmail()), messageText, LocalDateTime.now(),
-                replyMessageID);
+        Message parentMessage = getMessage(dto.getParentMessageId());
+        if (!parentMessage.getToEmails().contains(dto.getFromEmail()))
+            throw new AdministrationException("Error: User is not one of the recipients of the message!;\n");
+        Message message = new Message(null, dto.getFromEmail(), List.of(parentMessage.getFromEmail()), dto.getMessageText(), LocalDateTime.now(),
+                dto.getParentMessageId());
         messageValidator.validateDefault(message);
         messageRepo.save(message);
     }
@@ -91,19 +88,20 @@ public class MessageService {
     /**
      * saves a reply message sent to every person who can see the original message
      *
-     * @param fromEmail      - the sender email
-     * @param messageText    - the message's text
-     * @param replyMessageID - the parent message's id
-     * @throws ValidationException     - if the message is invalid
-     * @throws com.map_toysocialnetworkgui.service.AdministrationException - if the user is not one of the recipients
-     * @throws AdministrationException           - if the id is already in use
+     *
+     * @param dto@throws ValidationException     - if the message is invalid
+     * @throws AdministrationException - if the user is not one of the recipients
      */
-    public void addReplyAllMessage(String fromEmail, String messageText, Integer replyMessageID) throws ValidationException,
-            com.map_toysocialnetworkgui.service.AdministrationException, AdministrationException {
+    public void addReplyAllMessage(MessageDTO dto)
+            throws ValidationException, AdministrationException {
 
-        Message parentMessage = getMessageBy(replyMessageID);
-        if (!parentMessage.getToEmails().contains(fromEmail))
-            throw new com.map_toysocialnetworkgui.service.AdministrationException("Error: User is not one of the recipients of the message!;\n");
+        String fromEmail=dto.getFromEmail();
+        String messageText=dto.getMessageText();
+        Integer replyMessageID=dto.getParentMessageId();
+
+        Message parentMessage = getMessage(replyMessageID);
+        if (!parentMessage.getToEmails().contains(fromEmail) && !parentMessage.getFromEmail().equals(fromEmail))
+            throw new AdministrationException("Error: User is not one of the recipients of the message!;\n");
         List<String> receivers = parentMessage.getToEmails();
         receivers.add(parentMessage.getFromEmail());
         receivers.remove(fromEmail);
@@ -121,10 +119,9 @@ public class MessageService {
      * @return a list of DTOs for said messages
      * @throws ValidationException if the emails are the same
      */
-    public List<MessageDTO> getConversationBetweenUsers(String email1, String email2) throws ValidationException {
+    public Iterable<Message> getConversationBetweenUsers(String email1, String email2) throws ValidationException {
         if (Objects.equals(email1, email2))
             throw new ValidationException("Error: user emails must be different;\n");
-        return messageRepo.getMessagesBetweenUsersChronologically(email1, email2).stream()
-                .map(MessageDTO::new).toList();
+        return messageRepo.getMessagesBetweenUsersChronologically(email1, email2);
     }
 }

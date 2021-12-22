@@ -1,6 +1,5 @@
 package com.map_toysocialnetworkgui.service;
 
-import com.map_toysocialnetworkgui.model.entities.AccountStatus;
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.entities_dto.UserServiceDTO;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
@@ -84,8 +83,6 @@ public class UserService {
         User actualUser=usersRepo.get(dto.getEmail());
         if(actualUser==null)
             throw new AdministrationException("Error: email not in use;\n");
-        if(!actualUser.getAccountStatus().equals(AccountStatus.ACTIVE))
-            throw new AdministrationException("Error: account is disabled;\n");
         actualUser.setFirstName(dto.getFirstName());
         actualUser.setLastName(dto.getLastName());
         actualUser.setPasswordHash(dto.getPasswordHash());
@@ -93,49 +90,18 @@ public class UserService {
     }
 
     /**
-     * disables a user identified by an email
+     * deletes a user identified by an email
      *
      * @param email - said user's email
      * @throws ValidationException     - if said email is invalid
      * @throws AdministrationException - if a user with the specified email address doesn't exist
-     *                                   or if it is already disabled
      */
-    public void disableUserAccount(String email) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
-        changeUserAccountStatus(email,AccountStatus.DISABLED);
-    }
-
-    /**
-     * reactivates a user identified by an email
-     *
-     * @param email - said user's email
-     * @throws ValidationException     - if said email is invalid
-     * @throws AdministrationException - if a user with the specified email address doesn't exist
-     *                                   or if it is already disabled
-     */
-    public void reactivateUserAccount(String email) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
-        changeUserAccountStatus(email,AccountStatus.ACTIVE);
-
-    }
-
-    /**
-     * changes a user's account status (status must be valid)
-     *
-     * @param email  - said user's email
-     * @param status - the new status
-     * @throws ValidationException     - if said email is invalid
-     * @throws AdministrationException - if a user with the specified email address doesn't exist
-     */
-    private void changeUserAccountStatus(String email, AccountStatus status)
-            throws ValidationException, AdministrationException {
-
+    public void deleteUserAccount(String email) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
         userValidator.validateEmail(email);
-        User user=usersRepo.get(email);
-        if(user==null)
-            throw new AdministrationException("Error: email not in use;\n");
-        if(user.getAccountStatus().equals(status))
-            throw new AdministrationException("Error: account already "+status.name()+";\n");
-        user.setAccountStatus(status);
-        usersRepo.update(user);
+        boolean success=usersRepo.delete(email);
+        if(!success)
+            throw new AdministrationException("Error: no user with given email;\n");
+
     }
 
     /**
@@ -151,10 +117,9 @@ public class UserService {
      * verifies if a list of emails contains only emails of existing users
      *
      * @param emailList - said email list
-     * @throws ValidationException     - if any id is invalid
-     * @throws AdministrationException - if any email doesn't belong to a user
+     * @throws AdministrationException - if any email is incorrect
      */
-    public void verifyEmailCollection(Collection<String> emailList) throws ValidationException, AdministrationException {
+    public void verifyEmailCollection(Collection<String> emailList) throws AdministrationException {
         if(emailList==null)
             throw new ValidationException("Error: email list must be non null!;\n");
         List<String> errors=new ArrayList<>();
