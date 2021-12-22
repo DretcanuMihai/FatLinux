@@ -86,7 +86,6 @@ public class SuperService {
      * returns the UserDTO with the information of the user identified by email
      * @param email - the user's email
      * @return the UserDTO
-     * @throws ValidationException if email is invalid
      * @throws AdministrationException if a user with said email doesn't exist
      */
     public UserUIDTO getUserDTO(String email)throws ValidationException, AdministrationException {
@@ -311,13 +310,14 @@ public class SuperService {
 
     /**
      * logs in a user
-     * @param dto - contains email and password hash
+     * @param userEmail - said user's email
+     * @param userPassword - said user's password
      * @throws ValidationException - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      * @return said user
      */
-    public UserUIDTO login(UserServiceDTO dto) throws ValidationException, AdministrationException {
-        User user=userService.login(dto);
+    public UserUIDTO login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
+        User user=userService.login(userEmail,userPassword);
         return new UserUIDTO(user);
     }
 }

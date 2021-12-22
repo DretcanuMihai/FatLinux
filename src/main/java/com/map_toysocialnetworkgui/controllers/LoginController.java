@@ -1,6 +1,5 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.model.entities_dto.UserServiceDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.fxml.FXML;
@@ -22,7 +21,7 @@ public class LoginController extends AbstractController{
     public void login() throws IOException {
         try {
             String email=emailTextField.getText();
-            service.login(new UserServiceDTO(email,null,null,passwordTextField.getText().hashCode()));
+            service.login(email, passwordTextField.getText().hashCode());
             errorLabel.setText("");
             application.changeToMain(email);
         } catch (ValidationException | AdministrationException ex) {

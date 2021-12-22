@@ -177,20 +177,18 @@ public class UserService {
     /**
      * verifies if user email and password hash exists for logging in
      *
-     *
-     * @param dto - contains username and password hash
+     * @param userEmail - said email
+     * @param userPassword - said password hash
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      * @return the user's info
      */
-    public User login(UserServiceDTO dto) throws ValidationException, AdministrationException {
-        if(dto==null)
-            throw new ValidationException("Error: dto must be not null;\n");
-        userValidator.validateEmail(dto.getEmail());
-        User found = usersRepo.get(dto.getEmail());
+    public User login(String userEmail,int userPassword) throws ValidationException, AdministrationException {
+        userValidator.validateEmail(userEmail);
+        User found = usersRepo.get(userEmail);
 
-        if (found == null || found.getPasswordHash() != dto.getPasswordHash())
-            throw new AdministrationException("Error: Invalid email or password!\n");
+        if (found == null || found.getPasswordHash() != userPassword)
+            throw new AdministrationException("Invalid email or password!\n");
         return found;
     }
 }
