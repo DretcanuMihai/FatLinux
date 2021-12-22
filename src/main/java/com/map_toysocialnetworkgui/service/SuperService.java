@@ -294,4 +294,9 @@ public class SuperService {
         User user=userService.login(userEmail,userPassword);
         return new UserUIDTO(user);
     }
+
+    public void retractFriendRequest(String senderEmail,String receiverEmail){
+        userService.verifyEmailCollection(List.of(senderEmail,receiverEmail));
+        friendshipService.retractFriendRequest(senderEmail,receiverEmail);
+    }
 }
