@@ -97,6 +97,11 @@ public class MainApplication extends Application {
         modifyMainWindowWith(registerLoader);
     }
 
+    public void changeToLogin() throws IOException {
+        FXMLLoader loginLoader = initLoader(loginFXMLURL);
+        modifyMainWindowWith(loginLoader);
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
