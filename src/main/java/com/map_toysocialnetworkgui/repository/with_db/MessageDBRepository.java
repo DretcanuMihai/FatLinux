@@ -41,6 +41,119 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         this.password = password;
     }
 
+    @Override
+    public Message findOne(Integer id) {
+        String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
+        Message message = null;
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementGetMessage = connection.prepareStatement(sqlFind)) {
+
+            statementGetMessage.setInt(1, id);
+            ResultSet resultSetMessages = statementGetMessage.executeQuery();
+            if (resultSetMessages.next()) {
+                message = getNextFromSet(resultSetMessages);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+
+    @Override
+    public Iterable<Message> findAll() {
+        Set<Message> messages = new HashSet<>();
+        String sqlMessages = "SELECT * FROM messages";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
+
+            ResultSet resultSetMessages = statementMessages.executeQuery();
+            while (resultSetMessages.next()) {
+                Message message = getNextFromSet(resultSetMessages);
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+    @Override
+    public Message save(Message message) {
+        Message toReturn = message;
+        String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
+                "VALUES (?, ?, ?, ?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementInsertMessage = connection.prepareStatement(sqlSave, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+            statementInsertMessage.setString(1, message.getFromEmail());
+            statementInsertMessage.setString(2, message.getMessageText());
+            statementInsertMessage.setTimestamp(3, Timestamp.valueOf(message.getSendTime()));
+            if (message.getParentMessageId() != null)
+                statementInsertMessage.setInt(4, message.getParentMessageId());
+            else
+                statementInsertMessage.setNull(4, Types.INTEGER);
+
+            statementInsertMessage.executeUpdate();
+
+            // saves the list of receivers
+            int id = getMessageIDGeneratedBy(statementInsertMessage);
+            message.getToEmails().forEach(email -> saveDelivery(id, email));
+            toReturn = null;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
+    @Override
+    public Message delete(Integer id) {
+        Message toReturn = null;
+        Message message=findOne(id);
+        if(message==null)
+            return null;
+        String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
+
+            statementMessages.setInt(1, id);
+            int rows = statementMessages.executeUpdate();
+            if(rows != 0)
+                toReturn=message;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
+    @Override
+    public Message update(Message message) {
+        Message toReturn=message;
+        String sqlUpdateMessage="UPDATE messages set sender_email=(?),message_text=(?),send_time=(?),parent_message_id=(?) where message_id=(?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+
+            PreparedStatement statementUpdateMessage = connection.prepareStatement(sqlUpdateMessage);
+
+            statementUpdateMessage.setString(1,message.getFromEmail());
+            statementUpdateMessage.setString(2,message.getMessageText());
+            statementUpdateMessage.setTimestamp(3,Timestamp.valueOf(message.getSendTime()));
+            if(message.getParentMessageId()==null)
+                statementUpdateMessage.setNull(4,Types.INTEGER);
+            else
+                statementUpdateMessage.setInt(4,message.getParentMessageId());
+
+            statementUpdateMessage.setInt(5,message.getId());
+            int rows=statementUpdateMessage.executeUpdate();
+            updateDeliveriesOf(message);
+            if(rows!=0)
+                toReturn=null;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
     /**
      * extracts the current message from a ResultSet
      *
@@ -94,35 +207,6 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         return newKeys.getInt(1);
     }
 
-    @Override
-    public Message save(Message message) {
-        boolean toReturn = false;
-        String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
-                "VALUES (?, ?, ?, ?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementInsertMessage = connection.prepareStatement(sqlSave, PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-            statementInsertMessage.setString(1, message.getFromEmail());
-            statementInsertMessage.setString(2, message.getMessageText());
-            statementInsertMessage.setTimestamp(3, Timestamp.valueOf(message.getSendTime()));
-            if (message.getParentMessageId() != null)
-                statementInsertMessage.setInt(4, message.getParentMessageId());
-            else
-                statementInsertMessage.setNull(4, Types.INTEGER);
-
-            statementInsertMessage.executeUpdate();
-
-            // saves the list of receivers
-            int id = getMessageIDGeneratedBy(statementInsertMessage);
-            message.getToEmails().forEach(email -> saveDelivery(id, email));
-            toReturn = true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return toReturn;
-    }
-
     /**
      * gets the emails of the people who received the message with an id
      *
@@ -145,24 +229,6 @@ public class MessageDBRepository implements MessageRepositoryInterface {
             e.printStackTrace();
         }
         return toEmails;
-    }
-
-    @Override
-    public Message findOne(Integer id) {
-        String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
-        Message message = null;
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementGetMessage = connection.prepareStatement(sqlFind)) {
-
-            statementGetMessage.setInt(1, id);
-            ResultSet resultSetMessages = statementGetMessage.executeQuery();
-            if (resultSetMessages.next()) {
-                message = getNextFromSet(resultSetMessages);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return message;
     }
 
     /**
@@ -188,67 +254,6 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     private void updateDeliveriesOf(Message message){
         deleteDeliveriesOf(message.getId());
         message.getToEmails().forEach(email-> saveDelivery(message.getId(),email));
-    }
-
-    @Override
-    public Message update(Message message) {
-        boolean toReturn=false;
-        String sqlUpdateMessage="UPDATE messages set sender_email=(?),message_text=(?),send_time=(?),parent_message_id=(?) where message_id=(?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password)) {
-
-            PreparedStatement statementUpdateMessage = connection.prepareStatement(sqlUpdateMessage);
-
-            statementUpdateMessage.setString(1,message.getFromEmail());
-            statementUpdateMessage.setString(2,message.getMessageText());
-            statementUpdateMessage.setTimestamp(3,Timestamp.valueOf(message.getSendTime()));
-            if(message.getParentMessageId()==null)
-                statementUpdateMessage.setNull(4,Types.INTEGER);
-            else
-                statementUpdateMessage.setInt(4,message.getParentMessageId());
-
-            statementUpdateMessage.setInt(5,message.getId());
-            int rows=statementUpdateMessage.executeUpdate();
-            updateDeliveriesOf(message);
-            toReturn=(rows!=0);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return toReturn;
-    }
-
-    @Override
-    public Message delete(Integer id) {
-        boolean toReturn = false;
-        String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
-
-            statementMessages.setInt(1, id);
-            int rows = statementMessages.executeUpdate();
-            toReturn = (rows != 0);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return toReturn;
-    }
-
-    @Override
-    public Iterable<Message> findAll() {
-        Set<Message> messages = new HashSet<>();
-        String sqlMessages = "SELECT * FROM messages";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
-
-            ResultSet resultSetMessages = statementMessages.executeQuery();
-            while (resultSetMessages.next()) {
-                Message message = getNextFromSet(resultSetMessages);
-                messages.add(message);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return messages;
     }
 
     @Override

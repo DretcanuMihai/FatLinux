@@ -97,8 +97,6 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public User save(User user) {
         User toReturn = user;
-        if (findOne(user.getEmail())!= null)
-            return user;
         String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date) values (?, ?, ?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
@@ -139,8 +137,6 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public User update(User user) {
         User toReturn = user;
-        if(findOne(user.getEmail())==null)
-            return user;
         String sqlUpdate = "UPDATE users SET password_hash = (?),first_name = (?), last_name = (?),join_date=(?) WHERE email = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -158,8 +154,5 @@ public class UserDBRepository implements UserRepositoryInterface {
         }
         return toReturn;
     }
-
-
-
 
 }
