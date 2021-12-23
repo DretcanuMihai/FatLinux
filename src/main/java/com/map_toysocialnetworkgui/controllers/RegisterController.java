@@ -38,7 +38,7 @@ public class RegisterController extends AbstractController {
             registerPasswordMatchErrorLabel.setText("");
 
             if (passwordHash != confirmPasswordHash)
-                registerPasswordMatchErrorLabel.setText("Password does not match!");
+                registerPasswordMatchErrorLabel.setText("Passwords do not match!");
             else {
                 UserServiceDTO userServiceDTO = new UserServiceDTO(email, firstName, lastName, passwordHash);
                 service.createUserAccount(userServiceDTO);
@@ -58,7 +58,7 @@ public class RegisterController extends AbstractController {
         }
     }
 
-    public void cancel() throws IOException {
+    public void back() throws IOException {
         application.changeToLogin();
     }
 }
