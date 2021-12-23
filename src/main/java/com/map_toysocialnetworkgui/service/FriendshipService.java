@@ -65,8 +65,8 @@ public class FriendshipService {
     public void addFriendship(String userEmail1, String userEmail2) throws ValidationException, AdministrationException {
         Friendship friendship = new Friendship(userEmail1, userEmail2, LocalDate.now());
         friendshipValidator.validateDefault(friendship);
-        boolean success=friendshipRepo.save(friendship);
-        if(!success)
+        Friendship result=friendshipRepo.save(friendship);
+        if(result!=null)
             throw new AdministrationException("Error: users are already friends;\n");
     }
 
@@ -100,8 +100,8 @@ public class FriendshipService {
      */
     public void deleteFriendship(String userEmail1, String userEmail2) throws ValidationException, AdministrationException {
         friendshipValidator.validateEmails(userEmail1, userEmail2);
-        boolean success=friendshipRepo.delete(new UnorderedPair<>(userEmail1, userEmail2));
-        if(!success)
+        Friendship result=friendshipRepo.delete(new UnorderedPair<>(userEmail1, userEmail2));
+        if(result==null)
             throw new AdministrationException("Error: users weren't friends;\n");
     }
 
@@ -156,8 +156,8 @@ public class FriendshipService {
         if (inverse != null)
             throw new AdministrationException("Error: Can't send request! Receiver already sent request to sender;\n");
         FriendRequest friendRequest = new FriendRequest(senderEmail, receiverEmail, LocalDateTime.now());
-        boolean success=friendRequestRepository.save(friendRequest);
-        if(!success)
+        FriendRequest result=friendRequestRepository.save(friendRequest);
+        if(result!=null)
             throw new AdministrationException("Error: A friend request has already been sent!;\n");
     }
 
@@ -174,8 +174,8 @@ public class FriendshipService {
             throws ValidationException, AdministrationException {
 
         friendRequestValidator.validateEmails(senderEmail, receiverEmail);
-        boolean success=friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
-        if(!success)
+        FriendRequest result=friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
+        if(result==null)
             throw new AdministrationException("No friend request from sender to receiver exists;\n");
         if (accepted)
             friendshipRepo.save(new Friendship(senderEmail, receiverEmail, LocalDate.now()));
@@ -193,8 +193,8 @@ public class FriendshipService {
             throws ValidationException, AdministrationException {
 
         friendRequestValidator.validateEmails(senderEmail, receiverEmail);
-        boolean success=friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
-        if(!success)
+        FriendRequest result=friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
+        if(result==null)
             throw new AdministrationException("No friend request from sender to receiver exists;\n");
     }
 
