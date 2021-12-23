@@ -47,8 +47,8 @@ public class UserService {
 
         User user = new User(dto.getEmail(), dto.getPasswordHash(),dto.getFirstName(),dto.getLastName(),LocalDate.now());
         userValidator.validateDefault(user);
-        boolean success=usersRepo.save(user);
-        if(!success)
+        User result=usersRepo.save(user);
+        if(result!=null)
             throw new AdministrationException("Error: email already in use;\n");
     }
 
@@ -98,8 +98,8 @@ public class UserService {
      */
     public void deleteUserAccount(String email) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
         userValidator.validateEmail(email);
-        boolean success=usersRepo.delete(email);
-        if(!success)
+        User result=usersRepo.delete(email);
+        if(result==null)
             throw new AdministrationException("Error: no user with given email;\n");
 
     }
