@@ -40,22 +40,6 @@ public class UserDBRepository implements UserRepositoryInterface {
         this.password = password;
     }
 
-    /**
-     * gets the next User from a given Result Set
-     *
-     * @param resultSet - said set
-     * @return the next user
-     * @throws SQLException - if any problems occur
-     */
-    private User getNextFromSet(ResultSet resultSet) throws SQLException {
-        String email = resultSet.getString("email");
-        String firstName = resultSet.getString("first_name");
-        int passwordHash = resultSet.getInt("password_hash");
-        LocalDate joinDate = resultSet.getDate("join_date").toLocalDate();
-        String lastName = resultSet.getString("last_name");
-        return new User(email, passwordHash, firstName, lastName, joinDate);
-    }
-
     @Override
     public User findOne(String email) {
         User toReturn = null;
@@ -155,4 +139,19 @@ public class UserDBRepository implements UserRepositoryInterface {
         return toReturn;
     }
 
+    /**
+     * gets the next User from a given Result Set
+     *
+     * @param resultSet - said set
+     * @return the next user
+     * @throws SQLException - if any problems occur
+     */
+    private User getNextFromSet(ResultSet resultSet) throws SQLException {
+        String email = resultSet.getString("email");
+        String firstName = resultSet.getString("first_name");
+        int passwordHash = resultSet.getInt("password_hash");
+        LocalDate joinDate = resultSet.getDate("join_date").toLocalDate();
+        String lastName = resultSet.getString("last_name");
+        return new User(email, passwordHash, firstName, lastName, joinDate);
+    }
 }

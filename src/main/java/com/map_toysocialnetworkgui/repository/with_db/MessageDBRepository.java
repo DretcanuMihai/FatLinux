@@ -154,6 +154,33 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         return toReturn;
     }
 
+    @Override
+    public Iterable<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) {
+        List<Message> conversation = new ArrayList<>();
+        String sqlFilterConversationByTime = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                FROM messages m INNER JOIN message_deliveries md\s
+                ON m.message_id = md.message_id\s
+                WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
+                ORDER BY send_time""";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, userEmail1);
+            statementConversation.setString(2, userEmail2);
+            statementConversation.setString(3, userEmail2);
+            statementConversation.setString(4, userEmail1);
+            ResultSet resultSet = statementConversation.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                conversation.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conversation;
+    }
+
     /**
      * extracts the current message from a ResultSet
      *
@@ -254,32 +281,5 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     private void updateDeliveriesOf(Message message){
         deleteDeliveriesOf(message.getId());
         message.getToEmails().forEach(email-> saveDelivery(message.getId(),email));
-    }
-
-    @Override
-    public Iterable<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) {
-        List<Message> conversation = new ArrayList<>();
-        String sqlFilterConversationByTime = """
-                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
-                FROM messages m INNER JOIN message_deliveries md\s
-                ON m.message_id = md.message_id\s
-                WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
-                ORDER BY send_time""";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
-
-            statementConversation.setString(1, userEmail1);
-            statementConversation.setString(2, userEmail2);
-            statementConversation.setString(3, userEmail2);
-            statementConversation.setString(4, userEmail1);
-            ResultSet resultSet = statementConversation.executeQuery();
-            while (resultSet.next()) {
-                Message message = getNextFromSet(resultSet);
-                conversation.add(message);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return conversation;
     }
 }

@@ -38,41 +38,6 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
         this.password = password;
     }
 
-    /**
-     * gets the next Friendship from a given Result Set
-     *
-     * @param resultSet - said set
-     * @return the next friendship
-     * @throws SQLException - if any problems occur
-     */
-    private Friendship getNextFromSet(ResultSet resultSet) throws SQLException {
-        String email1 = resultSet.getString("first_user_email");
-        String email2 = resultSet.getString("second_user_email");
-        LocalDate beginDate = resultSet.getDate("begin_date").toLocalDate();
-        return new Friendship(email1, email2, beginDate);
-    }
-
-    @Override
-    public Friendship save(Friendship friendship) {
-        if (findOne(friendship.getId()) != null)
-            return false;
-        boolean toReturn = false;
-        String sqlSave = "INSERT INTO friendships(first_user_email, second_user_email, begin_date) values (?,?,?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
-
-            statementSave.setString(1, friendship.getEmails().getFirst());
-            statementSave.setString(2, friendship.getEmails().getSecond());
-            statementSave.setDate(3, Date.valueOf(friendship.getBeginDate()));
-            statementSave.execute();
-            toReturn = true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return toReturn;
-    }
-
     @Override
     public Friendship findOne(UnorderedPair<String> id) {
         Friendship toReturn = null;
@@ -114,17 +79,18 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
     }
 
     @Override
-    public Friendship update(Friendship friendship) {
-        boolean toReturn = false;
-        String sqlUpdate = "UPDATE friendships SET begin_date=(?) WHERE first_user_email = (?) and second_user_email=(?)";
+    public Friendship save(Friendship friendship) {
+        Friendship toReturn = friendship;
+        String sqlSave = "INSERT INTO friendships(first_user_email, second_user_email, begin_date) values (?,?,?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
+             PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
 
-            statementUpdate.setDate(1, Date.valueOf(friendship.getBeginDate()));
-            statementUpdate.setString(2, friendship.getEmails().getFirst());
-            statementUpdate.setString(3, friendship.getEmails().getSecond());
-            int affectedRows = statementUpdate.executeUpdate();
-            toReturn = (affectedRows != 0);
+            statementSave.setString(1, friendship.getEmails().getFirst());
+            statementSave.setString(2, friendship.getEmails().getSecond());
+            statementSave.setDate(3, Date.valueOf(friendship.getBeginDate()));
+            statementSave.execute();
+            toReturn=null;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -133,7 +99,10 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
 
     @Override
     public Friendship delete(UnorderedPair<String> id) {
-        boolean toReturn = false;
+        Friendship toReturn = null;
+        Friendship friendship=findOne(id);
+        if(friendship==null)
+            return null;
         String sqlDelete = "DELETE FROM friendships where (first_user_email=(?) and second_user_email=(?))";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
@@ -141,7 +110,27 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
             statementDelete.setString(1, id.getFirst());
             statementDelete.setString(2, id.getSecond());
             int rows = statementDelete.executeUpdate();
-            toReturn = (rows != 0);
+            if(rows != 0)
+                toReturn=friendship;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
+    @Override
+    public Friendship update(Friendship friendship) {
+        Friendship toReturn = friendship;
+        String sqlUpdate = "UPDATE friendships SET begin_date=(?) WHERE first_user_email = (?) and second_user_email=(?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
+
+            statementUpdate.setDate(1, Date.valueOf(friendship.getBeginDate()));
+            statementUpdate.setString(2, friendship.getEmails().getFirst());
+            statementUpdate.setString(3, friendship.getEmails().getSecond());
+            int affectedRows = statementUpdate.executeUpdate();
+            if(affectedRows != 0)
+                toReturn=null;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -192,5 +181,19 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
             e.printStackTrace();
         }
         return friendships;
+    }
+
+    /**
+     * gets the next Friendship from a given Result Set
+     *
+     * @param resultSet - said set
+     * @return the next friendship
+     * @throws SQLException - if any problems occur
+     */
+    private Friendship getNextFromSet(ResultSet resultSet) throws SQLException {
+        String email1 = resultSet.getString("first_user_email");
+        String email2 = resultSet.getString("second_user_email");
+        LocalDate beginDate = resultSet.getDate("begin_date").toLocalDate();
+        return new Friendship(email1, email2, beginDate);
     }
 }
