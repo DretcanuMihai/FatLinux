@@ -18,6 +18,14 @@
     -fx-text-fill: #ff7700;
 }
 
+.label#registerSuccessMessageLabel {
+    -fx-text-fill: #7CFC00;
+}
+
+.label#registerPasswordMatchErrorLabel {
+    -fx-text-fill: red;
+}
+
 .text-field {
     -fx-prompt-text-fill: gray;
     -fx-background-radius: 10px;

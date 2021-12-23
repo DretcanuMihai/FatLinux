@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="520.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.map_toysocialnetworkgui.controllers.RegisterController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="590.0" prefWidth="520.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.map_toysocialnetworkgui.controllers.RegisterController">
    <children>
       <AnchorPane prefHeight="82.0" prefWidth="520.0" style="-fx-background-color: #424043;">
          <children>
@@ -35,45 +35,55 @@
             </Label>
          </children>
       </AnchorPane>
-      <Label layoutX="92.0" layoutY="107.0" text="First name:">
+      <Label layoutX="92.0" layoutY="130.0" text="First name:">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
-      <TextField fx:id="firstNameTextField" layoutX="92.0" layoutY="134.0" prefHeight="25.0" prefWidth="336.0" promptText="First name" />
-      <Label layoutX="92.0" layoutY="174.0" text="Last name:">
+      <TextField fx:id="firstNameTextField" layoutX="92.0" layoutY="157.0" prefHeight="25.0" prefWidth="336.0" promptText="First name" />
+      <Label layoutX="92.0" layoutY="197.0" text="Last name:">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
-      <TextField fx:id="lastNameTextField" layoutX="92.0" layoutY="200.0" prefHeight="25.0" prefWidth="336.0" promptText="Last name" />
-      <Label layoutX="94.0" layoutY="238.0" text="E-mail:">
+      <TextField fx:id="lastNameTextField" layoutX="92.0" layoutY="223.0" prefHeight="25.0" prefWidth="336.0" promptText="Last name" />
+      <Label layoutX="94.0" layoutY="261.0" text="E-mail:">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
-      <TextField fx:id="emailTextField" layoutX="92.0" layoutY="264.0" prefHeight="25.0" prefWidth="336.0" promptText="E-mail" />
-      <Label layoutX="94.0" layoutY="303.0" text="Password:">
+      <TextField fx:id="emailTextField" layoutX="92.0" layoutY="287.0" prefHeight="25.0" prefWidth="336.0" promptText="E-mail" />
+      <Label layoutX="94.0" layoutY="326.0" text="Password:">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
-      <PasswordField fx:id="passwordTextField" layoutX="92.0" layoutY="330.0" prefHeight="25.0" prefWidth="336.0" promptText="Password" />
-      <Label layoutX="94.0" layoutY="365.0" text="Confirm password:">
+      <PasswordField fx:id="passwordTextField" layoutX="92.0" layoutY="353.0" prefHeight="25.0" prefWidth="336.0" promptText="Password" />
+      <Label layoutX="94.0" layoutY="388.0" text="Confirm password:">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
-      <PasswordField fx:id="confirmPasswordTextField" layoutX="92.0" layoutY="392.0" prefHeight="25.0" prefWidth="336.0" promptText="Confirm password" />
-      <Button fx:id="signUpButton" layoutX="92.0" layoutY="454.0" mnemonicParsing="false" onAction="#signUp" prefHeight="26.0" prefWidth="336.0" text="Sign up">
+      <PasswordField fx:id="confirmPasswordTextField" layoutX="92.0" layoutY="415.0" prefHeight="25.0" prefWidth="336.0" promptText="Confirm password" />
+      <Button fx:id="signUpButton" layoutX="92.0" layoutY="479.0" mnemonicParsing="false" onAction="#signUp" prefHeight="26.0" prefWidth="336.0" text="Sign up">
          <font>
             <Font size="13.0" />
          </font>
       </Button>
-      <Button fx:id="cancelButton" layoutX="92.0" layoutY="494.0" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="336.0" text="Cancel">
+      <Button fx:id="cancelButton" layoutX="92.0" layoutY="519.0" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="336.0" text="Cancel">
          <font>
             <Font size="13.0" />
          </font>
       </Button>
+      <Label fx:id="registerSuccessMessageLabel" alignment="CENTER" layoutX="14.0" layoutY="100.0" prefHeight="19.0" prefWidth="492.0">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <Label fx:id="registerPasswordMatchErrorLabel" alignment="CENTER" layoutX="93.0" layoutY="389.0" prefHeight="18.0" prefWidth="426.0">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
