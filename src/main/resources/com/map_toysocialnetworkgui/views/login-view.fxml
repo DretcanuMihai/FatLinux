@@ -8,13 +8,14 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="520.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.map_toysocialnetworkgui.controllers.LoginController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="432.0" prefWidth="520.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.map_toysocialnetworkgui.controllers.LoginController">
    <left>
       <AnchorPane prefHeight="407.0" prefWidth="228.0" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fitHeight="400.0" fitWidth="227.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="400.0" fitWidth="227.0" layoutY="-8.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../images/loginLeftSide.png" />
                </image>
@@ -22,32 +23,67 @@
          </children>
       </AnchorPane>
    </left>
-   <right>
+   <top>
+      <AnchorPane prefHeight="40.0" prefWidth="520.0" BorderPane.alignment="CENTER">
+         <children>
+            <Pane fx:id="titleBar" prefHeight="40.0" prefWidth="520.0" style="-fx-background-color: #202020;">
+               <children>
+                  <ImageView fx:id="appExitButton" fitHeight="22.0" fitWidth="22.0" layoutX="484.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/closeNormal.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="appMaximizeButton" fitHeight="22.0" fitWidth="22.0" layoutX="453.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/maxNormal.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="appMinimizeButton" fitHeight="22.0" fitWidth="22.0" layoutX="422.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/minNormal.png" />
+                     </image>
+                  </ImageView>
+                  <Label layoutX="42.0" layoutY="11.0" text="FATLinux Login">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <ImageView fitHeight="22.0" fitWidth="22.0" layoutX="14.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/tuxAppIcon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </Pane>
+         </children>
+      </AnchorPane>
+   </top>
+   <center>
       <AnchorPane prefHeight="400.0" prefWidth="332.0" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fitHeight="32.0" fitWidth="46.0" layoutX="119.0" layoutY="51.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="32.0" fitWidth="46.0" layoutX="125.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../images/loginLock.png" />
                </image>
             </ImageView>
-            <Label layoutX="14.0" layoutY="124.0" text="Email:">
+            <Label layoutX="20.0" layoutY="105.0" text="Email:">
                <font>
                   <Font size="13.0" />
                </font>
             </Label>
-            <TextField fx:id="emailTextField" layoutX="80.0" layoutY="121.0" prefHeight="26.0" prefWidth="173.0" promptText="Email" />
-            <Label layoutX="14.0" layoutY="165.0" text="Password:">
+            <TextField fx:id="emailTextField" layoutX="86.0" layoutY="102.0" prefHeight="26.0" prefWidth="173.0" promptText="Email" />
+            <Label layoutX="20.0" layoutY="146.0" text="Password:">
                <font>
                   <Font size="13.0" />
                </font>
             </Label>
-            <PasswordField fx:id="passwordTextField" layoutX="80.0" layoutY="161.0" prefHeight="26.0" prefWidth="173.0" promptText="Password" />
-            <Button fx:id="loginButton" layoutX="26.0" layoutY="303.0" mnemonicParsing="false" onAction="#login" prefHeight="32.0" prefWidth="240.0" text="Login" textFill="WHITE">
+            <PasswordField fx:id="passwordTextField" layoutX="86.0" layoutY="142.0" prefHeight="26.0" prefWidth="173.0" promptText="Password" />
+            <Button fx:id="loginButton" layoutX="32.0" layoutY="284.0" mnemonicParsing="false" onAction="#login" prefHeight="32.0" prefWidth="240.0" text="Login" textFill="WHITE">
                <font>
                   <Font size="13.0" />
                </font>
             </Button>
-            <Button fx:id="registerButton" layoutX="26.0" layoutY="354.0" mnemonicParsing="false" onAction="#register" prefHeight="32.0" prefWidth="240.0" text="Register" textFill="WHITE">
+            <Button fx:id="registerButton" layoutX="32.0" layoutY="329.0" mnemonicParsing="false" onAction="#register" prefHeight="32.0" prefWidth="240.0" text="Register" textFill="WHITE">
                <font>
                   <Font size="13.0" />
                </font>
@@ -59,5 +95,5 @@
             </Label>
          </children>
       </AnchorPane>
-   </right>
+   </center>
 </BorderPane>

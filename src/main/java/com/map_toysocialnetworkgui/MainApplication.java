@@ -16,10 +16,14 @@ import com.map_toysocialnetworkgui.service.MessageService;
 import com.map_toysocialnetworkgui.service.SuperService;
 import com.map_toysocialnetworkgui.service.UserService;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -32,12 +36,6 @@ public class MainApplication extends Application {
     URL registerFXMLURL;
     // Stages
     Stage primaryStage;
-
-    @Override
-    public void init() {
-        initService();
-        initURLs();
-    }
 
     private void initService() {
         // Repositories
@@ -64,10 +62,16 @@ public class MainApplication extends Application {
         this.service = new SuperService(userService, friendshipService, messageService);
     }
 
-    private void initURLs(){
+    private void initURLs() {
         loginFXMLURL = getClass().getResource("views/login-view.fxml");
         mainFXMLURL = getClass().getResource("views/main-view.fxml");
         registerFXMLURL = getClass().getResource("views/register-view.fxml");
+    }
+
+    @Override
+    public void init() {
+        initService();
+        initURLs();
     }
 
     private FXMLLoader initLoader(URL url) throws IOException {
@@ -105,7 +109,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
-        primaryStage.setTitle("FatLinuxApplication");
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         FXMLLoader loginLoader = initLoader(loginFXMLURL);
         modifyMainWindowWith(loginLoader);
         primaryStage.show();
