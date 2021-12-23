@@ -45,7 +45,7 @@ public class MessageService {
      */
     public Message getMessage(Integer id) throws ValidationException, AdministrationException {
         messageValidator.validateID(id);
-        Message message = messageRepo.get(id);
+        Message message = messageRepo.findOne(id);
         if (message == null)
             throw new AdministrationException("No message with given id exists!;\n");
         return message;

@@ -83,7 +83,7 @@ public class FriendshipService {
     public Friendship getFriendship(String userEmail1, String userEmail2)
             throws ValidationException, AdministrationException {
         friendshipValidator.validateEmails(userEmail1, userEmail2);
-        Friendship friendship = friendshipRepo.get(new UnorderedPair<>(userEmail1, userEmail2));
+        Friendship friendship = friendshipRepo.findOne(new UnorderedPair<>(userEmail1, userEmail2));
         if (friendship == null)
             throw new AdministrationException("Error: Users aren't friends!\n");
         return friendship;
@@ -111,7 +111,7 @@ public class FriendshipService {
      * @return a collection of said friendships
      */
     public Iterable<Friendship> getAllFriendships() {
-        return friendshipRepo.getAll();
+        return friendshipRepo.findAll();
     }
 
     /**
@@ -150,9 +150,9 @@ public class FriendshipService {
      */
     public void sendFriendRequest(String senderEmail, String receiverEmail) throws ValidationException, AdministrationException {
         friendRequestValidator.validateEmails(senderEmail, receiverEmail);
-        if (friendshipRepo.get(new UnorderedPair<>(senderEmail, receiverEmail)) != null)
+        if (friendshipRepo.findOne(new UnorderedPair<>(senderEmail, receiverEmail)) != null)
             throw new AdministrationException("Error: Users are already friends;\n");
-        FriendRequest inverse = friendRequestRepository.get(new Pair<>(receiverEmail, senderEmail));
+        FriendRequest inverse = friendRequestRepository.findOne(new Pair<>(receiverEmail, senderEmail));
         if (inverse != null)
             throw new AdministrationException("Error: Can't send request! Receiver already sent request to sender;\n");
         FriendRequest friendRequest = new FriendRequest(senderEmail, receiverEmail, LocalDateTime.now());
@@ -204,7 +204,7 @@ public class FriendshipService {
      * @return a collection of said friend requests
      */
     public Iterable<FriendRequest> getAllFriendRequests() {
-        return friendRequestRepository.getAll();
+        return friendRequestRepository.findAll();
     }
 
     /**

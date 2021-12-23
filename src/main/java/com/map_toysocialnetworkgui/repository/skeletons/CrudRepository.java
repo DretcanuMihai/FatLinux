@@ -17,7 +17,7 @@ public interface CRUDRepository<ID, E extends Entity<ID>> {
      * @param e - said entity
      * @return true if the operation was successful, false otherwise
      */
-    boolean save(E e);
+    E save(E e);
 
     /**
      * gets the entity with specified id from repo
@@ -25,24 +25,14 @@ public interface CRUDRepository<ID, E extends Entity<ID>> {
      * @param id - said id
      * @return the entity if it exists, null otherwise
      */
-    E get(ID id);
+    E findOne(ID id);
 
     /**
      * gets all the entities in the repo
      *
      * @return a collection of said entities
      */
-    Iterable<E> getAll();
-
-    /**
-     * checks if an entity with a specified id exists in repo
-     *
-     * @param id - said id
-     * @return true if it exists, false otherwise
-     */
-    default boolean contains(ID id) {
-        return get(id) != null;
-    }
+    Iterable<E> findAll();
 
     /**
      * updates the entry in repo with the same id as an entity with said entity
@@ -50,7 +40,7 @@ public interface CRUDRepository<ID, E extends Entity<ID>> {
      * @param e - said entity
      * @return true if the operation was successful, false otherwise
      */
-    boolean update(E e);
+    E update(E e);
 
     /**
      * deletes the entity with the given id from the repository
@@ -58,5 +48,5 @@ public interface CRUDRepository<ID, E extends Entity<ID>> {
      * @param id - said id
      * @return true if the operation was successful, false otherwise
      */
-    boolean delete(ID id);
+    E delete(ID id);
 }

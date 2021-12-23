@@ -62,7 +62,7 @@ public class UserService {
      */
     public User getUserInfo(String email) throws ValidationException, AdministrationException {
         userValidator.validateEmail(email);
-        User user = usersRepo.get(email);
+        User user = usersRepo.findOne(email);
         if (user == null)
             throw new AdministrationException("Error: email not in use;\n");
         return user;
@@ -80,7 +80,7 @@ public class UserService {
 
         User user = new User(dto.getEmail(), dto.getPasswordHash(),dto.getFirstName(),dto.getLastName(),null);
         userValidator.validateDefault(user);
-        User actualUser=usersRepo.get(dto.getEmail());
+        User actualUser=usersRepo.findOne(dto.getEmail());
         if(actualUser==null)
             throw new AdministrationException("Error: email not in use;\n");
         actualUser.setFirstName(dto.getFirstName());
@@ -110,7 +110,7 @@ public class UserService {
      * @return said collection
      */
     public Iterable<User> getAllUsers() {
-        return usersRepo.getAll();
+        return usersRepo.findAll();
     }
 
     /**
@@ -150,7 +150,7 @@ public class UserService {
      */
     public User login(String userEmail,int userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
-        User found = usersRepo.get(userEmail);
+        User found = usersRepo.findOne(userEmail);
 
         if (found == null || found.getPasswordHash() != userPassword)
             throw new AdministrationException("Invalid email or password!\n");

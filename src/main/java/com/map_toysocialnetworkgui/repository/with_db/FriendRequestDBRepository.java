@@ -55,8 +55,8 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     }
 
     @Override
-    public boolean save(FriendRequest friendRequest) {
-        if (contains(friendRequest.getId()))
+    public FriendRequest save(FriendRequest friendRequest) {
+        if (findOne(friendRequest.getId()) != null)
             return false;
         boolean toReturn = false;
         String sqlSave = "INSERT INTO friend_requests(sender_email, receiver_email, send_time) VALUES (?, ?, ?)";
@@ -76,7 +76,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     }
 
     @Override
-    public FriendRequest get(Pair<String, String> id) {
+    public FriendRequest findOne(Pair<String, String> id) {
         FriendRequest toReturn = null;
         String sqlFind = "SELECT * FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
 
@@ -97,7 +97,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     }
 
     @Override
-    public Iterable<FriendRequest> getAll() {
+    public Iterable<FriendRequest> findAll() {
         Set<FriendRequest> friendRequests = new HashSet<>();
         String sql = "SELECT * FROM friend_requests";
 
@@ -117,7 +117,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     }
 
     @Override
-    public boolean update(FriendRequest friendRequest) {
+    public FriendRequest update(FriendRequest friendRequest) {
         boolean toReturn = false;
         String sqlUpdate = "UPDATE friend_requests SET send_time=(?) WHERE sender_email = (?) and receiver_email=(?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -135,7 +135,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     }
 
     @Override
-    public boolean delete(Pair<String, String> id) {
+    public FriendRequest delete(Pair<String, String> id) {
         boolean toReturn = false;
         String sqlDelete = "DELETE FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
         try (Connection connection = DriverManager.getConnection(url, username, password);

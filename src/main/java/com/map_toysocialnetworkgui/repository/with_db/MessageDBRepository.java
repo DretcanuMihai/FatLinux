@@ -95,7 +95,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     }
 
     @Override
-    public boolean save(Message message) {
+    public Message save(Message message) {
         boolean toReturn = false;
         String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
                 "VALUES (?, ?, ?, ?)";
@@ -148,7 +148,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     }
 
     @Override
-    public Message get(Integer id) {
+    public Message findOne(Integer id) {
         String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
         Message message = null;
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -191,7 +191,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     }
 
     @Override
-    public boolean update(Message message) {
+    public Message update(Message message) {
         boolean toReturn=false;
         String sqlUpdateMessage="UPDATE messages set sender_email=(?),message_text=(?),send_time=(?),parent_message_id=(?) where message_id=(?)";
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
@@ -218,7 +218,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     }
 
     @Override
-    public boolean delete(Integer id) {
+    public Message delete(Integer id) {
         boolean toReturn = false;
         String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -234,7 +234,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     }
 
     @Override
-    public Iterable<Message> getAll() {
+    public Iterable<Message> findAll() {
         Set<Message> messages = new HashSet<>();
         String sqlMessages = "SELECT * FROM messages";
         try (Connection connection = DriverManager.getConnection(url, username, password);

@@ -57,8 +57,8 @@ public class UserDBRepository implements UserRepositoryInterface {
     }
 
     @Override
-    public boolean save(User user) {
-        if (contains(user.getEmail()))
+    public User save(User user) {
+        if (findOne(user.getEmail()) != null)
             return false;
         boolean toReturn = false;
         String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date) values (?, ?, ?, ?, ?)";
@@ -80,7 +80,7 @@ public class UserDBRepository implements UserRepositoryInterface {
     }
 
     @Override
-    public User get(String email) {
+    public User findOne(String email) {
         User toReturn = null;
         String sqlFind = "SELECT * FROM users WHERE email = (?)";
 
@@ -99,7 +99,7 @@ public class UserDBRepository implements UserRepositoryInterface {
     }
 
     @Override
-    public boolean update(User user) {
+    public User update(User user) {
         boolean toReturn = false;
         String sqlUpdate = "UPDATE users SET password_hash = (?),first_name = (?), last_name = (?),join_date=(?) WHERE email = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -119,7 +119,7 @@ public class UserDBRepository implements UserRepositoryInterface {
     }
 
     @Override
-    public boolean delete(String id) {
+    public User delete(String id) {
         boolean toReturn = false;
         String sqlDelete = "DELETE FROM users WHERE email = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -134,7 +134,7 @@ public class UserDBRepository implements UserRepositoryInterface {
     }
 
     @Override
-    public Iterable<User> getAll() {
+    public Iterable<User> findAll() {
         Set<User> users = new HashSet<>();
         String sql = "SELECT * FROM users";
         try (Connection connection = DriverManager.getConnection(url, username, password);

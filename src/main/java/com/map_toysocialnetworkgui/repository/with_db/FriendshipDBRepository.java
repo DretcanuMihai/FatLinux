@@ -53,8 +53,8 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
     }
 
     @Override
-    public boolean save(Friendship friendship) {
-        if (contains(friendship.getId()))
+    public Friendship save(Friendship friendship) {
+        if (findOne(friendship.getId()) != null)
             return false;
         boolean toReturn = false;
         String sqlSave = "INSERT INTO friendships(first_user_email, second_user_email, begin_date) values (?,?,?)";
@@ -74,7 +74,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
     }
 
     @Override
-    public Friendship get(UnorderedPair<String> id) {
+    public Friendship findOne(UnorderedPair<String> id) {
         Friendship toReturn = null;
         String sqlFind = "SELECT * from friendships where (first_user_email=(?) and second_user_email=(?))";
 
@@ -95,7 +95,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
     }
 
     @Override
-    public Iterable<Friendship> getAll() {
+    public Iterable<Friendship> findAll() {
         Set<Friendship> friendships = new HashSet<>();
         String sql = "SELECT * from friendships";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -114,7 +114,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
     }
 
     @Override
-    public boolean update(Friendship friendship) {
+    public Friendship update(Friendship friendship) {
         boolean toReturn = false;
         String sqlUpdate = "UPDATE friendships SET begin_date=(?) WHERE first_user_email = (?) and second_user_email=(?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -132,7 +132,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
     }
 
     @Override
-    public boolean delete(UnorderedPair<String> id) {
+    public Friendship delete(UnorderedPair<String> id) {
         boolean toReturn = false;
         String sqlDelete = "DELETE FROM friendships where (first_user_email=(?) and second_user_email=(?))";
         try (Connection connection = DriverManager.getConnection(url, username, password);
