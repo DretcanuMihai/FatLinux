@@ -1,52 +1,68 @@
 package com.map_toysocialnetworkgui.repository.skeletons;
 
-import com.map_toysocialnetworkgui.model.entities.Entity;
+
+import com.map_toysocialnetworkgui.model.validators.ValidationException;
 
 /**
- * the interface of a generic repository for entities
- * contains all CRUD operations
- *
- * @param <ID> - entity id type
- * @param <E>  - entity type
+ * CRUD operations repository interface
+ * @param <ID> - type E must have an attribute of type ID
+ * @param <E> -  type of entities saved in repository
  */
-public interface CRUDRepository<ID, E extends Entity<ID>> {
+
+public interface CrudRepository<ID, E> {
 
     /**
-     * saves an entity in the repo
      *
-     * @param e - said entity
-     * @return true if the operation was successful, false otherwise
+     * @param id -the id of the entity to be returned
+     *           id must not be null
+     * @return the entity with the specified id
+     *          or null - if there is no entity with the given id
+     * @throws IllegalArgumentException
+     *                  if id is null.
      */
-    E save(E e);
+    E findOne(ID id) throws IllegalArgumentException;
 
     /**
-     * gets the entity with specified id from repo
      *
-     * @param id - said id
-     * @return the entity if it exists, null otherwise
-     */
-    E findOne(ID id);
-
-    /**
-     * gets all the entities in the repo
-     *
-     * @return a collection of said entities
+     * @return all entities
      */
     Iterable<E> findAll();
 
     /**
-     * updates the entry in repo with the same id as an entity with said entity
      *
-     * @param e - said entity
-     * @return true if the operation was successful, false otherwise
+     * @param entity
+     *         entity must be not null
+     * @return null- if the given entity is saved
+     *         otherwise returns the entity (id already exists)
+     * @throws ValidationException
+     *            if the entity is not valid
+     * @throws IllegalArgumentException
+     *             if the given entity is null.     *
      */
-    E update(E e);
+    E save(E entity);
+
 
     /**
-     * deletes the entity with the given id from the repository
-     *
-     * @param id - said id
-     * @return true if the operation was successful, false otherwise
+     *  removes the entity with the specified id
+     * @param id
+     *      id must be not null
+     * @return the removed entity or null if there is no entity with the given id
+     * @throws IllegalArgumentException
+     *                   if the given id is null.
      */
     E delete(ID id);
+
+    /**
+     *
+     * @param entity
+     *          entity must not be null
+     * @return null - if the entity is updated,
+     *                otherwise  returns the entity  - (e.g id does not exist).
+     * @throws IllegalArgumentException
+     *             if the given entity is null.
+     * @throws ValidationException
+     *             if the entity is not valid.
+     */
+    E update(E entity);
+
 }
