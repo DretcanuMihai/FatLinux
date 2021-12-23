@@ -38,8 +38,8 @@
 }
 
 .button#loginButton:hover {
-    -fx-background-color: white;
-    -fx-text-fill: #ff7700;
+    -fx-background-color: #F04A00;
+
 }
 
 .button#registerButton {
@@ -47,8 +47,7 @@
 }
 
 .button#registerButton:hover {
-    -fx-background-color: white;
-    -fx-text-fill: #000000;
+    -fx-background-color: #424043;
 }
 
 .button#signUpButton {
@@ -56,8 +55,7 @@
 }
 
 .button#signUpButton:hover {
-    -fx-background-color: white;
-    -fx-text-fill: #ff7700;
+    -fx-background-color: #F04A00;
 }
 
 .button#cancelButton {
@@ -65,8 +63,7 @@
 }
 
 .button#cancelButton:hover {
-    -fx-background-color: white;
-    -fx-text-fill: #000000;
+    -fx-background-color: #424043;
 }
 
 .separator *.line {
