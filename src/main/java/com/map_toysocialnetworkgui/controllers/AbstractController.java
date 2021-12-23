@@ -27,7 +27,7 @@ public class AbstractController {
     @FXML
     public void initialize() {
         titleBar.setOnMousePressed(pressEvent -> titleBar.setOnMouseDragged(dragEvent -> {
-            Stage stage = (Stage)((Pane)dragEvent.getSource()).getScene().getWindow();
+            Stage stage = (Stage) ((Pane) dragEvent.getSource()).getScene().getWindow();
             stage.setX(dragEvent.getScreenX() - pressEvent.getSceneX());
             stage.setY(dragEvent.getScreenY() - pressEvent.getSceneY());
         }));
@@ -46,7 +46,7 @@ public class AbstractController {
             appExitButton.setImage(exitButtonImage);
         });
         appMinimizeButton.setOnMouseClicked(event -> {
-            Stage stage = (Stage)((ImageView)event.getSource()).getScene().getWindow();
+            Stage stage = (Stage) ((ImageView) event.getSource()).getScene().getWindow();
             stage.setIconified(true);
         });
         appMinimizeButton.setOnMouseEntered(event -> {
@@ -56,7 +56,7 @@ public class AbstractController {
             appMinimizeButton.setImage(minimizeButtonImage);
         });
         appMaximizeButton.setOnMouseClicked(event -> {
-            Stage stage = (Stage)((ImageView)event.getSource()).getScene().getWindow();
+            Stage stage = (Stage) ((ImageView) event.getSource()).getScene().getWindow();
             stage.setMaximized(!stage.isMaximized());
         });
         appMaximizeButton.setOnMouseEntered(event -> {
@@ -71,7 +71,7 @@ public class AbstractController {
         this.service = service;
     }
 
-    public void setApplication(MainApplication application){
-        this.application=application;
+    public void setApplication(MainApplication application) {
+        this.application = application;
     }
 }
