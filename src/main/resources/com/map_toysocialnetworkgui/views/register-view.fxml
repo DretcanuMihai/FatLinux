@@ -66,12 +66,12 @@
          </font>
       </Label>
       <PasswordField fx:id="confirmPasswordTextField" layoutX="92.0" layoutY="449.0" prefHeight="25.0" prefWidth="336.0" promptText="Confirm password" />
-      <Button fx:id="signUpButton" layoutX="92.0" layoutY="513.0" mnemonicParsing="false" onAction="#signUp" prefHeight="26.0" prefWidth="336.0" text="Sign up">
+      <Button fx:id="signUpButton" layoutX="92.0" layoutY="513.0" mnemonicParsing="false" onAction="#signUp" prefHeight="26.0" prefWidth="336.0" styleClass="registerButtons" text="Sign up">
          <font>
             <Font size="13.0" />
          </font>
       </Button>
-      <Button fx:id="backButton" layoutX="92.0" layoutY="553.0" mnemonicParsing="false" onAction="#back" prefHeight="26.0" prefWidth="336.0" text="Back">
+      <Button fx:id="backButton" layoutX="92.0" layoutY="553.0" mnemonicParsing="false" onAction="#back" prefHeight="26.0" prefWidth="336.0" styleClass="registerButtons" text="Back">
          <font>
             <Font size="13.0" />
          </font>

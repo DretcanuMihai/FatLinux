@@ -36,43 +36,6 @@
     -fx-font-size: 18px;
 }
 
-.button {
-    -fx-focus-traversable: false;
-    -fx-background-radius: 10px;
-}
-
-.button#loginButton {
-    -fx-background-color: #ff7700;
-}
-
-.button#loginButton:hover {
-    -fx-background-color: #F04A00;
-}
-
-.button#registerButton {
-    -fx-background-color: #000000;
-}
-
-.button#registerButton:hover {
-    -fx-background-color: #424043;
-}
-
-.button#signUpButton {
-    -fx-background-color: #ff7700;
-}
-
-.button#signUpButton:hover {
-    -fx-background-color: #F04A00;
-}
-
-.button#backButton {
-    -fx-background-color: #000000;
-}
-
-.button#backButton:hover {
-    -fx-background-color: #424043;
-}
-
 .separator *.line {
     -fx-background-color: #3C3C3C;
     -fx-border-style: solid;
@@ -117,4 +80,51 @@
 
 .password-field {
     -fx-background-radius: 10px;
+}
+
+.loginButtons, .registerButtons {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+}
+
+.button#loginButton {
+    -fx-background-color: #ff7700;
+}
+
+.button#loginButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.button#registerButton {
+    -fx-background-color: #000000;
+}
+
+.button#registerButton:hover {
+    -fx-background-color: #424043;
+}
+
+.button#signUpButton {
+    -fx-background-color: #ff7700;
+}
+
+.button#signUpButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.button#backButton {
+    -fx-background-color: #000000;
+}
+
+.button#backButton:hover {
+    -fx-background-color: #424043;
+}
+
+.sideBarItem {
+    -fx-text-fill: #ff7700;
+}
+
+.sideBarItem:hover {
+    -fx-background-color: black;
+    -fx-border-color: #ff7700;
+    -fx-border-width: 0px 0px 0px 3px;
 }

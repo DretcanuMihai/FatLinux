@@ -78,17 +78,17 @@
                </font>
             </Label>
             <PasswordField fx:id="passwordTextField" layoutX="86.0" layoutY="142.0" prefHeight="26.0" prefWidth="173.0" promptText="Password" />
-            <Button fx:id="loginButton" layoutX="32.0" layoutY="284.0" mnemonicParsing="false" onAction="#login" prefHeight="32.0" prefWidth="240.0" text="Login" textFill="WHITE">
+            <Button fx:id="loginButton" layoutX="32.0" layoutY="284.0" mnemonicParsing="false" onAction="#login" prefHeight="32.0" prefWidth="240.0" styleClass="loginButtons" text="Log In" textFill="WHITE">
                <font>
                   <Font size="13.0" />
                </font>
             </Button>
-            <Button fx:id="registerButton" layoutX="32.0" layoutY="329.0" mnemonicParsing="false" onAction="#register" prefHeight="32.0" prefWidth="240.0" text="Register" textFill="WHITE">
+            <Button fx:id="registerButton" layoutX="32.0" layoutY="329.0" mnemonicParsing="false" onAction="#register" prefHeight="32.0" prefWidth="240.0" styleClass="loginButtons" text="Register" textFill="WHITE">
                <font>
                   <Font size="13.0" />
                </font>
             </Button>
-            <Label fx:id="errorLabel" alignment="CENTER" layoutX="7.0" layoutY="200.0" prefHeight="83.0" prefWidth="278.0" textFill="RED">
+            <Label fx:id="errorLabel" alignment="CENTER" layoutX="7.0" layoutY="183.0" prefHeight="83.0" prefWidth="278.0" textFill="RED">
                <font>
                   <Font size="13.0" />
                </font>

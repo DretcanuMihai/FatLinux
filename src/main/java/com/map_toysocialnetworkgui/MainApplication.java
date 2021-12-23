@@ -16,11 +16,9 @@ import com.map_toysocialnetworkgui.service.MessageService;
 import com.map_toysocialnetworkgui.service.SuperService;
 import com.map_toysocialnetworkgui.service.UserService;
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 

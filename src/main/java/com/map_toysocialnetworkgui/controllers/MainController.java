@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class MainController extends AbstractController {
     //Data
     UserUIDTO loggedUser;
+    /*
     ObservableList<UserUIDTO> modelUsers = FXCollections.observableArrayList();
     ObservableList<UserUIDTO> modelFriends = FXCollections.observableArrayList();
     ObservableList<FriendRequestDTO> modelPending = FXCollections.observableArrayList();
@@ -62,15 +63,17 @@ public class MainController extends AbstractController {
         friendsTable.setItems(modelFriends);
         pendingTable.setItems(modelPending);
     }
-
+    */
     public void init(UserUIDTO user) {
         loggedUser=user;
+        /*
         welcomeLabel.setText("Welcome, " + loggedUser.getFirstName() + "!");
         updateModelUsers();
         updateModelFriends();
         updateModelPending();
+        */
     }
-
+    /*
     private void updateModelUsers() {
         modelUsers.setAll(new ArrayList<>(service.getAllUserDTOs()));
     }
@@ -151,4 +154,5 @@ public class MainController extends AbstractController {
     public void decline() {
         confirm(false);
     }
+     */
 }
