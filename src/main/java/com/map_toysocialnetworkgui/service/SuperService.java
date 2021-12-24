@@ -312,6 +312,6 @@ public class SuperService {
 
     public void retractFriendRequest(String senderEmail,String receiverEmail){
         userService.verifyEmailCollection(List.of(senderEmail,receiverEmail));
-        friendshipService.retractFriendRequest(senderEmail,receiverEmail);
+        friendRequestService.deleteFriendRequest(senderEmail,receiverEmail);
     }
 }

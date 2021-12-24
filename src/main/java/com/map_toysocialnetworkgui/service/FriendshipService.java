@@ -141,23 +141,6 @@ public class FriendshipService {
     }
 
     /**
-     * retracts the friend request sent by a sender to a receiver
-     *
-     * @param senderEmail   - sender's email
-     * @param receiverEmail - receiver's email
-     * @throws ValidationException     - if any data is invalid
-     * @throws AdministrationException - if any administrative problem occurs
-     */
-    public void retractFriendRequest(String senderEmail, String receiverEmail)
-            throws ValidationException, AdministrationException {
-
-        friendRequestValidator.validateEmails(senderEmail, receiverEmail);
-        FriendRequest result=friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
-        if(result==null)
-            throw new AdministrationException("No friend request from sender to receiver exists;\n");
-    }
-
-    /**
      * gets all friend requests as collection
      *
      * @return a collection of said friend requests
