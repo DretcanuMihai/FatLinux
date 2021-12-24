@@ -189,46 +189,49 @@ public class SuperService {
 
     /**
      * sends a root message (a message that isn't a reply) to some users
-     * @param dto - needed info
+     * @param fromEmail - sender email
+     * @param toEmails - a list of destination emails
+     * @param messageText - message's text
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendRootMessage(MessageDTO dto)
+    public void sendRootMessage(String fromEmail,List<String> toEmails,String messageText)
             throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
 
-        if(dto==null)
-            throw new ValidationException("Error:dto shouldn't be null;\n");
-
-        userService.getUserInfo(dto.getFromEmail());
-        userService.verifyEmailCollection(dto.getToEmails());
-        messageService.addRootMessage(dto);
+        userService.getUserInfo(fromEmail);
+        userService.verifyEmailCollection(toEmails);
+        messageService.addRootMessage(fromEmail,toEmails,messageText);
     }
 
     /**
      * sends a reply message to another message
      * the receiver will be the sender of the original message
-     * @param dto - needed info
+     * @param fromEmail - sender email
+     * @param messageText - message's text
+     * @param parentID - parent message id
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendReplyMessage(MessageDTO dto)
+    public void sendReplyMessage(String fromEmail,String messageText,Integer parentID)
             throws ValidationException, AdministrationException {
-        userService.getUserInfo(dto.getFromEmail());
-        messageService.addReplyMessage(dto);
+        userService.getUserInfo(fromEmail);
+        messageService.addReplyMessage(fromEmail,messageText,parentID);
     }
 
     /**
      * sends a reply message to another message
      * the receiver will be the sender of the original message and all the original receivers
      * except the replier
-     * @param dto - needed data
+     * @param fromEmail - sender email
+     * @param messageText - message's text
+     * @param parentID - parent message id
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendReplyAllMessage(MessageDTO dto)
+    public void sendReplyAllMessage(String fromEmail,String messageText,Integer parentID)
             throws ValidationException, AdministrationException {
-        userService.getUserInfo(dto.getFromEmail());
-        messageService.addReplyAllMessage(dto);
+        userService.getUserInfo(fromEmail);
+        messageService.addReplyAllMessage(fromEmail,messageText,parentID);
     }
 
     /**
