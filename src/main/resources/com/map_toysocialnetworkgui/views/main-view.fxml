@@ -14,7 +14,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="580.0" prefWidth="900.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.map_toysocialnetworkgui.controllers.MainController">
    <children>
-      <BorderPane layoutX="200.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane fx:id="mainBorderPane" layoutX="200.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
             <AnchorPane prefHeight="100.0" prefWidth="800.0" BorderPane.alignment="CENTER">
                <children>
@@ -71,7 +71,7 @@
                <children>
                   <VBox layoutY="229.0" prefHeight="250.0" prefWidth="230.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="229.0">
                      <children>
-                        <JFXButton fx:id="mainPageButton" alignment="BASELINE_LEFT" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Main Page" textFill="#ff7700">
+                        <JFXButton fx:id="mainPageButton" alignment="BASELINE_LEFT" onAction="#showMainPage" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Main Page" textFill="#ff7700">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
@@ -107,7 +107,7 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                        <JFXButton alignment="BASELINE_LEFT" layoutX="10.0" layoutY="111.0" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Friends" textFill="#ff7700">
+                        <JFXButton fx:id="friendsButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="111.0" onAction="#showFriends" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Friends" textFill="#ff7700">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
