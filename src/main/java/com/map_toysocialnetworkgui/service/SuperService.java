@@ -22,6 +22,10 @@ public class SuperService {
      */
     private final FriendshipService friendshipService;
     /**
+     * associated FriendshipService
+     */
+    private final FriendRequestService friendRequestService;
+    /**
      * associated MessageService
      */
     private final MessageService messageService;
@@ -31,9 +35,10 @@ public class SuperService {
      * @param userService - the User Service
      * @param friendshipService - the Friendship Service
      */
-    public SuperService(UserService userService, FriendshipService friendshipService, MessageService messageService) {
+    public SuperService(UserService userService, FriendshipService friendshipService,FriendRequestService friendRequestService, MessageService messageService) {
         this.userService = userService;
         this.friendshipService = friendshipService;
+        this.friendRequestService=friendRequestService;
         this.messageService=messageService;
     }
 
@@ -247,6 +252,14 @@ public class SuperService {
      */
     public void sendFriendRequest(String sender, String receiver)throws ValidationException, AdministrationException {
         userService.verifyEmailCollection(List.of(sender,receiver));
+        Friendship friendship=null;
+        try{
+            friendship=friendshipService.getFriendship(sender,receiver);
+        }catch (AdministrationException ignored){
+        }
+        if(friendship!=null){
+            throw new AdministrationException("Error: users are already friends;\n");
+        }
         friendshipService.sendFriendRequest(sender,receiver);
     }
 
