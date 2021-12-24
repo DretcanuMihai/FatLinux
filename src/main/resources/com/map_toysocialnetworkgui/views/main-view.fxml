@@ -141,13 +141,6 @@
                </children>
             </AnchorPane>
          </left>
-         <center>
-            <Label alignment="CENTER" prefHeight="480.0" prefWidth="671.0" text="Welcome to the FATLinux&#10;social network app!&#10;Search for friends and start hanging out!" BorderPane.alignment="CENTER">
-               <font>
-                  <Font size="36.0" />
-               </font>
-            </Label>
-         </center>
       </BorderPane>
    </children>
 </AnchorPane>

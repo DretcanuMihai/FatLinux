@@ -20,22 +20,25 @@ public class MainController extends AbstractController {
     @FXML
     BorderPane mainBorderPane;
 
-    public void init(UserUIDTO user) {
+    public void init(UserUIDTO user) throws IOException {
         loggedUser = user;
+        showMainPage();
         userNameLabel.setText(user.getFirstName() + " " + user.getFirstName());
     }
 
     public void showMainPage() throws IOException {
-        application.changeToMain(loggedUser);
-    }
-
-    public void logout() throws IOException {
-        application.changeToLogin();
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
+                .getResource("com/map_toysocialnetworkgui/views/mainPage-view.fxml")));
+        mainBorderPane.setCenter(root);
     }
 
     public void showFriends() throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
                 .getResource("com/map_toysocialnetworkgui/views/friends-view.fxml")));
         mainBorderPane.setCenter(root);
+    }
+
+    public void logout() throws IOException {
+        application.changeToLogin();
     }
 }
