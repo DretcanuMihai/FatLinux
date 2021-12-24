@@ -128,3 +128,19 @@
     -fx-border-color: #ff7700;
     -fx-border-width: 0px 0px 0px 3px;
 }
+
+.text-field#searchBar {
+    -fx-background-image: url("../images/searchIcon.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: 8px center;
+    -fx-background-size: 25;
+    -fx-padding: 0 0 0 38;
+}
+
+.label#menuLabel0 {
+    -fx-text-fill: #ff7700;
+}
+
+.label#menuLabel1 {
+    -fx-text-fill: #000000;
+}

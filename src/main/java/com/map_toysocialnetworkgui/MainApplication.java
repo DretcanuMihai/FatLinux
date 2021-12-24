@@ -85,6 +85,7 @@ public class MainApplication extends Application {
         Parent parent = loader.getRoot();
         Scene scene = new Scene(parent);
         primaryStage.setScene(scene);
+        primaryStage.centerOnScreen();
     }
 
     public void changeToMain(UserUIDTO user) throws IOException {

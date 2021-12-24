@@ -1,5 +1,6 @@
 package com.map_toysocialnetworkgui.controllers;
 
+import com.jfoenix.controls.JFXButton;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
@@ -8,11 +9,12 @@ import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 public class MainController extends AbstractController {
     //Data
     UserUIDTO loggedUser;
+    @FXML
+    JFXButton mainPageButton;
     /*
     ObservableList<UserUIDTO> modelUsers = FXCollections.observableArrayList();
     ObservableList<UserUIDTO> modelFriends = FXCollections.observableArrayList();
@@ -65,7 +69,7 @@ public class MainController extends AbstractController {
     }
     */
     public void init(UserUIDTO user) {
-        loggedUser=user;
+        loggedUser = user;
         /*
         welcomeLabel.setText("Welcome, " + loggedUser.getFirstName() + "!");
         updateModelUsers();

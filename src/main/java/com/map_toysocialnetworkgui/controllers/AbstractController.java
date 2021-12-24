@@ -2,6 +2,7 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.MainApplication;
 import com.map_toysocialnetworkgui.service.SuperService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -37,7 +38,7 @@ public class AbstractController {
         Image minimizeButtonImage = appMinimizeButton.getImage();
 
         appExitButton.setOnMouseClicked(event -> {
-            System.exit(0);
+            Platform.exit();
         });
         appExitButton.setOnMouseEntered(event -> {
             appExitButton.setImage(appExitHoveredButton);
