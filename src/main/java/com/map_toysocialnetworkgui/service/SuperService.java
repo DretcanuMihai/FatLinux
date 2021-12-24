@@ -273,7 +273,9 @@ public class SuperService {
      */
     public void confirmFriendRequest(String sender, String receiver, boolean accepted)throws ValidationException, AdministrationException {
         userService.verifyEmailCollection(List.of(sender,receiver));
-        friendshipService.confirmFriendRequest(sender,receiver,accepted);
+        friendRequestService.deleteFriendRequest(sender,receiver);
+        if(accepted)
+            friendshipService.addFriendship(sender,receiver);
     }
 
     /**

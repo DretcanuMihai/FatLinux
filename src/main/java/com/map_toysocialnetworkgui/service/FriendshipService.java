@@ -141,26 +141,6 @@ public class FriendshipService {
     }
 
     /**
-     * confirms a friend request based on accepted status
-     *
-     * @param senderEmail   - sender's email
-     * @param receiverEmail - receiver's email
-     * @param accepted      - acceptance status (true is accept, false decline)
-     * @throws ValidationException     - if any data is invalid
-     * @throws AdministrationException - if any administrative problem occurs
-     */
-    public void confirmFriendRequest(String senderEmail, String receiverEmail, boolean accepted)
-            throws ValidationException, AdministrationException {
-
-        friendRequestValidator.validateEmails(senderEmail, receiverEmail);
-        FriendRequest result=friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
-        if(result==null)
-            throw new AdministrationException("No friend request from sender to receiver exists;\n");
-        if (accepted)
-            friendshipRepo.save(new Friendship(senderEmail, receiverEmail, LocalDate.now()));
-    }
-
-    /**
      * retracts the friend request sent by a sender to a receiver
      *
      * @param senderEmail   - sender's email
