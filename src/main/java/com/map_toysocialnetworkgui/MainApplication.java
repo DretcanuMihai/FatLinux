@@ -46,13 +46,13 @@ public class MainApplication extends Application {
         FriendRequestDBRepository friendRequestRepository=new FriendRequestDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres", "postgres");
 
-        //Validators
+        // Validators
         UserValidator userValidator = new UserValidator();
         FriendshipValidator friendshipValidator = new FriendshipValidator();
         MessageValidator messageValidator = new MessageValidator();
         FriendRequestValidator friendRequestValidator = new FriendRequestValidator();
 
-        //Services
+        // Services
         UserService userService = new UserService(userRepo, userValidator);
         FriendshipService friendshipService = new FriendshipService(friendshipRepo, friendshipValidator,
                 friendRequestRepository, friendRequestValidator);
