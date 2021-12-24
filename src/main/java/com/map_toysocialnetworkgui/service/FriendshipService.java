@@ -141,27 +141,6 @@ public class FriendshipService {
     }
 
     /**
-     * saves a friend request from sender to receiver
-     *
-     * @param senderEmail   - sender email
-     * @param receiverEmail - receiver email
-     * @throws ValidationException     - if sender Email and receiver are the same
-     * @throws AdministrationException - if friend request already exists or if inverse exists
-     */
-    public void sendFriendRequest(String senderEmail, String receiverEmail) throws ValidationException, AdministrationException {
-        friendRequestValidator.validateEmails(senderEmail, receiverEmail);
-        if (friendshipRepo.findOne(new UnorderedPair<>(senderEmail, receiverEmail)) != null)
-            throw new AdministrationException("Error: Users are already friends;\n");
-        FriendRequest inverse = friendRequestRepository.findOne(new Pair<>(receiverEmail, senderEmail));
-        if (inverse != null)
-            throw new AdministrationException("Error: Can't send request! Receiver already sent request to sender;\n");
-        FriendRequest friendRequest = new FriendRequest(senderEmail, receiverEmail, LocalDateTime.now());
-        FriendRequest result=friendRequestRepository.save(friendRequest);
-        if(result!=null)
-            throw new AdministrationException("Error: A friend request has already been sent!;\n");
-    }
-
-    /**
      * confirms a friend request based on accepted status
      *
      * @param senderEmail   - sender's email

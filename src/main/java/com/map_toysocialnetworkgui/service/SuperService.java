@@ -260,7 +260,7 @@ public class SuperService {
         if(friendship!=null){
             throw new AdministrationException("Error: users are already friends;\n");
         }
-        friendshipService.sendFriendRequest(sender,receiver);
+        friendRequestService.sendFriendRequest(sender,receiver);
     }
 
     /**
