@@ -22,6 +22,10 @@ public class SuperService {
      */
     private final FriendshipService friendshipService;
     /**
+     * associated FriendshipService
+     */
+    private final FriendRequestService friendRequestService;
+    /**
      * associated MessageService
      */
     private final MessageService messageService;
@@ -31,35 +35,42 @@ public class SuperService {
      * @param userService - the User Service
      * @param friendshipService - the Friendship Service
      */
-    public SuperService(UserService userService, FriendshipService friendshipService, MessageService messageService) {
+    public SuperService(UserService userService, FriendshipService friendshipService,FriendRequestService friendRequestService, MessageService messageService) {
         this.userService = userService;
         this.friendshipService = friendshipService;
+        this.friendRequestService=friendRequestService;
         this.messageService=messageService;
     }
 
     /**
      * adds a user to the repo
      *
-     * @param dto - dto containing needed information
+     * @param email - email info
+     * @param passwordHash -password hash info
+     * @param firstName - first name info
+     * @param lastName - last name info
      * @throws ValidationException - if the user data is invalid
      * @throws AdministrationException       - if the email is already in use
      */
-    public void createUserAccount(UserServiceDTO dto)
+    public void createUserAccount(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
-        userService.createUserAccount(dto);
+        userService.createUserAccount(email,passwordHash,firstName,lastName);
     }
 
     /**
      * modifies the account identified by email with the other given information
      *
-     * @param dto - needed data
+     * @param email - email info
+     * @param passwordHash -password hash info
+     * @param firstName - first name info
+     * @param lastName - last name info
      * @throws ValidationException if any of the data is invalid
      * @throws AdministrationException if a user with said email doesn't exist
      */
-    public void updateUser(UserServiceDTO dto)
+    public void updateUser(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        userService.updateUserAccountInfo(dto);
+        userService.updateUserAccountInfo(email,passwordHash,firstName,lastName);
     }
 
     /**
@@ -178,46 +189,49 @@ public class SuperService {
 
     /**
      * sends a root message (a message that isn't a reply) to some users
-     * @param dto - needed info
+     * @param fromEmail - sender email
+     * @param toEmails - a list of destination emails
+     * @param messageText - message's text
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendRootMessage(MessageDTO dto)
+    public void sendRootMessage(String fromEmail,List<String> toEmails,String messageText)
             throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
 
-        if(dto==null)
-            throw new ValidationException("Error:dto shouldn't be null;\n");
-
-        userService.getUserInfo(dto.getFromEmail());
-        userService.verifyEmailCollection(dto.getToEmails());
-        messageService.addRootMessage(dto);
+        userService.getUserInfo(fromEmail);
+        userService.verifyEmailCollection(toEmails);
+        messageService.addRootMessage(fromEmail,toEmails,messageText);
     }
 
     /**
      * sends a reply message to another message
      * the receiver will be the sender of the original message
-     * @param dto - needed info
+     * @param fromEmail - sender email
+     * @param messageText - message's text
+     * @param parentID - parent message id
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendReplyMessage(MessageDTO dto)
+    public void sendReplyMessage(String fromEmail,String messageText,Integer parentID)
             throws ValidationException, AdministrationException {
-        userService.getUserInfo(dto.getFromEmail());
-        messageService.addReplyMessage(dto);
+        userService.getUserInfo(fromEmail);
+        messageService.addReplyMessage(fromEmail,messageText,parentID);
     }
 
     /**
      * sends a reply message to another message
      * the receiver will be the sender of the original message and all the original receivers
      * except the replier
-     * @param dto - needed data
+     * @param fromEmail - sender email
+     * @param messageText - message's text
+     * @param parentID - parent message id
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendReplyAllMessage(MessageDTO dto)
+    public void sendReplyAllMessage(String fromEmail,String messageText,Integer parentID)
             throws ValidationException, AdministrationException {
-        userService.getUserInfo(dto.getFromEmail());
-        messageService.addReplyAllMessage(dto);
+        userService.getUserInfo(fromEmail);
+        messageService.addReplyAllMessage(fromEmail,messageText,parentID);
     }
 
     /**
@@ -247,7 +261,15 @@ public class SuperService {
      */
     public void sendFriendRequest(String sender, String receiver)throws ValidationException, AdministrationException {
         userService.verifyEmailCollection(List.of(sender,receiver));
-        friendshipService.sendFriendRequest(sender,receiver);
+        Friendship friendship=null;
+        try{
+            friendship=friendshipService.getFriendship(sender,receiver);
+        }catch (AdministrationException ignored){
+        }
+        if(friendship!=null){
+            throw new AdministrationException("Error: users are already friends;\n");
+        }
+        friendRequestService.sendFriendRequest(sender,receiver);
     }
 
     /**
@@ -260,7 +282,9 @@ public class SuperService {
      */
     public void confirmFriendRequest(String sender, String receiver, boolean accepted)throws ValidationException, AdministrationException {
         userService.verifyEmailCollection(List.of(sender,receiver));
-        friendshipService.confirmFriendRequest(sender,receiver,accepted);
+        friendRequestService.deleteFriendRequest(sender,receiver);
+        if(accepted)
+            friendshipService.addFriendship(sender,receiver);
     }
 
     /**
@@ -274,7 +298,7 @@ public class SuperService {
             throws ValidationException, AdministrationException {
         User receiver=userService.getUserInfo(userEmail);
         Collection<FriendRequestDTO> friendRequestDTOS=new ArrayList<>();
-        friendshipService.getFriendRequestsSentToUser(userEmail).forEach(
+        friendRequestService.getFriendRequestsSentToUser(userEmail).forEach(
                 request-> {
                     User sender= userService.getUserInfo(request.getSender());
                     friendRequestDTOS.add(new FriendRequestDTO(request,sender,receiver));
@@ -295,8 +319,15 @@ public class SuperService {
         return new UserUIDTO(user);
     }
 
-    public void retractFriendRequest(String senderEmail,String receiverEmail){
+    /**
+     * retracts a friend request from sender to receiver
+     * @param senderEmail - sender's email
+     * @param receiverEmail - receiver's email
+     * @throws ValidationException - if any data is invalid
+     * @throws AdministrationException - if any administrative problem occurs
+     */
+    public void retractFriendRequest(String senderEmail,String receiverEmail)throws ValidationException,AdministrationException{
         userService.verifyEmailCollection(List.of(senderEmail,receiverEmail));
-        friendshipService.retractFriendRequest(senderEmail,receiverEmail);
+        friendRequestService.deleteFriendRequest(senderEmail,receiverEmail);
     }
 }

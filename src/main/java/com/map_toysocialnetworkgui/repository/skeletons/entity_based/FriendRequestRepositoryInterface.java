@@ -1,11 +1,11 @@
 package com.map_toysocialnetworkgui.repository.skeletons.entity_based;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
-import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.CrudRepository;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 public interface FriendRequestRepositoryInterface extends
-        CRUDRepository<Pair<String, String>, FriendRequest> {
+        CrudRepository<Pair<String, String>, FriendRequest> {
 
 
     /**

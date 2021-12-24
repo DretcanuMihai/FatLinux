@@ -1,10 +1,10 @@
 package com.map_toysocialnetworkgui.repository.skeletons.entity_based;
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
-import com.map_toysocialnetworkgui.repository.skeletons.CRUDRepository;
+import com.map_toysocialnetworkgui.repository.skeletons.CrudRepository;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
-public interface FriendshipRepositoryInterface extends CRUDRepository<UnorderedPair<String>, Friendship> {
+public interface FriendshipRepositoryInterface extends CrudRepository<UnorderedPair<String>, Friendship> {
 
 
     /**
