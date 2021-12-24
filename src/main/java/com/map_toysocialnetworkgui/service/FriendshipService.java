@@ -1,17 +1,12 @@
 package com.map_toysocialnetworkgui.service;
 
-import com.map_toysocialnetworkgui.model.entities.FriendRequest;
 import com.map_toysocialnetworkgui.model.entities.Friendship;
-import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
-import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendshipRepositoryInterface;
-import com.map_toysocialnetworkgui.utils.structures.Pair;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * a class that incorporates a service that works with friendship administration
@@ -25,32 +20,18 @@ public class FriendshipService {
      * associated friendship validator
      */
     private final FriendshipValidator friendshipValidator;
-    /**
-     * associated friend request repo
-     */
-    private final FriendRequestRepositoryInterface friendRequestRepository;
-    /**
-     * associated friend request validator
-     */
-    private final FriendRequestValidator friendRequestValidator;
 
     /**
-     * creates a friendship service based on a friendship repository and validator and
-     * friend request repository and validator
+     * creates a friendship service based on a friendship repository and validator
      *
      * @param friendshipRepo          - said friend repository
      * @param friendshipValidator     - said friend validator
-     * @param friendRequestRepository - said friend request repository
-     * @param friendRequestValidator  - said friend request validator
      */
-    public FriendshipService(FriendshipRepositoryInterface friendshipRepo, FriendshipValidator friendshipValidator,
-                             FriendRequestRepositoryInterface friendRequestRepository,
-                             FriendRequestValidator friendRequestValidator) {
+    public FriendshipService(FriendshipRepositoryInterface friendshipRepo, FriendshipValidator friendshipValidator)
+    {
 
         this.friendshipRepo = friendshipRepo;
         this.friendshipValidator = friendshipValidator;
-        this.friendRequestRepository = friendRequestRepository;
-        this.friendRequestValidator = friendRequestValidator;
     }
 
     /**

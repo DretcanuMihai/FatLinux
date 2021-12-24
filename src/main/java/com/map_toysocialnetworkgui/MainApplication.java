@@ -58,8 +58,7 @@ public class MainApplication extends Application {
 
         //Services
         UserService userService=new UserService(userRepo, userValidator);
-        FriendshipService friendshipService=new FriendshipService(friendshipRepo, friendshipValidator,
-                friendRequestRepository, friendRequestValidator);
+        FriendshipService friendshipService=new FriendshipService(friendshipRepo, friendshipValidator);
         FriendRequestService friendRequestService =new FriendRequestService(friendRequestRepository, friendRequestValidator);
         MessageService messageService=new MessageService(messageDBRepository,messageValidator);
         this.service = new SuperService(userService, friendshipService,friendRequestService, messageService);
