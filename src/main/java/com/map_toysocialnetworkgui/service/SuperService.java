@@ -289,7 +289,7 @@ public class SuperService {
             throws ValidationException, AdministrationException {
         User receiver=userService.getUserInfo(userEmail);
         Collection<FriendRequestDTO> friendRequestDTOS=new ArrayList<>();
-        friendshipService.getFriendRequestsSentToUser(userEmail).forEach(
+        friendRequestService.getFriendRequestsSentToUser(userEmail).forEach(
                 request-> {
                     User sender= userService.getUserInfo(request.getSender());
                     friendRequestDTOS.add(new FriendRequestDTO(request,sender,receiver));
@@ -310,7 +310,14 @@ public class SuperService {
         return new UserUIDTO(user);
     }
 
-    public void retractFriendRequest(String senderEmail,String receiverEmail){
+    /**
+     * retracts a friend request from sender to receiver
+     * @param senderEmail - sender's email
+     * @param receiverEmail - receiver's email
+     * @throws ValidationException - if any data is invalid
+     * @throws AdministrationException - if any administrative problem occurs
+     */
+    public void retractFriendRequest(String senderEmail,String receiverEmail)throws ValidationException,AdministrationException{
         userService.verifyEmailCollection(List.of(senderEmail,receiverEmail));
         friendRequestService.deleteFriendRequest(senderEmail,receiverEmail);
     }

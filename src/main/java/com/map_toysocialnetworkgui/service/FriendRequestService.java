@@ -67,4 +67,24 @@ public class FriendRequestService {
         if(result==null)
             throw new AdministrationException("No friend request from sender to receiver exists;\n");
     }
+
+    /**
+     * gets all friend requests as collection
+     *
+     * @return a collection of said friend requests
+     */
+    public Iterable<FriendRequest> getAllFriendRequests() {
+        return friendRequestRepository.findAll();
+    }
+
+    /**
+     * gets all friend requests of a user as a collection
+     *
+     * @param userEmail -> said user's emails
+     * @return a collection of said friend requests
+     */
+    public Iterable<FriendRequest> getFriendRequestsSentToUser(String userEmail) {
+        return friendRequestRepository.getFriendRequestsSentToUser(userEmail);
+    }
+
 }
