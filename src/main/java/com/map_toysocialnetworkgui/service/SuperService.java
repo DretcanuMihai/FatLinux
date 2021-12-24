@@ -45,26 +45,32 @@ public class SuperService {
     /**
      * adds a user to the repo
      *
-     * @param dto - dto containing needed information
+     * @param email - email info
+     * @param passwordHash -password hash info
+     * @param firstName - first name info
+     * @param lastName - last name info
      * @throws ValidationException - if the user data is invalid
      * @throws AdministrationException       - if the email is already in use
      */
-    public void createUserAccount(UserServiceDTO dto)
+    public void createUserAccount(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
-        userService.createUserAccount(dto);
+        userService.createUserAccount(email,passwordHash,firstName,lastName);
     }
 
     /**
      * modifies the account identified by email with the other given information
      *
-     * @param dto - needed data
+     * @param email - email info
+     * @param passwordHash -password hash info
+     * @param firstName - first name info
+     * @param lastName - last name info
      * @throws ValidationException if any of the data is invalid
      * @throws AdministrationException if a user with said email doesn't exist
      */
-    public void updateUser(UserServiceDTO dto)
+    public void updateUser(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        userService.updateUserAccountInfo(dto);
+        userService.updateUserAccountInfo(email,passwordHash,firstName,lastName);
     }
 
     /**

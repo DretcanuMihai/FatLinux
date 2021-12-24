@@ -5,7 +5,6 @@ import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
-import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.time.LocalDateTime;
 

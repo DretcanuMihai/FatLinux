@@ -1,7 +1,6 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.User;
-import com.map_toysocialnetworkgui.model.entities_dto.UserServiceDTO;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
@@ -38,14 +37,17 @@ public class UserService {
     /**
      * creates a user account
      *
-     * @param dto - dto containing needed information
+     * @param email - email info
+     * @param passwordHash -password hash info
+     * @param firstName - first name info
+     * @param lastName - last name info
      * @throws ValidationException - if the user data is invalid
      * @throws AdministrationException       - if the email is already in use
      */
-    public void createUserAccount(UserServiceDTO dto)
+    public void createUserAccount(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        User user = new User(dto.getEmail(), dto.getPasswordHash(),dto.getFirstName(),dto.getLastName(),LocalDate.now());
+        User user = new User(email, passwordHash,firstName,lastName,LocalDate.now());
         userValidator.validateDefault(user);
         User result=usersRepo.save(user);
         if(result!=null)
@@ -71,21 +73,24 @@ public class UserService {
     /**
      * updates the data of a user identified by an email
      *
-     * @param dto - needed data
+     * @param email - email info
+     * @param passwordHash -password hash info
+     * @param firstName - first name info
+     * @param lastName - last name info
      * @throws ValidationException     - if any of the data is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public void updateUserAccountInfo(UserServiceDTO dto)
+    public void updateUserAccountInfo(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        User user = new User(dto.getEmail(), dto.getPasswordHash(),dto.getFirstName(),dto.getLastName(),null);
+        User user = new User(email, passwordHash,firstName,lastName,null);
         userValidator.validateDefault(user);
-        User actualUser=usersRepo.findOne(dto.getEmail());
+        User actualUser=usersRepo.findOne(email);
         if(actualUser==null)
             throw new AdministrationException("Error: email not in use;\n");
-        actualUser.setFirstName(dto.getFirstName());
-        actualUser.setLastName(dto.getLastName());
-        actualUser.setPasswordHash(dto.getPasswordHash());
+        actualUser.setFirstName(firstName);
+        actualUser.setLastName(lastName);
+        actualUser.setPasswordHash(passwordHash);
         usersRepo.update(user);
     }
 
