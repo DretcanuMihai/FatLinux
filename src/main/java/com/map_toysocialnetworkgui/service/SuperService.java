@@ -4,6 +4,10 @@ import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.entities_dto.*;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.observer.Observer;
+import com.map_toysocialnetworkgui.utils.structures.Pair;
+import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -329,5 +333,41 @@ public class SuperService {
     public void retractFriendRequest(String senderEmail,String receiverEmail)throws ValidationException,AdministrationException{
         userService.verifyEmailCollection(List.of(senderEmail,receiverEmail));
         friendRequestService.deleteFriendRequest(senderEmail,receiverEmail);
+    }
+
+    /**
+     * subscribes an observer to user notifications
+     *
+     * @param observer - said observer
+     */
+    public void addUserObserver(Observer<EntityModificationEvent<String>> observer){
+        userService.addObserver(observer);
+    }
+
+    /**
+     * subscribes an observer to friendship notifications
+     *
+     * @param observer - said observer
+     */
+    public void addFriendshipObserver(Observer<EntityModificationEvent<UnorderedPair<String>>> observer){
+        friendshipService.addObserver(observer);
+    }
+
+    /**
+     * subscribes an observer to friend request notifications
+     *
+     * @param observer - said observer
+     */
+    public void addFriendRequestObserver(Observer<EntityModificationEvent<Pair<String,String>>> observer){
+        friendRequestService.addObserver(observer);
+    }
+
+    /**
+     * subscribes an observer to message notifications
+     *
+     * @param observer - said observer
+     */
+    public void addMessageObserver(Observer<EntityModificationEvent<Integer>> observer){
+        messageService.addObserver(observer);
     }
 }
