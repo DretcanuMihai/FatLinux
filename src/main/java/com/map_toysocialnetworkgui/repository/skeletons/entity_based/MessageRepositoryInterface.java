@@ -1,9 +1,9 @@
 package com.map_toysocialnetworkgui.repository.skeletons.entity_based;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
-import com.map_toysocialnetworkgui.repository.skeletons.CrudRepository;
+import com.map_toysocialnetworkgui.repository.paging.PagingRepository;
 
-public interface MessageRepositoryInterface extends CrudRepository<Integer, Message> {
+public interface MessageRepositoryInterface extends PagingRepository<Integer, Message> {
 
     /**
      * gets a list of all the messages between two users sorted chronologically
