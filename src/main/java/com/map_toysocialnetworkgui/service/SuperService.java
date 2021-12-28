@@ -1,5 +1,6 @@
 package com.map_toysocialnetworkgui.service;
 
+import com.map_toysocialnetworkgui.model.entities.FriendRequest;
 import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.entities.Message;
 import com.map_toysocialnetworkgui.model.entities.User;
@@ -423,6 +424,25 @@ public class SuperService {
                     friendRequestDTOS.add(new FriendRequestDTO(request,sender,receiver));
                 });
         return friendRequestDTOS;
+    }
+
+    /**
+     * gets a collection of DTOs of all the friend requests sent to a user
+     * @param userEmail - said user's email
+     * @return said collection
+     * @throws ValidationException if the user email is invalid
+     * @throws AdministrationException - if the user doesn't exist
+     */
+    public Page<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail,Pageable pageable)
+            throws ValidationException, AdministrationException {
+        validatePageable(pageable);
+        User receiver=userService.getUserInfo(userEmail);
+        Page<FriendRequest> page=friendRequestService.getFriendRequestsSentToUser(userEmail,pageable);
+        Stream<FriendRequestDTO> stream=page.getContent().map(request-> {
+            User sender= userService.getUserInfo(request.getSender());
+            return new FriendRequestDTO(request,sender,receiver);
+        });
+        return new PageImplementation<>(page.getPageable(),stream);
     }
 
     /**
