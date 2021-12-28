@@ -12,7 +12,7 @@ public class Entity<ID> implements Serializable {
     /**
      * entity id
      */
-    private final ID id;
+    private ID id;
 
     /**
      * creates entity with an id
@@ -30,6 +30,15 @@ public class Entity<ID> implements Serializable {
      */
     public ID getId() {
         return id;
+    }
+
+    /**
+     * sets entity ID
+     *
+     * @param id - new id
+     */
+    public void setId(ID id) {
+        this.id = id;
     }
 
     /**

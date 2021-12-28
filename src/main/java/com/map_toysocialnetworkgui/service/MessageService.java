@@ -4,6 +4,9 @@ import com.map_toysocialnetworkgui.model.entities.Message;
 import com.map_toysocialnetworkgui.model.validators.MessageValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
+import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +15,7 @@ import java.util.Objects;
 /**
  * a class that incorporates a service that works with message administration
  */
-public class MessageService {
+public class MessageService extends AbstractObservable<EntityModificationEvent<Integer>> {
     /**
      * associated message repo
      */
@@ -64,6 +67,7 @@ public class MessageService {
         Message message = new Message(null, fromEmail,toEmails,messageText, LocalDateTime.now(), null);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,message.getId()));
     }
 
     /**
@@ -86,6 +90,7 @@ public class MessageService {
                 parentID);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,message.getId()));
     }
 
     /**
@@ -111,6 +116,7 @@ public class MessageService {
                 parentID);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,message.getId()));
     }
 
     /**

@@ -98,6 +98,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
             // saves the list of receivers
             int id = getMessageIDGeneratedBy(statementInsertMessage);
             message.getToEmails().forEach(email -> saveDelivery(id, email));
+            message.setId(id);
             toReturn = null;
 
         } catch (SQLException e) {
