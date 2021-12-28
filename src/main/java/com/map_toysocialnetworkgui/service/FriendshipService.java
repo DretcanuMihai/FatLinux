@@ -3,6 +3,8 @@ package com.map_toysocialnetworkgui.service;
 import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendshipRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
@@ -124,6 +126,44 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
             throw new ValidationException("Error: Invalid month!\n");
 
         return friendshipRepo.getUserFriendshipsFromMonth(userEmail, month);
+    }
+
+    /**
+     * gets all existing friendships
+     * @param pageable - for paging
+     *
+     * @return a collection of said friendships
+     */
+    public Page<Friendship> getAllFriendships(Pageable pageable) {
+        return friendshipRepo.findAll(pageable);
+    }
+
+    /**
+     * gets all existing friendships to which a user belongs
+     * the email is assumed to belong to an actual valid user
+     *
+     * @param userEmail - said user's email
+     * @param pageable - for paging
+     * @return a collection of said friendships
+     */
+    public Page<Friendship> getUserFriendships(String userEmail,Pageable pageable) {
+        return friendshipRepo.getUserFriendships(userEmail,pageable);
+    }
+
+    /**
+     * Returns all friendships of a user that were created in a specific month
+     *
+     * @param userEmail - email of user
+     * @param month     - month in which the friendship was created
+     * @param pageable - for paging
+     * @return a collection of said friendships
+     * @throws ValidationException if month is invalid
+     */
+    public Page<Friendship> getUserFriendshipsFromMonth(String userEmail, int month, Pageable pageable) throws ValidationException {
+        if (month < 1 || month > 12)
+            throw new ValidationException("Error: Invalid month!\n");
+
+        return friendshipRepo.getUserFriendshipsFromMonth(userEmail, month,pageable);
     }
 
 
