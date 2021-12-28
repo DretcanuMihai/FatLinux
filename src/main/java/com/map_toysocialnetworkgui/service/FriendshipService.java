@@ -4,6 +4,9 @@ import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendshipRepositoryInterface;
+import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.time.LocalDate;
@@ -11,7 +14,7 @@ import java.time.LocalDate;
 /**
  * a class that incorporates a service that works with friendship administration
  */
-public class FriendshipService {
+public class FriendshipService extends AbstractObservable<EntityModificationEvent<UnorderedPair<String>>> {
     /**
      * associated friendship repo
      */
@@ -49,6 +52,7 @@ public class FriendshipService {
         Friendship result=friendshipRepo.save(friendship);
         if(result!=null)
             throw new AdministrationException("Error: users are already friends;\n");
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,friendship.getId()));
     }
 
     /**
@@ -84,6 +88,7 @@ public class FriendshipService {
         Friendship result=friendshipRepo.delete(new UnorderedPair<>(userEmail1, userEmail2));
         if(result==null)
             throw new AdministrationException("Error: users weren't friends;\n");
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.DELETE,new UnorderedPair<>(userEmail1,userEmail2)));
     }
 
     /**
