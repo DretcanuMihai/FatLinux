@@ -4,11 +4,14 @@ import com.map_toysocialnetworkgui.model.entities.FriendRequest;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
+import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.time.LocalDateTime;
 
-public class FriendRequestService {
+public class FriendRequestService extends AbstractObservable<EntityModificationEvent<Pair<String,String>>> {
 
     /**
      * associated friend request repo
@@ -48,6 +51,7 @@ public class FriendRequestService {
         FriendRequest result=friendRequestRepository.save(friendRequest);
         if(result!=null)
             throw new AdministrationException("Error: A friend request has already been sent!;\n");
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,friendRequest.getId()));
     }
 
     /**
@@ -65,6 +69,7 @@ public class FriendRequestService {
         FriendRequest result=friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
         if(result==null)
             throw new AdministrationException("No friend request from sender to receiver exists;\n");
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,result.getId()));
     }
 
     /**
