@@ -1,6 +1,9 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 
@@ -159,6 +162,56 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
             e.printStackTrace();
         }
         return friendRequests;
+    }
+
+    @Override
+    public Page<FriendRequest> findAll(Pageable pageable) {
+        Set<FriendRequest> friendRequests = new HashSet<>();
+        String sql = "SELECT * FROM friend_requests offset (?) limit (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            int pageSize=pageable.getPageSize();
+            int pageNr=pageable.getPageNumber();
+            int start=(pageNr-1)*pageSize;
+            statement.setInt(1,start);
+            statement.setInt(2,pageSize);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                FriendRequest friendRequest = getNextFromSet(resultSet);
+                friendRequests.add(friendRequest);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable,friendRequests.stream());
+    }
+
+    @Override
+    public Page<FriendRequest> getFriendRequestsSentToUser(String userEmail, Pageable pageable) {
+        Set<FriendRequest> friendRequests = new HashSet<>();
+        String sql = "SELECT * FROM friend_requests where receiver_email=(?) offset (?) limit (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, userEmail);
+            int pageSize=pageable.getPageSize();
+            int pageNr=pageable.getPageNumber();
+            int start=(pageNr-1)*pageSize;
+            statement.setInt(2,start);
+            statement.setInt(3,pageSize);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                FriendRequest friendRequest = getNextFromSet(resultSet);
+                friendRequests.add(friendRequest);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable,friendRequests.stream());
     }
 
     /**
