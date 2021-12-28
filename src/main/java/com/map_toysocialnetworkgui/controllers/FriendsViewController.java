@@ -1,21 +1,24 @@
 package com.map_toysocialnetworkgui.controllers;
 
+import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.util.Callback;
+import javafx.scene.text.Font;
 
-public class FriendsViewController {
+import java.util.Collection;
+
+public class FriendsViewController extends AbstractController {
+    // Data
+    UserUIDTO loggedUser;
     // List
-    ObservableList<String> list = FXCollections.observableArrayList(
-            "Item 1", "Item 2", "Item 3", "Item 4");
+    ObservableList<String> modelFriends = FXCollections.observableArrayList();
     // FXML
     @FXML
     ListView<String> friendsList;
@@ -24,16 +27,21 @@ public class FriendsViewController {
         HBox hbox = new HBox();
         Label label = new Label("Null");
         Pane pane = new Pane();
-        Button addButton = new Button("Add friend");
+        Button removeFriendButton = new Button("Remove friend");
         String lastItem;
-
+        private static final String IDLE_BUTTON_STYLE = "-fx-focus-traversable: false; -fx-background-radius: 10px; -fx-background-color: #ff7700;";
+        private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
         public FriendCell() {
             super();
-            hbox.getChildren().addAll(label, pane, addButton);
+            hbox.getChildren().addAll(label, pane, removeFriendButton);
+            hbox.setAlignment(Pos.CENTER);
             HBox.setHgrow(pane, Priority.ALWAYS);
-            addButton.setOnAction(event -> {
-                System.out.println("lmao");
-            });
+            label.setFont(new Font(20.0));
+            removeFriendButton.setMaxSize(180, 40);
+            removeFriendButton.setStyle(IDLE_BUTTON_STYLE);
+            removeFriendButton.setOnMouseEntered(event -> removeFriendButton.setStyle(HOVERED_BUTTON_STYLE));
+            removeFriendButton.setOnMouseExited(event -> removeFriendButton.setStyle(IDLE_BUTTON_STYLE));
+            removeFriendButton.setOnAction(event -> System.out.println(label.getText()));
         }
 
         @Override
@@ -44,6 +52,7 @@ public class FriendsViewController {
                 lastItem = null;
                 setGraphic(null);
             } else {
+                setPrefHeight(80.0);
                 lastItem = item;
                 label.setText(item != null ? item : "<null>");
                 setGraphic(hbox);
@@ -51,17 +60,25 @@ public class FriendsViewController {
         }
     }
 
-    void initFriendsList() {
-        friendsList.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-            @Override
-            public ListCell<String> call(ListView<String> param) {
-                return new FriendCell();
-            }
-        });
+    public void setLoggedUser(UserUIDTO loggedUser) {
+        this.loggedUser = loggedUser;
     }
 
+    public void updateModelFriends() {
+        Collection<UserUIDTO> friendshipDTOS = service.getAllFriendshipDTOsOfUser(loggedUser.getEmail()).stream()
+        .map(FriendshipDTO::getUser2).toList();
+
+         modelFriends.setAll(friendshipDTOS.stream()
+                 .map(userUIDTO -> userUIDTO.getFirstName() + " " + userUIDTO.getLastName()).toList());
+    }
+
+    @FXML
     public void initialize() {
-        friendsList.setItems(list);
-        initFriendsList();
+        friendsList.setCellFactory(param -> new FriendCell());
+        friendsList.setItems(modelFriends);
+    }
+
+    public void init() {
+        updateModelFriends();
     }
 }

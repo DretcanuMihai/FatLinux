@@ -10,8 +10,7 @@ import javafx.scene.layout.BorderPane;
 import java.io.IOException;
 import java.util.Objects;
 
-
-public class MainController extends AbstractController {
+public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     // Data
     UserUIDTO loggedUser;
     // FXML
@@ -22,8 +21,8 @@ public class MainController extends AbstractController {
 
     public void init(UserUIDTO user) throws IOException {
         loggedUser = user;
+        userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
         showMainPage();
-        userNameLabel.setText(user.getFirstName() + " " + user.getFirstName());
     }
 
     public void showMainPage() throws IOException {
@@ -33,8 +32,13 @@ public class MainController extends AbstractController {
     }
 
     public void showFriends() throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
-                .getResource("com/map_toysocialnetworkgui/views/friends-view.fxml")));
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(getClass().getClassLoader())
+                .getResource("com/map_toysocialnetworkgui/views/friends-view.fxml"));
+        Parent root = loader.load();
+        FriendsViewController friendsViewController = loader.getController();
+        friendsViewController.setLoggedUser(loggedUser);
+        friendsViewController.setService(this.service);
+        friendsViewController.init();
         mainBorderPane.setCenter(root);
     }
 

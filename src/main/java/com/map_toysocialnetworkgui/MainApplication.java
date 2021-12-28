@@ -1,7 +1,7 @@
 package com.map_toysocialnetworkgui;
 
-import com.map_toysocialnetworkgui.controllers.AbstractController;
-import com.map_toysocialnetworkgui.controllers.MainController;
+import com.map_toysocialnetworkgui.controllers.AbstractControllerWithTitleBar;
+import com.map_toysocialnetworkgui.controllers.MainControllerWithTitleBar;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
@@ -75,7 +75,7 @@ public class MainApplication extends Application {
     private FXMLLoader initLoader(URL url) throws IOException {
         FXMLLoader loader = new FXMLLoader(url);
         loader.load();
-        AbstractController controller = loader.getController();
+        AbstractControllerWithTitleBar controller = loader.getController();
         controller.setService(service);
         controller.setApplication(this);
         return loader;
@@ -90,7 +90,7 @@ public class MainApplication extends Application {
 
     public void changeToMain(UserUIDTO user) throws IOException {
         FXMLLoader mainLoader = initLoader(mainFXMLURL);
-        MainController controller = mainLoader.getController();
+        MainControllerWithTitleBar controller = mainLoader.getController();
         controller.init(user);
         modifyMainWindowWith(mainLoader);
     }

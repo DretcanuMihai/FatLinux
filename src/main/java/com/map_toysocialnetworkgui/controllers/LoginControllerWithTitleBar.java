@@ -10,7 +10,7 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 
-public class LoginController extends AbstractController {
+public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar {
     @FXML
     TextField emailTextField;
     @FXML
