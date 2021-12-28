@@ -4,6 +4,9 @@ import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
+import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,7 +16,7 @@ import java.util.List;
 /**
  * a class that incorporates a service that works with user administration
  */
-public class UserService {
+public class UserService extends AbstractObservable<EntityModificationEvent<String>> {
     /**
      * associated users repo
      */
@@ -52,6 +55,7 @@ public class UserService {
         User result=usersRepo.save(user);
         if(result!=null)
             throw new AdministrationException("Error: email already in use;\n");
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,email));
     }
 
     /**
@@ -92,6 +96,7 @@ public class UserService {
         actualUser.setLastName(lastName);
         actualUser.setPasswordHash(passwordHash);
         usersRepo.update(user);
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.UPDATE,email));
     }
 
     /**
@@ -106,6 +111,7 @@ public class UserService {
         User result=usersRepo.delete(email);
         if(result==null)
             throw new AdministrationException("Error: no user with given email;\n");
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.DELETE,email));
 
     }
 
