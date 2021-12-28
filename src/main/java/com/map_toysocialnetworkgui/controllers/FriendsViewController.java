@@ -36,8 +36,8 @@ public class FriendsViewController extends AbstractController {
             hbox.getChildren().addAll(label, pane, removeFriendButton);
             hbox.setAlignment(Pos.CENTER);
             HBox.setHgrow(pane, Priority.ALWAYS);
-            label.setFont(new Font(20.0));
-            removeFriendButton.setMaxSize(180, 40);
+            label.setFont(new Font(25.0));
+            removeFriendButton.setFont(new Font(16.0));
             removeFriendButton.setStyle(IDLE_BUTTON_STYLE);
             removeFriendButton.setOnMouseEntered(event -> removeFriendButton.setStyle(HOVERED_BUTTON_STYLE));
             removeFriendButton.setOnMouseExited(event -> removeFriendButton.setStyle(IDLE_BUTTON_STYLE));
@@ -64,18 +64,18 @@ public class FriendsViewController extends AbstractController {
         this.loggedUser = loggedUser;
     }
 
-    public void updateModelFriends() {
-        Collection<UserUIDTO> friendshipDTOS = service.getAllFriendshipDTOsOfUser(loggedUser.getEmail()).stream()
-        .map(FriendshipDTO::getUser2).toList();
-
-         modelFriends.setAll(friendshipDTOS.stream()
-                 .map(userUIDTO -> userUIDTO.getFirstName() + " " + userUIDTO.getLastName()).toList());
-    }
-
     @FXML
     public void initialize() {
         friendsList.setCellFactory(param -> new FriendCell());
         friendsList.setItems(modelFriends);
+    }
+
+    public void updateModelFriends() {
+        Collection<String> friendCompleteName = service.getAllFriendshipDTOsOfUser(loggedUser.getEmail()).stream()
+                .map(FriendshipDTO::getUser2).toList().stream()
+                .map(userUIDTO -> userUIDTO.getFirstName() + " " + userUIDTO.getLastName()).toList();
+
+         modelFriends.setAll(friendCompleteName);
     }
 
     public void init() {
