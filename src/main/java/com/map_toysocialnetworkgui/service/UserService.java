@@ -118,19 +118,19 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     }
 
     /**
-     * returns a collection of all the users in repo
+     * returns an iterable of all the users in repo
      *
-     * @return said collection
+     * @return said iterable
      */
     public Iterable<User> getAllUsers() {
         return usersRepo.findAll();
     }
 
     /**
-     * returns a collection of all the users in repo
+     * returns a page of all the users in repo
      * @param pageable - pageable for paging
      *
-     * @return said collection
+     * @return said page
      */
     public Page<User> getAllUsers(Pageable pageable) {
         return usersRepo.findAll(pageable);

@@ -126,7 +126,7 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
      *
      * @param email1 - first user's email
      * @param email2 - second user's email
-     * @return a list of DTOs for said messages
+     * @return an iterable of the messages in the conversation
      * @throws ValidationException if the emails are the same
      */
     public Iterable<Message> getConversationBetweenUsers(String email1, String email2) throws ValidationException {
@@ -136,12 +136,12 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
     }
 
     /**
-     * returns the conversation between two users sorted chronologically
+     * returns a page of the conversation between two users sorted chronologically
      *
      * @param email1 - first user's email
      * @param email2 - second user's email
      * @param pageable - for paging
-     * @return a list of DTOs for said messages
+     * @return said page
      * @throws ValidationException if the emails are the same
      */
     public Page<Message> getConversationBetweenUsers(String email1, String email2, Pageable pageable) throws ValidationException {

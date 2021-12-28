@@ -11,19 +11,19 @@ public interface FriendRequestRepositoryInterface extends
 
 
     /**
-     * gets all friend requests sent to a user as a collection
+     * gets all friend requests sent to a user as an iterable
      *
      * @param userEmail -> said user's emails
-     * @return a collection of said friend requests
+     * @return an iterable of said friend requests
      */
     Iterable<FriendRequest> getFriendRequestsSentToUser(String userEmail);
 
     /**
-     * gets all friend requests sent to a user as a collection
+     * gets page of user friend requests
      *
      * @param userEmail -> said user's emails
      * @param pageable -> pageable for paging
-     * @return a collection of said friend requests
+     * @return a page of said friend requests
      */
     Page<FriendRequest> getFriendRequestsSentToUser(String userEmail, Pageable pageable);
 }

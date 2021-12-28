@@ -139,24 +139,24 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
     }
 
     /**
-     * gets all existing friendships to which a user belongs
+     * gets a page of all existing friendships to which a user belongs
      * the email is assumed to belong to an actual valid user
      *
      * @param userEmail - said user's email
      * @param pageable - for paging
-     * @return a collection of said friendships
+     * @return a page of said friendships
      */
     public Page<Friendship> getUserFriendships(String userEmail,Pageable pageable) {
         return friendshipRepo.getUserFriendships(userEmail,pageable);
     }
 
     /**
-     * Returns all friendships of a user that were created in a specific month
+     * Returns a page of all friendships of a user that were created in a specific month
      *
      * @param userEmail - email of user
      * @param month     - month in which the friendship was created
      * @param pageable - for paging
-     * @return a collection of said friendships
+     * @return a page of said friendships
      * @throws ValidationException if month is invalid
      */
     public Page<Friendship> getUserFriendshipsFromMonth(String userEmail, int month, Pageable pageable) throws ValidationException {

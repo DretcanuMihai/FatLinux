@@ -8,21 +8,21 @@ import com.map_toysocialnetworkgui.repository.paging.PagingRepository;
 public interface MessageRepositoryInterface extends PagingRepository<Integer, Message> {
 
     /**
-     * gets a list of all the messages between two users sorted chronologically
+     * gets an iterable of all the messages between two users sorted chronologically
      *
      * @param userEmail1 - first user email
      * @param userEmail2 - second user email
-     * @return said list of messages
+     * @return said iterable
      */
     Iterable<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2);
 
     /**
-     * gets a list of all the messages between two users sorted chronologically
+     * gets a page of the messages between two users sorted chronologically
      *
      * @param userEmail1 - first user email
      * @param userEmail2 - second user email
      * @param pageable - pageable for pagination
-     * @return said list of messages
+     * @return said page
      */
     Page<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2, Pageable pageable);
 }

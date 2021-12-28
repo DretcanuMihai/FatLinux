@@ -3,6 +3,8 @@ package com.map_toysocialnetworkgui.service;
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
@@ -73,22 +75,43 @@ public class FriendRequestService extends AbstractObservable<EntityModificationE
     }
 
     /**
-     * gets all friend requests as collection
+     * gets all friend requests as an iterable
      *
-     * @return a collection of said friend requests
+     * @return an iterable of said friend requests
      */
     public Iterable<FriendRequest> getAllFriendRequests() {
         return friendRequestRepository.findAll();
     }
 
     /**
-     * gets all friend requests of a user as a collection
+     * gets all friend requests of a user as an iterable
      *
      * @param userEmail -> said user's emails
-     * @return a collection of said friend requests
+     * @return said iterable
      */
     public Iterable<FriendRequest> getFriendRequestsSentToUser(String userEmail) {
         return friendRequestRepository.getFriendRequestsSentToUser(userEmail);
+    }
+
+    /**
+     * gets a page of all the friend requests
+     *
+     * @param pageable - for paging
+     * @return said page
+     */
+    public Page<FriendRequest> getAllFriendRequests(Pageable pageable) {
+        return friendRequestRepository.findAll(pageable);
+    }
+
+    /**
+     * gets a page of a user's friend requests
+     *
+     * @param userEmail -> said user's emails
+     * @param pageable - for paging
+     * @return said page
+     */
+    public Page<FriendRequest> getFriendRequestsSentToUser(String userEmail,Pageable pageable) {
+        return friendRequestRepository.getFriendRequestsSentToUser(userEmail,pageable);
     }
 
 }

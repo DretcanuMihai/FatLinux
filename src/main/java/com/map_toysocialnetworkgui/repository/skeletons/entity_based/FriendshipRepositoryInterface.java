@@ -13,7 +13,7 @@ public interface FriendshipRepositoryInterface extends PagingRepository<Unordere
      * gets all existing friendships to which a user belongs
      *
      * @param userEmail - said user's email
-     * @return a collection of said friendships
+     * @return an iterable of said friendships
      */
     Iterable<Friendship> getUserFriendships(String userEmail);
 
@@ -22,26 +22,26 @@ public interface FriendshipRepositoryInterface extends PagingRepository<Unordere
      *
      * @param userEmail - said user's email
      * @param month     - said month's number
-     * @return a collection of said friendships
+     * @return an iterable of said friendships
      */
     Iterable<Friendship> getUserFriendshipsFromMonth(String userEmail, int month);
 
     /**
-     * gets all existing friendships to which a user belongs
+     * gets a page of the existing friendships to which a user belongs
      *
      * @param userEmail - said user's email
      * @param pageable - for paging
-     * @return a collection of said friendships
+     * @return the said page
      */
     Page<Friendship> getUserFriendships(String userEmail, Pageable pageable);
 
     /**
-     * gets all existing friendships to which a user belongs, friendships created in a given month
+     * gets a page of the existing friendships to which a user belongs, friendships created in a given month
      *
      * @param userEmail - said user's email
      * @param month     - said month's number
      * @param pageable - for paging
-     * @return a collection of said friendships
+     * @return the page
      */
     Page<Friendship> getUserFriendshipsFromMonth(String userEmail, int month,Pageable pageable);
 }
