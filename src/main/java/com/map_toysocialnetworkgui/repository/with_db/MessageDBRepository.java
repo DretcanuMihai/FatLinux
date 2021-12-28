@@ -1,6 +1,9 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
 
 import java.sql.*;
@@ -180,6 +183,66 @@ public class MessageDBRepository implements MessageRepositoryInterface {
             e.printStackTrace();
         }
         return conversation;
+    }
+
+    @Override
+    public Page<Message> findAll(Pageable pageable) {
+        Set<Message> messages = new HashSet<>();
+        String sql = "SELECT * FROM messages offset (?) limit (?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            int pageSize=pageable.getPageSize();
+            int pageNr=pageable.getPageNumber();
+            int start=(pageNr-1)*pageSize;
+            statement.setInt(1,start);
+            statement.setInt(2,pageSize);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable,messages.stream());
+    }
+
+    @Override
+    public Page<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2, Pageable pageable) {
+        Set<Message> messages = new HashSet<>();
+        String sql = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                FROM messages m INNER JOIN message_deliveries md
+                ON m.message_id = md.message_id
+                WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
+                ORDER BY send_time
+                OFFSET (?)
+                LIMIT (?)
+                """;
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            int pageSize=pageable.getPageSize();
+            int pageNr=pageable.getPageNumber();
+            int start=(pageNr-1)*pageSize;
+            statement.setString(1, userEmail1);
+            statement.setString(2, userEmail2);
+            statement.setString(3, userEmail2);
+            statement.setString(4, userEmail1);
+            statement.setInt(5,start);
+            statement.setInt(6,pageSize);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable,messages.stream());
     }
 
     /**
