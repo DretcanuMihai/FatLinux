@@ -3,8 +3,30 @@ package com.map_toysocialnetworkgui.utils.observer;
 
 import com.map_toysocialnetworkgui.utils.events.Event;
 
+/**
+ * Observable class for observer pattern
+ *
+ * @param <E> - event type
+ */
 public interface Observable<E extends Event> {
-    void addObserver(Observer<E> e);
-    void removeObserver(Observer<E> e);
-    void notifyObservers(E t);
+    /**
+     * adds observer for notification
+     *
+     * @param observer - said observer
+     */
+    void addObserver(Observer<E> observer);
+
+    /**
+     * removes an observer from notification
+     *
+     * @param observer - said observer
+     */
+    void removeObserver(Observer<E> observer);
+
+    /**
+     * notifies observers with an event
+     *
+     * @param event - said event
+     */
+    void notifyObservers(E event);
 }
