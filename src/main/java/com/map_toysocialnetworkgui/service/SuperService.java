@@ -506,4 +506,33 @@ public class SuperService {
     public void addMessageObserver(Observer<EntityModificationEvent<Integer>> observer){
         messageService.addObserver(observer);
     }
+
+    /**
+     * returns an iterable of all the users in repo with certain string inside of them
+     * @param string - said string
+     *
+     * @return said iterable
+     * @throws ValidationException - if string is null
+     */
+    public Iterable<UserUIDTO> filterUsers(String string) throws ValidationException {
+        List<UserUIDTO> userUIDTOS=new ArrayList<>();
+        userService.filterUsers(string).forEach(user -> {
+            userUIDTOS.add(new UserUIDTO(user));
+        });
+        return userUIDTOS;
+    }
+
+    /**
+     * returns a page of all the users in repo that have a certain string in their names
+     * @param string - said string
+     * @param pageable - pageable for paging
+     * @return said page
+     * @throws ValidationException - if string is null
+     */
+    public Page<UserUIDTO> filterUsers(String string, Pageable pageable) throws ValidationException{
+        validatePageable(pageable);
+        Page<User> page= userService.filterUsers(string, pageable);
+        Stream<UserUIDTO> stream=page.getContent().map(UserUIDTO::new);
+        return new PageImplementation<>(page.getPageable(),stream);
+    }
 }

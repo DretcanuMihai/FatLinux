@@ -179,4 +179,31 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
             throw new AdministrationException("Invalid email or password!\n");
         return found;
     }
+
+    /**
+     * returns an iterable of all the users in repo with certain string inside of them
+     * @param string - sais string
+     *
+     * @return said iterable
+     * @throws ValidationException if string is null
+     */
+    public Iterable<User> filterUsers(String string)throws ValidationException {
+        if(string==null)
+            throw new ValidationException("Error: string must be non null;\n");
+        return usersRepo.getUsersByName(string);
+    }
+
+    /**
+     * returns a page of all the users in repo that have a certain string in their names
+     * @param string - said string
+     * @param pageable - pageable for paging
+     *
+     * @return said page
+     * @throws ValidationException if string is null
+     */
+    public Page<User> filterUsers(String string, Pageable pageable)throws ValidationException {
+        if(string==null)
+            throw new ValidationException("Error: string must be non null;\n");
+        return usersRepo.getUsersByName(string,pageable);
+    }
 }
