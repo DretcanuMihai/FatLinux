@@ -427,10 +427,11 @@ public class SuperService {
     }
 
     /**
-     * gets a collection of DTOs of all the friend requests sent to a user
+     * gets a page of DTOs of all the friend requests sent to a user
      * @param userEmail - said user's email
-     * @return said collection
-     * @throws ValidationException if the user email is invalid
+     * @param pageable - for paging
+     * @return said page
+     * @throws ValidationException if the user email or pageable is invalid
      * @throws AdministrationException - if the user doesn't exist
      */
     public Page<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail,Pageable pageable)

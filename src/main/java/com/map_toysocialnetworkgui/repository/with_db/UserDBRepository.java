@@ -74,7 +74,6 @@ public class UserDBRepository implements UserRepositoryInterface {
                 User user = getNextFromSet(resultSet);
                 users.add(user);
             }
-            return users;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -154,6 +153,52 @@ public class UserDBRepository implements UserRepositoryInterface {
             int start=(pageNr-1)*pageSize;
             statement.setInt(1,start);
             statement.setInt(2,pageSize);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                User user = getNextFromSet(resultSet);
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable,users.stream());
+    }
+
+    @Override
+    public Iterable<User> getUsersByName(String string) {
+        Set<User> users = new HashSet<>();
+        String sql = "SELECT * FROM users u where u.first_name || ' ' || u.last_name like '%' || (?) ||'%'";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1,string);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                User user = getNextFromSet(resultSet);
+                users.add(user);
+            }
+            return users;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
+    @Override
+    public Page<User> getUsersByName(String string, Pageable pageable) {
+        Set<User> users = new HashSet<>();
+        String sql = "SELECT * FROM users u where u.first_name || ' ' || u.last_name like '%' || (?) ||'%' offset (?) limit (?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1,string);
+            int pageSize=pageable.getPageSize();
+            int pageNr=pageable.getPageNumber();
+            int start=(pageNr-1)*pageSize;
+            statement.setInt(2,start);
+            statement.setInt(3,pageSize);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
