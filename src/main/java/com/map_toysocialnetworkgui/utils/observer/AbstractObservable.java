@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class AbstractObservable<E extends Event> implements Observable<E> {
-
     Collection<Observer<E>> observerList;
 
+    /**
+     * creates an array list of observers for the observable entity
+     */
     public AbstractObservable() {
-        observerList=new ArrayList<>();
+        observerList = new ArrayList<>();
     }
 
     @Override
@@ -25,6 +27,6 @@ public class AbstractObservable<E extends Event> implements Observable<E> {
 
     @Override
     public void notifyObservers(E event) {
-        observerList.forEach(observer->observer.update(event));
+        observerList.forEach(observer -> observer.update(event));
     }
 }

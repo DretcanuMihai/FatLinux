@@ -10,6 +10,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
+/**
+ * class that describes a friend request list cell for the friend requests list
+ */
 public class FriendRequestCell extends ListCell<String> {
     private static final String IDLE_BUTTON_STYLE = "-fx-focus-traversable: false; -fx-background-radius: 10px; -fx-background-color: #ff7700;";
     private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
@@ -19,6 +22,9 @@ public class FriendRequestCell extends ListCell<String> {
     Button acceptButton = new Button("Accept");
     Button declineButton = new Button("Decline");
 
+    /**
+     * creates a cell that has a label and 2 buttons
+     */
     public FriendRequestCell() {
         super();
         label.setFont(new Font(25.0));

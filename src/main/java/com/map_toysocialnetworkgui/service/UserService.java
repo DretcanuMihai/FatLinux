@@ -16,12 +16,13 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * a class that incorporates a service that works with user administration
+ * class that incorporates a service that works with user administration
  */
 public class UserService extends AbstractObservable<EntityModificationEvent<String>> {
     /**
      * associated users repo
      */
+
     private final UserRepositoryInterface usersRepo;
     /**
      * associated user validator

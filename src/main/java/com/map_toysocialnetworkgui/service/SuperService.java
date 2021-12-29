@@ -23,31 +23,36 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * controller class - it controls all services used in the application
+ * class that incorporates a super service that administers the other service classes
  */
 public class SuperService {
     /**
-     * associated UserService
+     * associated user service
      */
     private final UserService userService;
+
     /**
-     * associated FriendshipService
+     * associated friendship service
      */
     private final FriendshipService friendshipService;
+
     /**
-     * associated FriendshipService
+     * associated friend request service
      */
     private final FriendRequestService friendRequestService;
+
     /**
-     * associated MessageService
+     * associated message service
      */
     private final MessageService messageService;
 
     /**
-     * Creates a Controller with said services
+     * creates a super service with said services
      *
-     * @param userService       - the User Service
-     * @param friendshipService - the Friendship Service
+     * @param userService          - the user service
+     * @param friendshipService    - the friendship service
+     * @param friendRequestService - the friendship request service
+     * @param messageService       - the message service
      */
     public SuperService(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, MessageService messageService) {
         this.userService = userService;
@@ -110,7 +115,7 @@ public class SuperService {
     }
 
     /**
-     * returns a collection of all user data in the form of UserDTOs
+     * returns a collection of all user data in the form of UserUIDTO
      *
      * @return said collection
      */
@@ -121,7 +126,7 @@ public class SuperService {
     }
 
     /**
-     * returns a page of user data in the form of UserDTOs
+     * returns a page of user data in the form of UserUIDTO
      *
      * @param pageable - for paging
      * @return said page
@@ -202,7 +207,7 @@ public class SuperService {
     }
 
     /**
-     * Returns a collection of all friendship data of one user identified by email in the form of FriendshipDTOs
+     * returns a collection of all friendship data of one user identified by email in the form of FriendshipDTOs
      *
      * @param userEmail - the user's email
      * @return said collection
@@ -211,7 +216,6 @@ public class SuperService {
      */
     public Collection<FriendshipDTO> getAllFriendshipDTOsOfUser(String userEmail) throws ValidationException, AdministrationException {
         User user = userService.getUserInfo(userEmail);
-
         Collection<FriendshipDTO> friendshipDTOS = new ArrayList<>();
         friendshipService.getUserFriendships(userEmail).forEach(friendship -> {
             String friendEmail = friendship.getEmails().getFirst();
@@ -226,7 +230,7 @@ public class SuperService {
     }
 
     /**
-     * Returns a page of friendship data of one user identified by email in the form of FriendshipDTOs
+     * returns a page of friendship data of one user identified by email in the form of FriendshipDTOs
      *
      * @param userEmail - the user's email
      * @param pageable  - for paging
@@ -237,14 +241,11 @@ public class SuperService {
     public Page<FriendshipDTO> getAllFriendshipDTOsOfUser(String userEmail, Pageable pageable) throws ValidationException, AdministrationException {
         validatePageable(pageable);
         User user = userService.getUserInfo(userEmail);
-
         Page<Friendship> page = friendshipService.getUserFriendships(userEmail, pageable);
         Stream<FriendshipDTO> friendshipDTOS = page.getContent().map(friendship -> {
             String friendEmail = friendship.getEmails().getFirst();
-
             if (friendEmail.equals(userEmail))
                 friendEmail = friendship.getEmails().getSecond();
-
             User friend = userService.getUserInfo(friendEmail);
             return new FriendshipDTO(friendship, user, friend);
         });
@@ -252,7 +253,7 @@ public class SuperService {
     }
 
     /**
-     * Returns all friendships of a user that were created in a specific month as DTOs
+     * returns all friendships of a user that were created in a specific month as FriendshipDTOs
      *
      * @param userEmail - email of user
      * @param month     - month in which the friendship was created
@@ -262,14 +263,11 @@ public class SuperService {
      */
     public Collection<FriendshipDTO> getAllFriendshipDTOsOfUserFromMonth(String userEmail, int month) throws ValidationException, AdministrationException {
         User user = userService.getUserInfo(userEmail);
-
         Collection<FriendshipDTO> friendshipDTOS = new ArrayList<>();
         friendshipService.getUserFriendshipsFromMonth(userEmail, month).forEach(friendship -> {
             String friendEmail = friendship.getEmails().getFirst();
-
             if (friendEmail.equals(userEmail))
                 friendEmail = friendship.getEmails().getSecond();
-
             User friend = userService.getUserInfo(friendEmail);
             friendshipDTOS.add(new FriendshipDTO(friendship, user, friend));
         });
@@ -277,7 +275,7 @@ public class SuperService {
     }
 
     /**
-     * Returns page of friendships of a user that were created in a specific month as DTOs
+     * returns a page of friendships of a user that were created in a specific month as FriendshipDTOs
      *
      * @param userEmail - email of user
      * @param month     - month in which the friendship was created
@@ -289,14 +287,11 @@ public class SuperService {
     public Page<FriendshipDTO> getAllFriendshipDTOsOfUserFromMonth(String userEmail, int month, Pageable pageable) throws ValidationException, AdministrationException {
         validatePageable(pageable);
         User user = userService.getUserInfo(userEmail);
-
         Page<Friendship> page = friendshipService.getUserFriendshipsFromMonth(userEmail, month, pageable);
         Stream<FriendshipDTO> friendships = page.getContent().map(friendship -> {
             String friendEmail = friendship.getEmails().getFirst();
-
             if (friendEmail.equals(userEmail))
                 friendEmail = friendship.getEmails().getSecond();
-
             User friend = userService.getUserInfo(friendEmail);
             return new FriendshipDTO(friendship, user, friend);
         });
@@ -304,7 +299,7 @@ public class SuperService {
     }
 
     /**
-     * sends a root message (a message that isn't a reply) to some users
+     * sends a root message (a message that isn't a reply) to one or more users
      *
      * @param fromEmail      - sender email
      * @param toEmails       - a list of destination emails
@@ -334,6 +329,7 @@ public class SuperService {
      */
     public void sendReplyMessage(String fromEmail, String messageText, String messageSubject, Integer parentID)
             throws ValidationException, AdministrationException {
+
         userService.getUserInfo(fromEmail);
         messageService.addReplyMessage(fromEmail, messageText, messageSubject, parentID);
     }
@@ -351,6 +347,7 @@ public class SuperService {
      */
     public void sendReplyAllMessage(String fromEmail, String messageText, String messageSubject, Integer parentID)
             throws ValidationException, AdministrationException {
+
         userService.getUserInfo(fromEmail);
         messageService.addReplyAllMessage(fromEmail, messageText, messageSubject, parentID);
     }
@@ -383,7 +380,9 @@ public class SuperService {
      * @throws AdministrationException if the users do not exist
      * @throws ValidationException     if emails or the pageable is invalid
      */
-    public Page<MessageDTO> getConversation(String email1, String email2, Pageable pageable) throws ValidationException, AdministrationException {
+    public Page<MessageDTO> getConversation(String email1, String email2, Pageable pageable)
+            throws ValidationException, AdministrationException {
+
         validatePageable(pageable);
         userService.getUserInfo(email1);
         userService.getUserInfo(email2);
@@ -403,6 +402,7 @@ public class SuperService {
     public void sendFriendRequest(String sender, String receiver) throws ValidationException, AdministrationException {
         userService.verifyEmailCollection(List.of(sender, receiver));
         Friendship friendship = null;
+
         try {
             friendship = friendshipService.getFriendship(sender, receiver);
         } catch (AdministrationException ignored) {
@@ -422,7 +422,9 @@ public class SuperService {
      * @throws ValidationException     - if any data is invalid
      * @throws AdministrationException - if any administrative problem occurs
      */
-    public void confirmFriendRequest(String sender, String receiver, boolean accepted) throws ValidationException, AdministrationException {
+    public void confirmFriendRequest(String sender, String receiver, boolean accepted)
+            throws ValidationException, AdministrationException {
+
         userService.verifyEmailCollection(List.of(sender, receiver));
         friendRequestService.deleteFriendRequest(sender, receiver);
         if (accepted)
@@ -439,6 +441,7 @@ public class SuperService {
      */
     public Collection<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail)
             throws ValidationException, AdministrationException {
+
         User receiver = userService.getUserInfo(userEmail);
         Collection<FriendRequestDTO> friendRequestDTOS = new ArrayList<>();
         friendRequestService.getFriendRequestsSentToUser(userEmail).forEach(
@@ -460,6 +463,7 @@ public class SuperService {
      */
     public Page<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail, Pageable pageable)
             throws ValidationException, AdministrationException {
+
         validatePageable(pageable);
         User receiver = userService.getUserInfo(userEmail);
         Page<FriendRequest> page = friendRequestService.getFriendRequestsSentToUser(userEmail, pageable);
@@ -534,7 +538,7 @@ public class SuperService {
     }
 
     /**
-     * returns an iterable of all the users in repo with certain string inside of them
+     * returns an iterable of all the users in repo with certain string inside them
      *
      * @param string - said string
      * @return said iterable
@@ -564,7 +568,7 @@ public class SuperService {
     }
 
     /**
-     * returns the messages sent to an user
+     * returns the messages sent to a user
      *
      * @param email - first user's email
      * @return an iterable of the messages
@@ -579,7 +583,7 @@ public class SuperService {
     }
 
     /**
-     * returns the messages sent to an user
+     * returns the messages sent to a user
      *
      * @param email    - first user's email
      * @param pageable - for paging
@@ -596,7 +600,7 @@ public class SuperService {
     }
 
     /**
-     * returns the messages sent by an user
+     * returns the messages sent by a user
      *
      * @param email - first user's email
      * @return an iterable of the messages
@@ -611,7 +615,7 @@ public class SuperService {
     }
 
     /**
-     * returns the messages sent by an user
+     * returns the messages sent by a user
      *
      * @param email    - first user's email
      * @param pageable - for paging

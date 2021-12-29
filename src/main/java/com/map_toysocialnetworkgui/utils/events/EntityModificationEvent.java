@@ -1,18 +1,18 @@
 package com.map_toysocialnetworkgui.utils.events;
 
 /**
- * a class that describes an event for a modification of an entity
+ * class that describes an event for a modification of an entity
  *
  * @param <ID> - the entity's id type
  */
-public class EntityModificationEvent<ID> implements Event{
+public class EntityModificationEvent<ID> implements Event {
     private final ChangeEventType type;
     private final ID modifiedEntityID;
 
     /**
      * create an event
      *
-     * @param type - event's type
+     * @param type             - event's type
      * @param modifiedEntityID - the id of the entity modified
      */
     public EntityModificationEvent(ChangeEventType type, ID modifiedEntityID) {

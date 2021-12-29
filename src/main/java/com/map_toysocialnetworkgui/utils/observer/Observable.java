@@ -1,10 +1,9 @@
 package com.map_toysocialnetworkgui.utils.observer;
 
-
 import com.map_toysocialnetworkgui.utils.events.Event;
 
 /**
- * Observable class for observer pattern
+ * observable class for observer pattern
  *
  * @param <E> - event type
  */

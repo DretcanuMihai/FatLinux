@@ -14,13 +14,14 @@ import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 import java.time.LocalDate;
 
 /**
- * a class that incorporates a service that works with friendship administration
+ * class that incorporates a service that works with friendship administration
  */
 public class FriendshipService extends AbstractObservable<EntityModificationEvent<UnorderedPair<String>>> {
     /**
      * associated friendship repo
      */
     private final FriendshipRepositoryInterface friendshipRepo;
+
     /**
      * associated friendship validator
      */
@@ -29,19 +30,17 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
     /**
      * creates a friendship service based on a friendship repository and validator
      *
-     * @param friendshipRepo          - said friend repository
-     * @param friendshipValidator     - said friend validator
+     * @param friendshipRepo      - said friend repository
+     * @param friendshipValidator - said friend validator
      */
-    public FriendshipService(FriendshipRepositoryInterface friendshipRepo, FriendshipValidator friendshipValidator)
-    {
-
+    public FriendshipService(FriendshipRepositoryInterface friendshipRepo, FriendshipValidator friendshipValidator) {
         this.friendshipRepo = friendshipRepo;
         this.friendshipValidator = friendshipValidator;
     }
 
     /**
      * adds a friendship between two users identified by email
-     * Said user emails are assumed to belong to actual valid users
+     * said user emails are assumed to belong to actual valid users
      *
      * @param userEmail1 - first user's email
      * @param userEmail2 - second user's email
@@ -51,10 +50,10 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
     public void addFriendship(String userEmail1, String userEmail2) throws ValidationException, AdministrationException {
         Friendship friendship = new Friendship(userEmail1, userEmail2, LocalDate.now());
         friendshipValidator.validateDefault(friendship);
-        Friendship result=friendshipRepo.save(friendship);
-        if(result!=null)
+        Friendship result = friendshipRepo.save(friendship);
+        if (result != null)
             throw new AdministrationException("Error: users are already friends;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,friendship.getId()));
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, friendship.getId()));
     }
 
     /**
@@ -78,7 +77,7 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
 
     /**
      * deletes a friendship between two users identified by email
-     * Said user emails are assumed to belong to actual valid users
+     * said user emails are assumed to belong to actual valid users
      *
      * @param userEmail1 - first user's email
      * @param userEmail2 - second user's email
@@ -87,10 +86,10 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
      */
     public void deleteFriendship(String userEmail1, String userEmail2) throws ValidationException, AdministrationException {
         friendshipValidator.validateEmails(userEmail1, userEmail2);
-        Friendship result=friendshipRepo.delete(new UnorderedPair<>(userEmail1, userEmail2));
-        if(result==null)
+        Friendship result = friendshipRepo.delete(new UnorderedPair<>(userEmail1, userEmail2));
+        if (result == null)
             throw new AdministrationException("Error: users weren't friends;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.DELETE,new UnorderedPair<>(userEmail1,userEmail2)));
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.DELETE, new UnorderedPair<>(userEmail1, userEmail2)));
     }
 
     /**
@@ -114,7 +113,7 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
     }
 
     /**
-     * Returns all friendships of a user that were created in a specific month
+     * returns all friendships of a user that were created in a specific month
      *
      * @param userEmail - email of user
      * @param month     - month in which the friendship was created
@@ -124,14 +123,13 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
     public Iterable<Friendship> getUserFriendshipsFromMonth(String userEmail, int month) throws ValidationException {
         if (month < 1 || month > 12)
             throw new ValidationException("Error: Invalid month!\n");
-
         return friendshipRepo.getUserFriendshipsFromMonth(userEmail, month);
     }
 
     /**
      * gets all existing friendships
-     * @param pageable - for paging
      *
+     * @param pageable - for paging
      * @return a collection of said friendships
      */
     public Page<Friendship> getAllFriendships(Pageable pageable) {
@@ -143,28 +141,25 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
      * the email is assumed to belong to an actual valid user
      *
      * @param userEmail - said user's email
-     * @param pageable - for paging
+     * @param pageable  - for paging
      * @return a page of said friendships
      */
-    public Page<Friendship> getUserFriendships(String userEmail,Pageable pageable) {
-        return friendshipRepo.getUserFriendships(userEmail,pageable);
+    public Page<Friendship> getUserFriendships(String userEmail, Pageable pageable) {
+        return friendshipRepo.getUserFriendships(userEmail, pageable);
     }
 
     /**
-     * Returns a page of all friendships of a user that were created in a specific month
+     * returns a page of all friendships of a user that were created in a specific month
      *
      * @param userEmail - email of user
      * @param month     - month in which the friendship was created
-     * @param pageable - for paging
+     * @param pageable  - for paging
      * @return a page of said friendships
      * @throws ValidationException if month is invalid
      */
     public Page<Friendship> getUserFriendshipsFromMonth(String userEmail, int month, Pageable pageable) throws ValidationException {
         if (month < 1 || month > 12)
             throw new ValidationException("Error: Invalid month!\n");
-
-        return friendshipRepo.getUserFriendshipsFromMonth(userEmail, month,pageable);
+        return friendshipRepo.getUserFriendshipsFromMonth(userEmail, month, pageable);
     }
-
-
 }
