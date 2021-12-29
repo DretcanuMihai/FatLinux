@@ -149,4 +149,46 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
             throw new ValidationException("Error: user emails must be different;\n");
         return messageRepo.getMessagesBetweenUsersChronologically(email1, email2,pageable);
     }
+
+    /**
+     * returns the messages sent to an user
+     *
+     * @param email - first user's email
+     * @return an iterable of the messages
+     */
+    public Iterable<Message> getMessagesSentToUser(String email){
+        return messageRepo.getMessagesSentToUserChronologically(email);
+    }
+
+    /**
+     * returns the messages sent to an user
+     *
+     * @param email - first user's email
+     * @param pageable - for paging
+     * @return said page
+     */
+    public Page<Message> getMessagesSentToUser(String email, Pageable pageable){
+        return messageRepo.getMessagesSentToUserChronologically(email,pageable);
+    }
+
+    /**
+     * returns the messages sent by an user
+     *
+     * @param email - first user's email
+     * @return an iterable of the messages
+     */
+    public Iterable<Message> getMessagesSentByUser(String email){
+        return messageRepo.getMessagesSentByUserChronologically(email);
+    }
+
+    /**
+     * returns the messages sent by an user
+     *
+     * @param email - first user's email
+     * @param pageable - for paging
+     * @return said page
+     */
+    public Page<Message> getMessagesSentByUser(String email, Pageable pageable){
+        return messageRepo.getMessagesSentByUserChronologically(email,pageable);
+    }
 }
