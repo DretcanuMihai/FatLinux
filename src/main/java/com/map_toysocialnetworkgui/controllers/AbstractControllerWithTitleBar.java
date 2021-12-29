@@ -25,18 +25,16 @@ public class AbstractControllerWithTitleBar {
     Image appMaximizeHoveredButton = new Image("com/map_toysocialnetworkgui/images/maxHover.png");
     Image appMinimiseHoveredButton = new Image("com/map_toysocialnetworkgui/images/minHover.png");
 
-    @FXML
-    public void initialize() {
+    public void setTitleBarOnMousePressedDragWindow() {
         titleBar.setOnMousePressed(pressEvent -> titleBar.setOnMouseDragged(dragEvent -> {
             Stage stage = (Stage) ((Pane) dragEvent.getSource()).getScene().getWindow();
             stage.setX(dragEvent.getScreenX() - pressEvent.getSceneX());
             stage.setY(dragEvent.getScreenY() - pressEvent.getSceneY());
         }));
+    }
 
+    public void initAppExitButton() {
         Image exitButtonImage = appExitButton.getImage();
-        Image maximizeButtonImage = appMaximizeButton.getImage();
-        Image minimizeButtonImage = appMinimizeButton.getImage();
-
         appExitButton.setOnMouseClicked(event -> {
             Platform.exit();
         });
@@ -46,6 +44,10 @@ public class AbstractControllerWithTitleBar {
         appExitButton.setOnMouseExited(event -> {
             appExitButton.setImage(exitButtonImage);
         });
+    }
+
+    public void initAppMinimizeButton() {
+        Image minimizeButtonImage = appMinimizeButton.getImage();
         appMinimizeButton.setOnMouseClicked(event -> {
             Stage stage = (Stage) ((ImageView) event.getSource()).getScene().getWindow();
             stage.setIconified(true);
@@ -56,6 +58,10 @@ public class AbstractControllerWithTitleBar {
         appMinimizeButton.setOnMouseExited(event -> {
             appMinimizeButton.setImage(minimizeButtonImage);
         });
+    }
+
+    public void initAppMaximizeButton() {
+        Image maximizeButtonImage = appMaximizeButton.getImage();
         appMaximizeButton.setOnMouseClicked(event -> {
             Stage stage = (Stage) ((ImageView) event.getSource()).getScene().getWindow();
             stage.setMaximized(!stage.isMaximized());
@@ -66,6 +72,14 @@ public class AbstractControllerWithTitleBar {
         appMaximizeButton.setOnMouseExited(event -> {
             appMaximizeButton.setImage(maximizeButtonImage);
         });
+    }
+
+    @FXML
+    public void initialize() {
+        setTitleBarOnMousePressedDragWindow();
+        initAppExitButton();
+        initAppMinimizeButton();
+        initAppMaximizeButton();
     }
 
     public void setService(SuperService service) {

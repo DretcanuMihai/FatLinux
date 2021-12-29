@@ -21,18 +21,18 @@ public class SearchFriendsController extends AbstractController {
     @FXML
     Label searchFailedLabel;
 
+    @FXML
+    public void initialize() {
+        searchFriendsList.setCellFactory(param -> new UserCell());
+        searchFriendsList.setItems(modelSearch);
+    }
+
     public void setLoggedUser(UserUIDTO loggedUser) {
         this.loggedUser = loggedUser;
     }
 
     public void setSearchText(String searchText) {
         this.searchText = searchText;
-    }
-
-    @FXML
-    public void initialize() {
-        searchFriendsList.setCellFactory(param -> new UserCell());
-        searchFriendsList.setItems(modelSearch);
     }
 
     public void updateModelUsers() {

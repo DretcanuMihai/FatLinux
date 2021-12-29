@@ -28,16 +28,16 @@ public class FriendsViewController extends AbstractController {
     @FXML
     Button viewFriendRequestsButton;
 
-    public void setLoggedUser(UserUIDTO loggedUser) {
-        this.loggedUser = loggedUser;
-    }
-
     @FXML
     public void initialize() {
         friendsList.setCellFactory(param -> new FriendCell());
         friendsList.setItems(modelFriends);
         requestsList.setCellFactory(param -> new FriendRequestCell());
         requestsList.setItems(modelRequests);
+    }
+
+    public void setLoggedUser(UserUIDTO loggedUser) {
+        this.loggedUser = loggedUser;
     }
 
     public void updateModelFriends() {

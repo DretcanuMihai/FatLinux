@@ -37,7 +37,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" layoutX="250.0" prefHeight="50.0" prefWidth="390.0" spacing="20.0">
+            <HBox alignment="CENTER" layoutX="250.0" prefHeight="50.0" prefWidth="390.0" spacing="30.0">
                <children>
                   <Button fx:id="replyButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply">
                      <font>
@@ -49,7 +49,7 @@
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="composeButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Compose">
+                  <Button fx:id="composeButton" mnemonicParsing="false" onAction="#openComposeMessageWindow" styleClass="inboxMessagingButtons" text="Compose">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -62,7 +62,10 @@
    <center>
       <AnchorPane BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="messageTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0" />
+            <TextArea fx:id="messageTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+               <font>
+                  <Font size="14.0" />
+               </font></TextArea>
             <Label layoutX="12.0" layoutY="14.0" text="From:">
                <font>
                   <Font size="13.0" />
@@ -78,9 +81,18 @@
                   <Font size="13.0" />
                </font>
             </Label>
-            <TextField fx:id="fromLabel" editable="false" layoutX="73.0" layoutY="11.0" prefHeight="26.0" prefWidth="300.0" />
-            <TextField fx:id="toLabel" editable="false" layoutX="73.0" layoutY="39.0" prefHeight="26.0" prefWidth="300.0" />
-            <TextField fx:id="subjectLabel" editable="false" layoutX="73.0" layoutY="67.0" prefHeight="26.0" prefWidth="300.0" />
+            <TextField fx:id="fromTextField" editable="false" layoutX="73.0" layoutY="11.0" prefHeight="26.0" prefWidth="300.0">
+               <font>
+                  <Font size="13.0" />
+               </font></TextField>
+            <TextField fx:id="toTextField" editable="false" layoutX="73.0" layoutY="39.0" prefHeight="26.0" prefWidth="300.0">
+               <font>
+                  <Font size="13.0" />
+               </font></TextField>
+            <TextField fx:id="subjectTextField" editable="false" layoutX="73.0" layoutY="67.0" prefHeight="26.0" prefWidth="300.0">
+               <font>
+                  <Font size="13.0" />
+               </font></TextField>
          </children>
       </AnchorPane>
    </center>

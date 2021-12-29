@@ -95,7 +95,7 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                        <JFXButton alignment="BASELINE_LEFT" layoutX="10.0" layoutY="60.0" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="FATLook" textFill="#ff7700">
+                        <JFXButton fx:id="inboxButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="60.0" onAction="#showInbox" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="FATLook" textFill="#ff7700">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
