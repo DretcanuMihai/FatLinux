@@ -25,4 +25,38 @@ public interface MessageRepositoryInterface extends PagingRepository<Integer, Me
      * @return said page
      */
     Page<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2, Pageable pageable);
+
+    /**
+     * gets an iterable of all the messages sent to a user sorted chronologically
+     *
+     * @param userEmail - said user's email
+     * @return said iterable
+     */
+    Iterable<Message> getMessagesSentToUserChronologically(String userEmail);
+
+    /**
+     * gets a page of all the messages sent to a user sorted chronologically
+     *
+     * @param userEmail - said user's email
+     * @param pageable - for paging
+     * @return said page
+     */
+    Page<Message> getMessagesSentToUserChronologically(String userEmail, Pageable pageable);
+
+    /**
+     * gets an iterable of all the messages sent by a user sorted chronologically
+     *
+     * @param userEmail - said user's email
+     * @return said iterable
+     */
+    Iterable<Message> getMessagesSentByUserChronologically(String userEmail);
+
+    /**
+     * gets a page of all the messages sent by a user sorted chronologically
+     *
+     * @param userEmail - said user's email
+     * @param pageable - for paging
+     * @return said page
+     */
+    Page<Message> getMessagesSentByUserChronologically(String userEmail, Pageable pageable);
 }
