@@ -12,19 +12,33 @@ import javafx.scene.layout.BorderPane;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * controller for main view
+ */
 public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
-    // Data
+    /**
+     * currently logged-in user
+     */
     UserUIDTO loggedUser;
-    // Controllers
+
+    /**
+     * controllers for child views
+     */
     SearchFriendsController searchFriendsController;
     InboxController inboxController;
     FriendsViewController friendsViewController;
-    // View parents
+
+    /**
+     * child views' parents
+     */
     Parent mainPageRoot;
     Parent searchForFriendRoot;
     Parent inboxRoot;
     Parent showFriendsRoot;
-    // FXML
+
+    /**
+     * FXML data
+     */
     @FXML
     Label userNameLabel;
     @FXML
@@ -32,6 +46,11 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     @FXML
     TextField searchBar;
 
+    /**
+     * initiates loaders and controllers for child views
+     *
+     * @throws IOException if an IO error occurs
+     */
     private void initLoadersAndControllers() throws IOException {
         URL mainPageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/mainPage-view.fxml");
         URL searchForFriendURL = getClass().getResource("/com/map_toysocialnetworkgui/views/searchFriend-view.fxml");
@@ -53,6 +72,9 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         this.friendsViewController = showFriendsLoader.getController();
     }
 
+    /**
+     * initiates search bar's functionality
+     */
     private void initSearchBar() {
         this.searchBar.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
@@ -63,6 +85,13 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         });
     }
 
+    /**
+     * initiates the main controller with the currently logged-in user
+     * shows the main page view
+     *
+     * @param user - said user
+     * @throws IOException if an IO error occurs
+     */
     public void init(UserUIDTO user) throws IOException {
         initLoadersAndControllers();
         initSearchBar();
@@ -71,15 +100,24 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         showMainPage();
     }
 
+    /**
+     * shows the main page view
+     */
     public void showMainPage() {
         mainBorderPane.setCenter(mainPageRoot);
     }
 
+    /**
+     * initiates search bar's controller
+     */
     public void searchForFriend() {
         searchFriendsController.setLoggedUser(loggedUser);
         searchFriendsController.setService(this.service);
     }
 
+    /**
+     * shows the inbox view
+     */
     public void showInbox() {
         inboxController.setLoggedUser(loggedUser);
         inboxController.setService(this.service);
@@ -87,6 +125,9 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         mainBorderPane.setCenter(inboxRoot);
     }
 
+    /**
+     * shows the friends view
+     */
     public void showFriends() {
         friendsViewController.setLoggedUser(loggedUser);
         friendsViewController.setService(this.service);
@@ -94,6 +135,11 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         mainBorderPane.setCenter(showFriendsRoot);
     }
 
+    /**
+     * logs out the currently logged-in user
+     *
+     * @throws IOException if an IO error occurs
+     */
     public void logout() throws IOException {
         application.changeToLogin();
     }

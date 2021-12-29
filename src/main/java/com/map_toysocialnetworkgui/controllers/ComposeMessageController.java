@@ -1,7 +1,5 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.model.entities.Message;
-import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
@@ -13,14 +11,21 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * controller for compose message view
+ */
 public class ComposeMessageController extends AbstractControllerWithTitleBar {
-    // Data
+    /**
+     * currently logged-in user
+     */
     UserUIDTO loggedUser;
-    // FXML
+
+    /**
+     * FXML data
+     */
     @FXML
     Button closeComposeMessageWindowButton;
     @FXML
@@ -32,6 +37,9 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
     @FXML
     TextArea messageTextArea;
 
+    /**
+     * makes the exit button able to only close the associated window
+     */
     @Override
     public void initAppExitButton() {
         Image exitButtonImage = appExitButton.getImage();
@@ -47,18 +55,34 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
         });
     }
 
+    /**
+     * sets the currently logged-in user
+     *
+     * @param loggedUser - said user
+     */
     public void setLoggedUser(UserUIDTO loggedUser) {
         this.loggedUser = loggedUser;
     }
 
+    /**
+     * sets the sender as the currently logged-in user
+     */
     public void init() {
         fromTextField.setPromptText(loggedUser.getEmail());
     }
 
+    /**
+     * closes the window
+     */
     public void close() {
         ((Stage) closeComposeMessageWindowButton.getScene().getWindow()).close();
     }
 
+    /**
+     * sends a message
+     * raises a warning window if there are any exceptions
+     * raises an information window if the message has been successfully sent
+     */
     public void sendMessage() {
         try {
             String fromEmail = fromTextField.getPromptText();
@@ -66,10 +90,7 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
             String messageSubject = subjectTextField.getText();
             String messageText = messageTextArea.getText();
 
-            Message message = new Message(null, fromEmail, toEmails, messageText, messageSubject, LocalDateTime.now(), null);
-            MessageDTO messageDTO = new MessageDTO(message);
-            this.service.sendRootMessage(messageDTO);
-
+            this.service.sendRootMessage(fromEmail, toEmails, messageText, messageSubject);
             this.close();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success!");

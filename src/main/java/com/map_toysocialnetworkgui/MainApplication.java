@@ -27,13 +27,21 @@ import java.io.IOException;
 import java.net.URL;
 
 public class MainApplication extends Application {
-    // Business
+    /**
+     * business
+     */
     SuperService service;
-    // Loader files
+
+    /**
+     * loader files
+     */
     URL loginFXMLURL;
     URL mainFXMLURL;
     URL registerFXMLURL;
-    // Stages
+
+    /**
+     * stages
+     */
     Stage primaryStage;
 
     public static void main(String[] args) {
@@ -57,7 +65,7 @@ public class MainApplication extends Application {
         MessageValidator messageValidator = new MessageValidator();
         FriendRequestValidator friendRequestValidator = new FriendRequestValidator();
 
-        //Services
+        // Services
         UserService userService = new UserService(userRepo, userValidator);
         FriendshipService friendshipService = new FriendshipService(friendshipRepo, friendshipValidator);
         FriendRequestService friendRequestService = new FriendRequestService(friendRequestRepository, friendRequestValidator);
@@ -65,6 +73,9 @@ public class MainApplication extends Application {
         this.service = new SuperService(userService, friendshipService, friendRequestService, messageService);
     }
 
+    /**
+     * initiates FXML URLs
+     */
     private void initURLs() {
         loginFXMLURL = getClass().getResource("views/login-view.fxml");
         mainFXMLURL = getClass().getResource("views/main-view.fxml");
@@ -77,6 +88,13 @@ public class MainApplication extends Application {
         initURLs();
     }
 
+    /**
+     * initiates a loader with a URL
+     *
+     * @param url - said URL
+     * @return said loader
+     * @throws IOException if an IO error occurs
+     */
     private FXMLLoader initLoader(URL url) throws IOException {
         FXMLLoader loader = new FXMLLoader(url);
         loader.load();
@@ -86,6 +104,11 @@ public class MainApplication extends Application {
         return loader;
     }
 
+    /**
+     * changes the main window
+     *
+     * @param loader - loader of the new window
+     */
     private void modifyMainWindowWith(FXMLLoader loader) {
         Parent parent = loader.getRoot();
         Scene scene = new Scene(parent);
@@ -93,6 +116,12 @@ public class MainApplication extends Application {
         primaryStage.centerOnScreen();
     }
 
+    /**
+     * changes to main view
+     *
+     * @param user - currently logged-in user
+     * @throws IOException if an IO error occurs
+     */
     public void changeToMain(UserUIDTO user) throws IOException {
         FXMLLoader mainLoader = initLoader(mainFXMLURL);
         MainControllerWithTitleBar controller = mainLoader.getController();
@@ -100,11 +129,21 @@ public class MainApplication extends Application {
         modifyMainWindowWith(mainLoader);
     }
 
+    /**
+     * changes to register view
+     *
+     * @throws IOException if an IO error occurs
+     */
     public void changeToRegister() throws IOException {
         FXMLLoader registerLoader = initLoader(registerFXMLURL);
         modifyMainWindowWith(registerLoader);
     }
 
+    /**
+     * changes to login view
+     *
+     * @throws IOException if an IO error occurs
+     */
     public void changeToLogin() throws IOException {
         FXMLLoader loginLoader = initLoader(loginFXMLURL);
         modifyMainWindowWith(loginLoader);

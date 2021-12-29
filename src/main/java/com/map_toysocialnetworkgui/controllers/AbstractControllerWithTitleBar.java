@@ -9,10 +9,23 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+/**
+ * class that describes an abstract view controller with a custom title bar
+ */
 public class AbstractControllerWithTitleBar {
+    /**
+     * associated super service
+     */
     protected SuperService service;
+
+    /**
+     * associated application
+     */
     protected MainApplication application;
-    // Window control buttons and title bar
+
+    /**
+     * Window control buttons and title bar
+     */
     @FXML
     ImageView appExitButton;
     @FXML
@@ -25,6 +38,9 @@ public class AbstractControllerWithTitleBar {
     Image appMaximizeHoveredButton = new Image("com/map_toysocialnetworkgui/images/maxHover.png");
     Image appMinimiseHoveredButton = new Image("com/map_toysocialnetworkgui/images/minHover.png");
 
+    /**
+     * makes the title bar able to drag the window while clicked on and moved around
+     */
     public void setTitleBarOnMousePressedDragWindow() {
         titleBar.setOnMousePressed(pressEvent -> titleBar.setOnMouseDragged(dragEvent -> {
             Stage stage = (Stage) ((Pane) dragEvent.getSource()).getScene().getWindow();
@@ -33,6 +49,9 @@ public class AbstractControllerWithTitleBar {
         }));
     }
 
+    /**
+     * initiates exit button look and functionality
+     */
     public void initAppExitButton() {
         Image exitButtonImage = appExitButton.getImage();
         appExitButton.setOnMouseClicked(event -> {
@@ -46,6 +65,9 @@ public class AbstractControllerWithTitleBar {
         });
     }
 
+    /**
+     * initiates minimize button look and functionality
+     */
     public void initAppMinimizeButton() {
         Image minimizeButtonImage = appMinimizeButton.getImage();
         appMinimizeButton.setOnMouseClicked(event -> {
@@ -60,6 +82,9 @@ public class AbstractControllerWithTitleBar {
         });
     }
 
+    /**
+     * initiates maximize button look and functionality
+     */
     public void initAppMaximizeButton() {
         Image maximizeButtonImage = appMaximizeButton.getImage();
         appMaximizeButton.setOnMouseClicked(event -> {
@@ -82,10 +107,20 @@ public class AbstractControllerWithTitleBar {
         initAppMaximizeButton();
     }
 
+    /**
+     * sets associated super service
+     *
+     * @param service - said super service
+     */
     public void setService(SuperService service) {
         this.service = service;
     }
 
+    /**
+     * sets associated application
+     *
+     * @param application - said application
+     */
     public void setApplication(MainApplication application) {
         this.application = application;
     }

@@ -1,6 +1,5 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.model.entities_dto.UserServiceDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.fxml.FXML;
@@ -11,7 +10,13 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 
+/**
+ * controller for register view
+ */
 public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleBar {
+    /**
+     * FXML data
+     */
     @FXML
     TextField firstNameTextField;
     @FXML
@@ -27,6 +32,9 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
     @FXML
     Label registerPasswordMatchErrorLabel;
 
+    /**
+     * clears all text fields and text areas
+     */
     public void clearAllFields() {
         firstNameTextField.clear();
         lastNameTextField.clear();
@@ -35,6 +43,10 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
         confirmPasswordTextField.clear();
     }
 
+    /**
+     * signs up a user
+     * raises a warning window if there are any exceptions
+     */
     public void signUp() {
         try {
             String firstName = firstNameTextField.getText();
@@ -48,8 +60,7 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
             if (passwordHash != confirmPasswordHash)
                 registerPasswordMatchErrorLabel.setText("Passwords do not match!");
             else {
-                UserServiceDTO userServiceDTO = new UserServiceDTO(email, firstName, lastName, passwordHash);
-                service.createUserAccount(userServiceDTO);
+                service.createUserAccount(email, passwordHash, firstName, lastName);
                 registerSuccessMessageLabel.setText("Account created successfully!");
                 clearAllFields();
             }
@@ -62,6 +73,11 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
         }
     }
 
+    /**
+     * changes the register window to log in window
+     *
+     * @throws IOException if an IO error occurs
+     */
     public void back() throws IOException {
         application.changeToLogin();
     }

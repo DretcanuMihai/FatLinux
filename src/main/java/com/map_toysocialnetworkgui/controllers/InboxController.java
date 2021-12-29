@@ -16,13 +16,24 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.util.Collection;
 
+/**
+ * controller for inbox view
+ */
 public class InboxController extends AbstractController {
-    // Data
+    /**
+     * currently logged-in user
+     */
     UserUIDTO loggedUser;
-    // List
+
+    /**
+     * observable lists for sent and received messages
+     */
     ObservableList<String> modelReceivedMessages = FXCollections.observableArrayList();
     ObservableList<String> modelSentMessages = FXCollections.observableArrayList();
-    // FXML
+
+    /**
+     * FXML data
+     */
     @FXML
     ListView<String> receivedMessagesList;
     @FXML
@@ -40,6 +51,11 @@ public class InboxController extends AbstractController {
     @FXML
     TextArea messageTextArea;
 
+    /**
+     * modifies a list view's cell height and font
+     *
+     * @param list - said list
+     */
     public void setCustomCell(ListView<String> list) {
         list.setCellFactory(lst -> new ListCell<>() {
             @Override
@@ -64,10 +80,18 @@ public class InboxController extends AbstractController {
         sentMessagesList.setItems(modelSentMessages);
     }
 
+    /**
+     * sets the currently logged-in user
+     *
+     * @param loggedUser - said user
+     */
     public void setLoggedUser(UserUIDTO loggedUser) {
         this.loggedUser = loggedUser;
     }
 
+    /**
+     * clears all text fields and text areas
+     */
     private void clearAllFields() {
         fromTextField.clear();
         toTextField.clear();
@@ -75,6 +99,10 @@ public class InboxController extends AbstractController {
         messageTextArea.clear();
     }
 
+    /**
+     * updates the observable list of received messages
+     * selected message will display the contents of the message and show reply and reply all buttons
+     */
     public void updateModelReceivedMessages() {
         Collection<MessageDTO> receivedMessages = service.getConversation(loggedUser.getEmail(), "test@yahoo.com");
         Collection<String> receivedMessagesSubjects = receivedMessages.stream()
@@ -103,10 +131,17 @@ public class InboxController extends AbstractController {
         modelReceivedMessages.setAll(receivedMessagesSubjects);
     }
 
+    /**
+     * updates the observable list of sent messages
+     * selected message will display the contents of the message and show reply and reply all buttons
+     */
     public void updateModelSentMessages() {
         // TODO
     }
 
+    /**
+     * hides the sent messages list and shows the received messages list
+     */
     public void viewReceivedMessages() {
         this.receivedMessagesList.setVisible(true);
         this.sentMessagesList.setVisible(false);
@@ -115,6 +150,9 @@ public class InboxController extends AbstractController {
         replyAllButton.setVisible(false);
     }
 
+    /**
+     * hides the received messages list and shows the sent messages list
+     */
     public void viewSentMessages() {
         this.receivedMessagesList.setVisible(false);
         this.sentMessagesList.setVisible(true);
@@ -123,6 +161,11 @@ public class InboxController extends AbstractController {
         replyAllButton.setVisible(false);
     }
 
+    /**
+     * opens the message composing window
+     *
+     * @throws IOException if an IO error occurs
+     */
     public void openComposeMessageWindow() throws IOException {
         FXMLLoader composeMessageWindowLoader = new FXMLLoader(getClass()
                 .getResource("/com/map_toysocialnetworkgui/views/composeMessage-view.fxml"));
@@ -141,6 +184,11 @@ public class InboxController extends AbstractController {
         composeMessageStage.show();
     }
 
+    /**
+     * initiates the lists
+     * received messages list is by default visible
+     * reply and replyAll buttons are by default hidden
+     */
     public void init() {
         updateModelReceivedMessages();
         updateModelSentMessages();
