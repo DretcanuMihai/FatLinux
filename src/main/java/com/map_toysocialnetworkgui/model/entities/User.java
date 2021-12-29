@@ -8,33 +8,30 @@ import java.util.Objects;
  */
 public class User extends Entity<String> {
     /**
+     * associated join date
+     */
+    private final LocalDate joinDate;
+    /**
      * associated first name
      */
     private String firstName;
-
     /**
      * associated last name
      */
     private String lastName;
-
     /**
      * associated passwordHash
      */
     private int passwordHash;
 
     /**
-     * associated join date
-     */
-    private final LocalDate joinDate;
-
-    /**
-     * Creates a user based on the given information
+     * creates a user based on the given information
      *
-     * @param email         - user's email
-     * @param passwordHash  - user's password's hashcode
-     * @param firstName     - user's first name
-     * @param lastName      - user's last name
-     * @param joinDate      - the date the user joined
+     * @param email        - user's email
+     * @param passwordHash - user's password's hashcode
+     * @param firstName    - user's first name
+     * @param lastName     - user's last name
+     * @param joinDate     - the date the user joined
      */
     public User(String email, int passwordHash, String firstName, String lastName, LocalDate joinDate) {
         super(email);

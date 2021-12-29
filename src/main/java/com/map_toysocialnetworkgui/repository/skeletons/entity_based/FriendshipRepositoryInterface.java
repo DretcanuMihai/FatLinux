@@ -6,9 +6,10 @@ import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PagingRepository;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
+/**
+ * the interface for a generic paging friendship repository
+ */
 public interface FriendshipRepositoryInterface extends PagingRepository<UnorderedPair<String>, Friendship> {
-
-
     /**
      * gets all existing friendships to which a user belongs
      *
@@ -30,7 +31,7 @@ public interface FriendshipRepositoryInterface extends PagingRepository<Unordere
      * gets a page of the existing friendships to which a user belongs
      *
      * @param userEmail - said user's email
-     * @param pageable - for paging
+     * @param pageable  - for paging
      * @return the said page
      */
     Page<Friendship> getUserFriendships(String userEmail, Pageable pageable);
@@ -40,8 +41,8 @@ public interface FriendshipRepositoryInterface extends PagingRepository<Unordere
      *
      * @param userEmail - said user's email
      * @param month     - said month's number
-     * @param pageable - for paging
+     * @param pageable  - for paging
      * @return the page
      */
-    Page<Friendship> getUserFriendshipsFromMonth(String userEmail, int month,Pageable pageable);
+    Page<Friendship> getUserFriendshipsFromMonth(String userEmail, int month, Pageable pageable);
 }

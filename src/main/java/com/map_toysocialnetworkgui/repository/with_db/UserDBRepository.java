@@ -1,6 +1,5 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
-
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
@@ -13,10 +12,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * a user repository that works with a database
+ * database repository for user
  */
 public class UserDBRepository implements UserRepositoryInterface {
-
     /**
      * the database's URL
      */
@@ -31,7 +29,7 @@ public class UserDBRepository implements UserRepositoryInterface {
     private final String password;
 
     /**
-     * constructor
+     * creates a database repository with an url, a username and a password
      *
      * @param url      - url of database
      * @param username - username of database
@@ -66,6 +64,7 @@ public class UserDBRepository implements UserRepositoryInterface {
     public Iterable<User> findAll() {
         Set<User> users = new HashSet<>();
         String sql = "SELECT * FROM users";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
@@ -83,7 +82,8 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public User save(User user) {
         User toReturn = user;
-        String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date) values (?, ?, ?, ?, ?)";
+        String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date) VALUES (?, ?, ?, ?, ?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
 
@@ -94,7 +94,6 @@ public class UserDBRepository implements UserRepositoryInterface {
             statementSave.setDate(5, Date.valueOf(user.getJoinDate()));
             statementSave.execute();
             toReturn = null;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -104,16 +103,17 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public User delete(String id) {
         User toReturn = null;
-        User user=findOne(id);
-        if(user==null)
+        User user = findOne(id);
+        if (user == null)
             return null;
         String sqlDelete = "DELETE FROM users WHERE email = (?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
             statementDelete.setString(1, id);
             int rows = statementDelete.executeUpdate();
-            if(rows != 0)
-                toReturn=user;
+            if (rows != 0)
+                toReturn = user;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -123,7 +123,8 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public User update(User user) {
         User toReturn = user;
-        String sqlUpdate = "UPDATE users SET password_hash = (?),first_name = (?), last_name = (?),join_date=(?) WHERE email = (?)";
+        String sqlUpdate = "UPDATE users SET password_hash = (?), first_name = (?), last_name = (?), join_date = (?) WHERE email = (?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
 
@@ -133,8 +134,8 @@ public class UserDBRepository implements UserRepositoryInterface {
             statementUpdate.setDate(4, Date.valueOf(user.getJoinDate()));
             statementUpdate.setString(5, user.getEmail());
             int affectedRows = statementUpdate.executeUpdate();
-            if(affectedRows != 0)
-                toReturn=null;
+            if (affectedRows != 0)
+                toReturn = null;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -144,17 +145,17 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public Page<User> findAll(Pageable pageable) {
         Set<User> users = new HashSet<>();
-        String sql = "SELECT * FROM users offset (?) limit (?)";
+        String sql = "SELECT * FROM users OFFSET (?) LIMIT (?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            int pageSize=pageable.getPageSize();
-            int pageNr=pageable.getPageNumber();
-            int start=(pageNr-1)*pageSize;
-            statement.setInt(1,start);
-            statement.setInt(2,pageSize);
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statement.setInt(1, start);
+            statement.setInt(2, pageSize);
             ResultSet resultSet = statement.executeQuery();
-
             while (resultSet.next()) {
                 User user = getNextFromSet(resultSet);
                 users.add(user);
@@ -162,19 +163,19 @@ public class UserDBRepository implements UserRepositoryInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PageImplementation<>(pageable,users.stream());
+        return new PageImplementation<>(pageable, users.stream());
     }
 
     @Override
     public Iterable<User> getUsersByName(String string) {
         Set<User> users = new HashSet<>();
-        String sql = "SELECT * FROM users u where u.first_name || ' ' || u.last_name like '%' || (?) ||'%'";
+        String sql = "SELECT * FROM users u WHERE u.first_name || ' ' || u.last_name LIKE '%' || (?) || '%'";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1,string);
+            statement.setString(1, string);
             ResultSet resultSet = statement.executeQuery();
-
             while (resultSet.next()) {
                 User user = getNextFromSet(resultSet);
                 users.add(user);
@@ -189,18 +190,18 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public Page<User> getUsersByName(String string, Pageable pageable) {
         Set<User> users = new HashSet<>();
-        String sql = "SELECT * FROM users u where u.first_name || ' ' || u.last_name like '%' || (?) ||'%' offset (?) limit (?)";
+        String sql = "SELECT * FROM users u WHERE u.first_name || ' ' || u.last_name LIKE '%' || (?) ||'%' OFFSET (?) LIMIT (?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1,string);
-            int pageSize=pageable.getPageSize();
-            int pageNr=pageable.getPageNumber();
-            int start=(pageNr-1)*pageSize;
-            statement.setInt(2,start);
-            statement.setInt(3,pageSize);
+            statement.setString(1, string);
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statement.setInt(2, start);
+            statement.setInt(3, pageSize);
             ResultSet resultSet = statement.executeQuery();
-
             while (resultSet.next()) {
                 User user = getNextFromSet(resultSet);
                 users.add(user);
@@ -208,7 +209,7 @@ public class UserDBRepository implements UserRepositoryInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PageImplementation<>(pageable,users.stream());
+        return new PageImplementation<>(pageable, users.stream());
     }
 
     /**

@@ -10,7 +10,7 @@ import java.time.LocalDate;
  */
 public class FriendshipDTO {
     /**
-     * Begin date info
+     * begin date info
      */
     private final LocalDate beginDate;
 

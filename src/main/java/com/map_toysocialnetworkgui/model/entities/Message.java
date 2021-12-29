@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * class that describes a message
+ */
 public class Message extends Entity<Integer> {
     private final String fromEmail;
     private final List<String> toEmails;

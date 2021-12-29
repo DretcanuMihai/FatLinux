@@ -13,10 +13,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Repository in database for friend request
+ * database repository for friend request
  */
 public class FriendRequestDBRepository implements FriendRequestRepositoryInterface {
-
     /**
      * the database's URL
      */
@@ -31,7 +30,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     private final String password;
 
     /**
-     * constructor
+     * creates a database repository with an url, a username and a password
      *
      * @param url      - url of database
      * @param username - username of database
@@ -57,7 +56,6 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
             if (result.next()) {
                 toReturn = getNextFromSet(result);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -72,7 +70,6 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
-
             while (resultSet.next()) {
                 FriendRequest friendRequest = getNextFromSet(resultSet);
                 friendRequests.add(friendRequest);
@@ -88,6 +85,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     public FriendRequest save(FriendRequest friendRequest) {
         FriendRequest toReturn = friendRequest;
         String sqlSave = "INSERT INTO friend_requests(sender_email, receiver_email, send_time) VALUES (?, ?, ?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
 
@@ -96,7 +94,6 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
             statementSave.setTimestamp(3, Timestamp.valueOf(friendRequest.getSendTime()));
             statementSave.execute();
             toReturn = null;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -110,6 +107,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
         if (friendRequest == null)
             return null;
         String sqlDelete = "DELETE FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
 
@@ -127,7 +125,8 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     @Override
     public FriendRequest update(FriendRequest friendRequest) {
         FriendRequest toReturn = friendRequest;
-        String sqlUpdate = "UPDATE friend_requests SET send_time=(?) WHERE sender_email = (?) and receiver_email=(?)";
+        String sqlUpdate = "UPDATE friend_requests SET send_time=(?) WHERE sender_email = (?) AND receiver_email=(?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
 
@@ -167,7 +166,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     @Override
     public Page<FriendRequest> findAll(Pageable pageable) {
         Set<FriendRequest> friendRequests = new HashSet<>();
-        String sql = "SELECT * FROM friend_requests offset (?) limit (?)";
+        String sql = "SELECT * FROM friend_requests OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -178,7 +177,6 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
             statement.setInt(1, start);
             statement.setInt(2, pageSize);
             ResultSet resultSet = statement.executeQuery();
-
             while (resultSet.next()) {
                 FriendRequest friendRequest = getNextFromSet(resultSet);
                 friendRequests.add(friendRequest);
@@ -192,7 +190,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     @Override
     public Page<FriendRequest> getFriendRequestsSentToUser(String userEmail, Pageable pageable) {
         Set<FriendRequest> friendRequests = new HashSet<>();
-        String sql = "SELECT * FROM friend_requests where receiver_email=(?) offset (?) limit (?)";
+        String sql = "SELECT * FROM friend_requests WHERE receiver_email = (?) OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {

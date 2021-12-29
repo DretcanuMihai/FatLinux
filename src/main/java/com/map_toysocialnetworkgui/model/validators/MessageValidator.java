@@ -1,9 +1,13 @@
 package com.map_toysocialnetworkgui.model.validators;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * message entity validator
+ */
 public class MessageValidator implements Validator<Message> {
     static private final int messageTextMaxSize = 100;
     static private final int messageSubjectMaxSize = 50;
