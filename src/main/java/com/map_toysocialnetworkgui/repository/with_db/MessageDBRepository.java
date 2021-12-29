@@ -1,6 +1,9 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
 
 import java.sql.*;
@@ -39,6 +42,207 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         this.url = url;
         this.username = username;
         this.password = password;
+    }
+
+    @Override
+    public Message findOne(Integer id) {
+        String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
+        Message message = null;
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementGetMessage = connection.prepareStatement(sqlFind)) {
+
+            statementGetMessage.setInt(1, id);
+            ResultSet resultSetMessages = statementGetMessage.executeQuery();
+            if (resultSetMessages.next()) {
+                message = getNextFromSet(resultSetMessages);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+
+    @Override
+    public Iterable<Message> findAll() {
+        Set<Message> messages = new HashSet<>();
+        String sqlMessages = "SELECT * FROM messages";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
+
+            ResultSet resultSetMessages = statementMessages.executeQuery();
+            while (resultSetMessages.next()) {
+                Message message = getNextFromSet(resultSetMessages);
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+    @Override
+    public Message save(Message message) {
+        Message toReturn = message;
+        String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
+                "VALUES (?, ?, ?, ?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementInsertMessage = connection.prepareStatement(sqlSave, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+            statementInsertMessage.setString(1, message.getFromEmail());
+            statementInsertMessage.setString(2, message.getMessageText());
+            statementInsertMessage.setTimestamp(3, Timestamp.valueOf(message.getSendTime()));
+            if (message.getParentMessageId() != null)
+                statementInsertMessage.setInt(4, message.getParentMessageId());
+            else
+                statementInsertMessage.setNull(4, Types.INTEGER);
+
+            statementInsertMessage.executeUpdate();
+
+            // saves the list of receivers
+            int id = getMessageIDGeneratedBy(statementInsertMessage);
+            message.getToEmails().forEach(email -> saveDelivery(id, email));
+            message.setId(id);
+            toReturn = null;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
+    @Override
+    public Message delete(Integer id) {
+        Message toReturn = null;
+        Message message=findOne(id);
+        if(message==null)
+            return null;
+        String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
+
+            statementMessages.setInt(1, id);
+            int rows = statementMessages.executeUpdate();
+            if(rows != 0)
+                toReturn=message;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
+    @Override
+    public Message update(Message message) {
+        Message toReturn=message;
+        String sqlUpdateMessage="UPDATE messages set sender_email=(?),message_text=(?),send_time=(?),parent_message_id=(?) where message_id=(?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+
+            PreparedStatement statementUpdateMessage = connection.prepareStatement(sqlUpdateMessage);
+
+            statementUpdateMessage.setString(1,message.getFromEmail());
+            statementUpdateMessage.setString(2,message.getMessageText());
+            statementUpdateMessage.setTimestamp(3,Timestamp.valueOf(message.getSendTime()));
+            if(message.getParentMessageId()==null)
+                statementUpdateMessage.setNull(4,Types.INTEGER);
+            else
+                statementUpdateMessage.setInt(4,message.getParentMessageId());
+
+            statementUpdateMessage.setInt(5,message.getId());
+            int rows=statementUpdateMessage.executeUpdate();
+            updateDeliveriesOf(message);
+            if(rows!=0)
+                toReturn=null;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
+    @Override
+    public Iterable<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) {
+        List<Message> conversation = new ArrayList<>();
+        String sqlFilterConversationByTime = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                FROM messages m INNER JOIN message_deliveries md\s
+                ON m.message_id = md.message_id\s
+                WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
+                ORDER BY send_time""";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, userEmail1);
+            statementConversation.setString(2, userEmail2);
+            statementConversation.setString(3, userEmail2);
+            statementConversation.setString(4, userEmail1);
+            ResultSet resultSet = statementConversation.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                conversation.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conversation;
+    }
+
+    @Override
+    public Page<Message> findAll(Pageable pageable) {
+        Set<Message> messages = new HashSet<>();
+        String sql = "SELECT * FROM messages offset (?) limit (?)";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            int pageSize=pageable.getPageSize();
+            int pageNr=pageable.getPageNumber();
+            int start=(pageNr-1)*pageSize;
+            statement.setInt(1,start);
+            statement.setInt(2,pageSize);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable,messages.stream());
+    }
+
+    @Override
+    public Page<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2, Pageable pageable) {
+        Set<Message> messages = new HashSet<>();
+        String sql = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                FROM messages m INNER JOIN message_deliveries md
+                ON m.message_id = md.message_id
+                WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
+                ORDER BY send_time
+                OFFSET (?)
+                LIMIT (?)
+                """;
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            int pageSize=pageable.getPageSize();
+            int pageNr=pageable.getPageNumber();
+            int start=(pageNr-1)*pageSize;
+            statement.setString(1, userEmail1);
+            statement.setString(2, userEmail2);
+            statement.setString(3, userEmail2);
+            statement.setString(4, userEmail1);
+            statement.setInt(5,start);
+            statement.setInt(6,pageSize);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable,messages.stream());
     }
 
     /**
@@ -94,35 +298,6 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         return newKeys.getInt(1);
     }
 
-    @Override
-    public boolean save(Message message) {
-        boolean toReturn = false;
-        String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
-                "VALUES (?, ?, ?, ?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementInsertMessage = connection.prepareStatement(sqlSave, PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-            statementInsertMessage.setString(1, message.getFromEmail());
-            statementInsertMessage.setString(2, message.getMessageText());
-            statementInsertMessage.setTimestamp(3, Timestamp.valueOf(message.getSendTime()));
-            if (message.getParentMessageId() != null)
-                statementInsertMessage.setInt(4, message.getParentMessageId());
-            else
-                statementInsertMessage.setNull(4, Types.INTEGER);
-
-            statementInsertMessage.executeUpdate();
-
-            // saves the list of receivers
-            int id = getMessageIDGeneratedBy(statementInsertMessage);
-            message.getToEmails().forEach(email -> saveDelivery(id, email));
-            toReturn = true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return toReturn;
-    }
-
     /**
      * gets the emails of the people who received the message with an id
      *
@@ -145,24 +320,6 @@ public class MessageDBRepository implements MessageRepositoryInterface {
             e.printStackTrace();
         }
         return toEmails;
-    }
-
-    @Override
-    public Message get(Integer id) {
-        String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
-        Message message = null;
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementGetMessage = connection.prepareStatement(sqlFind)) {
-
-            statementGetMessage.setInt(1, id);
-            ResultSet resultSetMessages = statementGetMessage.executeQuery();
-            if (resultSetMessages.next()) {
-                message = getNextFromSet(resultSetMessages);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return message;
     }
 
     /**
@@ -188,93 +345,5 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     private void updateDeliveriesOf(Message message){
         deleteDeliveriesOf(message.getId());
         message.getToEmails().forEach(email-> saveDelivery(message.getId(),email));
-    }
-
-    @Override
-    public boolean update(Message message) {
-        boolean toReturn=false;
-        String sqlUpdateMessage="UPDATE messages set sender_email=(?),message_text=(?),send_time=(?),parent_message_id=(?) where message_id=(?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password)) {
-
-            PreparedStatement statementUpdateMessage = connection.prepareStatement(sqlUpdateMessage);
-
-            statementUpdateMessage.setString(1,message.getFromEmail());
-            statementUpdateMessage.setString(2,message.getMessageText());
-            statementUpdateMessage.setTimestamp(3,Timestamp.valueOf(message.getSendTime()));
-            if(message.getParentMessageId()==null)
-                statementUpdateMessage.setNull(4,Types.INTEGER);
-            else
-                statementUpdateMessage.setInt(4,message.getParentMessageId());
-
-            statementUpdateMessage.setInt(5,message.getId());
-            int rows=statementUpdateMessage.executeUpdate();
-            updateDeliveriesOf(message);
-            toReturn=(rows!=0);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return toReturn;
-    }
-
-    @Override
-    public boolean delete(Integer id) {
-        boolean toReturn = false;
-        String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
-
-            statementMessages.setInt(1, id);
-            int rows = statementMessages.executeUpdate();
-            toReturn = (rows != 0);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return toReturn;
-    }
-
-    @Override
-    public Iterable<Message> getAll() {
-        Set<Message> messages = new HashSet<>();
-        String sqlMessages = "SELECT * FROM messages";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
-
-            ResultSet resultSetMessages = statementMessages.executeQuery();
-            while (resultSetMessages.next()) {
-                Message message = getNextFromSet(resultSetMessages);
-                messages.add(message);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return messages;
-    }
-
-    @Override
-    public Iterable<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) {
-        List<Message> conversation = new ArrayList<>();
-        String sqlFilterConversationByTime = """
-                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
-                FROM messages m INNER JOIN message_deliveries md\s
-                ON m.message_id = md.message_id\s
-                WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
-                ORDER BY send_time""";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
-
-            statementConversation.setString(1, userEmail1);
-            statementConversation.setString(2, userEmail2);
-            statementConversation.setString(3, userEmail2);
-            statementConversation.setString(4, userEmail1);
-            ResultSet resultSet = statementConversation.executeQuery();
-            while (resultSet.next()) {
-                Message message = getNextFromSet(resultSet);
-                conversation.add(message);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return conversation;
     }
 }

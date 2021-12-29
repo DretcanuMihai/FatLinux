@@ -1,13 +1,23 @@
 package com.map_toysocialnetworkgui.service;
 
+import com.map_toysocialnetworkgui.model.entities.FriendRequest;
 import com.map_toysocialnetworkgui.model.entities.Friendship;
+import com.map_toysocialnetworkgui.model.entities.Message;
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.entities_dto.*;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.observer.Observer;
+import com.map_toysocialnetworkgui.utils.structures.Pair;
+import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * controller class - it controls all services used in the application
@@ -22,44 +32,66 @@ public class SuperService {
      */
     private final FriendshipService friendshipService;
     /**
+     * associated FriendshipService
+     */
+    private final FriendRequestService friendRequestService;
+    /**
      * associated MessageService
      */
     private final MessageService messageService;
+
+    /**
+     * validates a pageable if its page number and size are greater than 1
+     *
+     * @param pageable - said pageable
+     * @throws ValidationException if pageable is invalid
+     */
+    private void validatePageable(Pageable pageable) throws ValidationException{
+        if(pageable==null || pageable.getPageNumber()<1 || pageable.getPageSize()<1)
+            throw new ValidationException("Error: pageable not valid;\n");
+    }
 
     /**
      * Creates a Controller with said services
      * @param userService - the User Service
      * @param friendshipService - the Friendship Service
      */
-    public SuperService(UserService userService, FriendshipService friendshipService, MessageService messageService) {
+    public SuperService(UserService userService, FriendshipService friendshipService,FriendRequestService friendRequestService, MessageService messageService) {
         this.userService = userService;
         this.friendshipService = friendshipService;
+        this.friendRequestService=friendRequestService;
         this.messageService=messageService;
     }
 
     /**
      * adds a user to the repo
      *
-     * @param dto - dto containing needed information
+     * @param email - email info
+     * @param passwordHash -password hash info
+     * @param firstName - first name info
+     * @param lastName - last name info
      * @throws ValidationException - if the user data is invalid
      * @throws AdministrationException       - if the email is already in use
      */
-    public void createUserAccount(UserServiceDTO dto)
+    public void createUserAccount(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
-        userService.createUserAccount(dto);
+        userService.createUserAccount(email,passwordHash,firstName,lastName);
     }
 
     /**
      * modifies the account identified by email with the other given information
      *
-     * @param dto - needed data
+     * @param email - email info
+     * @param passwordHash -password hash info
+     * @param firstName - first name info
+     * @param lastName - last name info
      * @throws ValidationException if any of the data is invalid
      * @throws AdministrationException if a user with said email doesn't exist
      */
-    public void updateUser(UserServiceDTO dto)
+    public void updateUser(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        userService.updateUserAccountInfo(dto);
+        userService.updateUserAccountInfo(email,passwordHash,firstName,lastName);
     }
 
     /**
@@ -80,6 +112,19 @@ public class SuperService {
         Collection<UserUIDTO> userUIDTOS =new ArrayList<>();
         userService.getAllUsers().forEach(user -> userUIDTOS.add(new UserUIDTO(user)));
         return userUIDTOS;
+    }
+
+    /**
+     * returns a page of user data in the form of UserDTOs
+     * @param pageable - for paging
+     * @return said page
+     * @throws ValidationException if pageable is not valid
+     */
+    public Page<UserUIDTO> getAllUserDTOs(Pageable pageable) throws ValidationException{
+        validatePageable(pageable);
+        Page<User> page=userService.getAllUsers(pageable);
+        Stream<UserUIDTO> stream=page.getContent().map(UserUIDTO::new);
+        return new PageImplementation<>(page.getPageable(),stream);
     }
 
     /**
@@ -118,7 +163,6 @@ public class SuperService {
      * returns a collection of all friendship data in the form of FriendshipDTOs
      * @return said collection
      */
-    @Deprecated
     public Collection<FriendshipDTO> getAllFriendshipDTOs() {
         Collection<FriendshipDTO> friendshipDTOS=new ArrayList<>();
         friendshipService.getAllFriendships().forEach(friendship -> {
@@ -127,6 +171,23 @@ public class SuperService {
             friendshipDTOS.add(new FriendshipDTO(friendship,u1,u2));
         });
         return friendshipDTOS;
+    }
+
+    /**
+     * returns a page of friendship data in the form of FriendshipDTOs
+     * @param pageable - for paging
+     * @return said collection
+     * @throws ValidationException if pageable is invalid
+     */
+    public Page<FriendshipDTO> getAllFriendshipDTOs(Pageable pageable) throws ValidationException{
+        validatePageable(pageable);
+        Page<Friendship> page=friendshipService.getAllFriendships(pageable);
+        Stream<FriendshipDTO> stream=page.getContent().map(friendship -> {
+            User u1=userService.getUserInfo(friendship.getEmails().getFirst());
+            User u2=userService.getUserInfo(friendship.getEmails().getSecond());
+            return new FriendshipDTO(friendship,u1,u2);
+        });
+        return new PageImplementation<>(page.getPageable(),stream);
     }
 
     /**
@@ -153,6 +214,31 @@ public class SuperService {
     }
 
     /**
+     * Returns a page of friendship data of one user identified by email in the form of FriendshipDTOs
+     * @param userEmail - the user's email
+     * @param pageable - for paging
+     * @return said page
+     * @throws ValidationException if email or pageable is invalid
+     * @throws AdministrationException if user doesn't exist
+     */
+    public Page<FriendshipDTO> getAllFriendshipDTOsOfUser(String userEmail,Pageable pageable) throws ValidationException, AdministrationException {
+        validatePageable(pageable);
+        User user = userService.getUserInfo(userEmail);
+
+        Page<Friendship> page=friendshipService.getUserFriendships(userEmail,pageable);
+        Stream<FriendshipDTO> friendshipDTOS=page.getContent().map(friendship -> {
+            String friendEmail = friendship.getEmails().getFirst();
+
+            if(friendEmail.equals(userEmail))
+                friendEmail = friendship.getEmails().getSecond();
+
+            User friend = userService.getUserInfo(friendEmail);
+            return new FriendshipDTO(friendship, user, friend);
+        });
+        return new PageImplementation<>(pageable,friendshipDTOS);
+    }
+
+    /**
      * Returns all friendships of a user that were created in a specific month as DTOs
      * @param userEmail - email of user
      * @param month - month in which the friendship was created
@@ -160,7 +246,7 @@ public class SuperService {
      * @throws ValidationException if month is invalid or userEmail is invalid
      * @throws AdministrationException if user doesn't exist
      */
-    public Collection<FriendshipDTO> getAllFriendshipDTOsOfUserFromMonth(String userEmail, int month) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
+    public Collection<FriendshipDTO> getAllFriendshipDTOsOfUserFromMonth(String userEmail, int month) throws ValidationException, AdministrationException {
         User user = userService.getUserInfo(userEmail);
 
         Collection<FriendshipDTO> friendshipDTOS=new ArrayList<>();
@@ -177,47 +263,76 @@ public class SuperService {
     }
 
     /**
+     * Returns page of friendships of a user that were created in a specific month as DTOs
+     * @param userEmail - email of user
+     * @param month - month in which the friendship was created
+     * @param pageable - for paging
+     * @return a page of said friendshipDTOs
+     * @throws ValidationException if month, userEmail or pageable is invalid
+     * @throws AdministrationException if user doesn't exist
+     */
+    public Page<FriendshipDTO> getAllFriendshipDTOsOfUserFromMonth(String userEmail, int month,Pageable pageable) throws ValidationException, AdministrationException {
+        validatePageable(pageable);
+        User user = userService.getUserInfo(userEmail);
+
+        Page<Friendship> page=friendshipService.getUserFriendshipsFromMonth(userEmail,month,pageable);
+        Stream<FriendshipDTO> friendships=page.getContent().map(friendship -> {
+            String friendEmail = friendship.getEmails().getFirst();
+
+            if(friendEmail.equals(userEmail))
+                friendEmail = friendship.getEmails().getSecond();
+
+            User friend = userService.getUserInfo(friendEmail);
+            return new FriendshipDTO(friendship, user, friend);
+        }) ;
+        return new PageImplementation<>(page.getPageable(),friendships);
+    }
+
+    /**
      * sends a root message (a message that isn't a reply) to some users
-     * @param dto - needed info
+     * @param fromEmail - sender email
+     * @param toEmails - a list of destination emails
+     * @param messageText - message's text
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendRootMessage(MessageDTO dto)
+    public void sendRootMessage(String fromEmail,List<String> toEmails,String messageText)
             throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
 
-        if(dto==null)
-            throw new ValidationException("Error:dto shouldn't be null;\n");
-
-        userService.getUserInfo(dto.getFromEmail());
-        userService.verifyEmailCollection(dto.getToEmails());
-        messageService.addRootMessage(dto);
+        userService.getUserInfo(fromEmail);
+        userService.verifyEmailCollection(toEmails);
+        messageService.addRootMessage(fromEmail,toEmails,messageText);
     }
 
     /**
      * sends a reply message to another message
      * the receiver will be the sender of the original message
-     * @param dto - needed info
+     * @param fromEmail - sender email
+     * @param messageText - message's text
+     * @param parentID - parent message id
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendReplyMessage(MessageDTO dto)
+    public void sendReplyMessage(String fromEmail,String messageText,Integer parentID)
             throws ValidationException, AdministrationException {
-        userService.getUserInfo(dto.getFromEmail());
-        messageService.addReplyMessage(dto);
+        userService.getUserInfo(fromEmail);
+        messageService.addReplyMessage(fromEmail,messageText,parentID);
     }
 
     /**
      * sends a reply message to another message
      * the receiver will be the sender of the original message and all the original receivers
      * except the replier
-     * @param dto - needed data
+     * @param fromEmail - sender email
+     * @param messageText - message's text
+     * @param parentID - parent message id
      * @throws ValidationException if any data is invalid
      * @throws AdministrationException if any administration problems are found
      */
-    public void sendReplyAllMessage(MessageDTO dto)
+    public void sendReplyAllMessage(String fromEmail,String messageText,Integer parentID)
             throws ValidationException, AdministrationException {
-        userService.getUserInfo(dto.getFromEmail());
-        messageService.addReplyAllMessage(dto);
+        userService.getUserInfo(fromEmail);
+        messageService.addReplyAllMessage(fromEmail,messageText,parentID);
     }
 
     /**
@@ -239,6 +354,25 @@ public class SuperService {
     }
 
     /**
+     * returns a page of conversation between two users sorted chronologically
+     *
+     * @param email1 - first user's email
+     * @param email2 - second user's email
+     * @param pageable - for paging
+     * @return a list of DTOs for said messages
+     * @throws AdministrationException if the users do not exist
+     * @throws ValidationException if emails or the pageable is invalid
+     */
+    public Page<MessageDTO> getConversation(String email1, String email2,Pageable pageable) throws ValidationException, AdministrationException {
+        validatePageable(pageable);
+        userService.getUserInfo(email1);
+        userService.getUserInfo(email2);
+        Page<Message> page=messageService.getConversationBetweenUsers(email1,email2,pageable);
+        Stream<MessageDTO> stream=page.getContent().map(MessageDTO::new);
+        return new PageImplementation<>(page.getPageable(),stream);
+    }
+
+    /**
      * sends a friend request from sender to receiver
      * @param sender - sender's email
      * @param receiver - receiver's email
@@ -247,7 +381,15 @@ public class SuperService {
      */
     public void sendFriendRequest(String sender, String receiver)throws ValidationException, AdministrationException {
         userService.verifyEmailCollection(List.of(sender,receiver));
-        friendshipService.sendFriendRequest(sender,receiver);
+        Friendship friendship=null;
+        try{
+            friendship=friendshipService.getFriendship(sender,receiver);
+        }catch (AdministrationException ignored){
+        }
+        if(friendship!=null){
+            throw new AdministrationException("Error: users are already friends;\n");
+        }
+        friendRequestService.sendFriendRequest(sender,receiver);
     }
 
     /**
@@ -260,7 +402,9 @@ public class SuperService {
      */
     public void confirmFriendRequest(String sender, String receiver, boolean accepted)throws ValidationException, AdministrationException {
         userService.verifyEmailCollection(List.of(sender,receiver));
-        friendshipService.confirmFriendRequest(sender,receiver,accepted);
+        friendRequestService.deleteFriendRequest(sender,receiver);
+        if(accepted)
+            friendshipService.addFriendship(sender,receiver);
     }
 
     /**
@@ -272,14 +416,34 @@ public class SuperService {
      */
     public Collection<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail)
             throws ValidationException, AdministrationException {
-        User sender=userService.getUserInfo(userEmail);
+        User receiver=userService.getUserInfo(userEmail);
         Collection<FriendRequestDTO> friendRequestDTOS=new ArrayList<>();
-        friendshipService.getFriendRequestsSentToUser(userEmail).forEach(
+        friendRequestService.getFriendRequestsSentToUser(userEmail).forEach(
                 request-> {
-                    User receiver= userService.getUserInfo(request.getReceiver());
-                    friendRequestDTOS.add(new FriendRequestDTO(request, sender,receiver));
+                    User sender= userService.getUserInfo(request.getSender());
+                    friendRequestDTOS.add(new FriendRequestDTO(request,sender,receiver));
                 });
         return friendRequestDTOS;
+    }
+
+    /**
+     * gets a page of DTOs of all the friend requests sent to a user
+     * @param userEmail - said user's email
+     * @param pageable - for paging
+     * @return said page
+     * @throws ValidationException if the user email or pageable is invalid
+     * @throws AdministrationException - if the user doesn't exist
+     */
+    public Page<FriendRequestDTO> getFriendRequestsSentToUser(String userEmail,Pageable pageable)
+            throws ValidationException, AdministrationException {
+        validatePageable(pageable);
+        User receiver=userService.getUserInfo(userEmail);
+        Page<FriendRequest> page=friendRequestService.getFriendRequestsSentToUser(userEmail,pageable);
+        Stream<FriendRequestDTO> stream=page.getContent().map(request-> {
+            User sender= userService.getUserInfo(request.getSender());
+            return new FriendRequestDTO(request,sender,receiver);
+        });
+        return new PageImplementation<>(page.getPageable(),stream);
     }
 
     /**
@@ -293,5 +457,82 @@ public class SuperService {
     public UserUIDTO login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
         User user=userService.login(userEmail,userPassword);
         return new UserUIDTO(user);
+    }
+
+    /**
+     * retracts a friend request from sender to receiver
+     * @param senderEmail - sender's email
+     * @param receiverEmail - receiver's email
+     * @throws ValidationException - if any data is invalid
+     * @throws AdministrationException - if any administrative problem occurs
+     */
+    public void retractFriendRequest(String senderEmail,String receiverEmail)throws ValidationException,AdministrationException{
+        userService.verifyEmailCollection(List.of(senderEmail,receiverEmail));
+        friendRequestService.deleteFriendRequest(senderEmail,receiverEmail);
+    }
+
+    /**
+     * subscribes an observer to user notifications
+     *
+     * @param observer - said observer
+     */
+    public void addUserObserver(Observer<EntityModificationEvent<String>> observer){
+        userService.addObserver(observer);
+    }
+
+    /**
+     * subscribes an observer to friendship notifications
+     *
+     * @param observer - said observer
+     */
+    public void addFriendshipObserver(Observer<EntityModificationEvent<UnorderedPair<String>>> observer){
+        friendshipService.addObserver(observer);
+    }
+
+    /**
+     * subscribes an observer to friend request notifications
+     *
+     * @param observer - said observer
+     */
+    public void addFriendRequestObserver(Observer<EntityModificationEvent<Pair<String,String>>> observer){
+        friendRequestService.addObserver(observer);
+    }
+
+    /**
+     * subscribes an observer to message notifications
+     *
+     * @param observer - said observer
+     */
+    public void addMessageObserver(Observer<EntityModificationEvent<Integer>> observer){
+        messageService.addObserver(observer);
+    }
+
+    /**
+     * returns an iterable of all the users in repo with certain string inside of them
+     * @param string - said string
+     *
+     * @return said iterable
+     * @throws ValidationException - if string is null
+     */
+    public Iterable<UserUIDTO> filterUsers(String string) throws ValidationException {
+        List<UserUIDTO> userUIDTOS=new ArrayList<>();
+        userService.filterUsers(string).forEach(user -> {
+            userUIDTOS.add(new UserUIDTO(user));
+        });
+        return userUIDTOS;
+    }
+
+    /**
+     * returns a page of all the users in repo that have a certain string in their names
+     * @param string - said string
+     * @param pageable - pageable for paging
+     * @return said page
+     * @throws ValidationException - if string is null
+     */
+    public Page<UserUIDTO> filterUsers(String string, Pageable pageable) throws ValidationException{
+        validatePageable(pageable);
+        Page<User> page= userService.filterUsers(string, pageable);
+        Stream<UserUIDTO> stream=page.getContent().map(UserUIDTO::new);
+        return new PageImplementation<>(page.getPageable(),stream);
     }
 }
