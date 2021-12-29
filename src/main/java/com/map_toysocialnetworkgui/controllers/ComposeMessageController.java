@@ -55,6 +55,10 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
         fromTextField.setPromptText(loggedUser.getEmail());
     }
 
+    public void close() {
+        ((Stage) closeComposeMessageWindowButton.getScene().getWindow()).close();
+    }
+
     public void sendMessage() {
         try {
             String fromEmail = fromTextField.getPromptText();
@@ -65,6 +69,13 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
             Message message = new Message(null, fromEmail, toEmails, messageText, messageSubject, LocalDateTime.now(), null);
             MessageDTO messageDTO = new MessageDTO(message);
             this.service.sendRootMessage(messageDTO);
+
+            this.close();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success!");
+            alert.setHeaderText("Message sent!");
+            alert.setContentText("Your message has been successfully sent!");
+            alert.showAndWait();
         } catch (ValidationException | AdministrationException ex) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning!");
@@ -72,9 +83,5 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
         }
-    }
-
-    public void close() {
-        ((Stage) closeComposeMessageWindowButton.getScene().getWindow()).close();
     }
 }
