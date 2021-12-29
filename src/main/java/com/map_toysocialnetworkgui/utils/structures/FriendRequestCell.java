@@ -10,15 +10,16 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
-public class UserCell extends ListCell<String> {
+public class FriendRequestCell extends ListCell<String> {
     private static final String IDLE_BUTTON_STYLE = "-fx-focus-traversable: false; -fx-background-radius: 10px; -fx-background-color: #ff7700;";
     private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
     HBox root = new HBox(10);
     Label label = new Label("Null");
     Region region = new Region();
-    Button addFriendButton = new Button("Add friend");
+    Button acceptButton = new Button("Accept");
+    Button declineButton = new Button("Decline");
 
-    public UserCell() {
+    public FriendRequestCell() {
         super();
         label.setFont(new Font(25.0));
 
@@ -28,18 +29,19 @@ public class UserCell extends ListCell<String> {
         HBox.setHgrow(region, Priority.ALWAYS);
         root.getChildren().add(region);
 
-        addFriendButton.setFont(new Font(16.0));
-        addFriendButton.setStyle(IDLE_BUTTON_STYLE);
-        addFriendButton.setOnMouseEntered(event -> addFriendButton.setStyle(HOVERED_BUTTON_STYLE));
-        addFriendButton.setOnMouseExited(event -> addFriendButton.setStyle(IDLE_BUTTON_STYLE));
-        addFriendButton.setOnAction(event -> {
-            if (addFriendButton.getText().equals("Add friend"))
-                addFriendButton.setText("Cancel friend request");
-            else
-                addFriendButton.setText("Add friend");
-        });
+        acceptButton.setFont(new Font(16.0));
+        acceptButton.setStyle(IDLE_BUTTON_STYLE);
+        acceptButton.setOnMouseEntered(event -> acceptButton.setStyle(HOVERED_BUTTON_STYLE));
+        acceptButton.setOnMouseExited(event -> acceptButton.setStyle(IDLE_BUTTON_STYLE));
+        acceptButton.setOnAction(event -> System.out.println("Accepted"));
 
-        root.getChildren().addAll(addFriendButton);
+        declineButton.setFont(new Font(16.0));
+        declineButton.setStyle(IDLE_BUTTON_STYLE);
+        declineButton.setOnMouseEntered(event -> declineButton.setStyle(HOVERED_BUTTON_STYLE));
+        declineButton.setOnMouseExited(event -> declineButton.setStyle(IDLE_BUTTON_STYLE));
+        declineButton.setOnAction(event -> System.out.println("Declined"));
+
+        root.getChildren().addAll(acceptButton, declineButton);
     }
 
     @Override
