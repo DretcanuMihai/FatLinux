@@ -245,6 +245,113 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         return new PageImplementation<>(pageable,messages.stream());
     }
 
+    @Override
+    public Iterable<Message> getMessagesSentToUserChronologically(String userEmail) {
+        List<Message> conversation = new ArrayList<>();
+        String sqlFilterConversationByTime = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                FROM messages m INNER JOIN message_deliveries md
+                ON m.message_id = md.message_id
+                WHERE md.receiver_email = (?)
+                ORDER BY send_time""";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, userEmail);
+            ResultSet resultSet = statementConversation.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                conversation.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conversation;
+    }
+
+    @Override
+    public Page<Message> getMessagesSentToUserChronologically(String userEmail, Pageable pageable) {
+        List<Message> conversation = new ArrayList<>();
+        String sqlFilterConversationByTime = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                FROM messages m INNER JOIN message_deliveries md
+                ON m.message_id = md.message_id
+                WHERE md.receiver_email = (?)
+                ORDER BY send_time
+                offset (?) limit (?)""";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, userEmail);
+            int pageSize=pageable.getPageSize();
+            int pageNr=pageable.getPageNumber();
+            int start=(pageNr-1)*pageSize;
+            statementConversation.setInt(2,start);
+            statementConversation.setInt(3,pageSize);
+            ResultSet resultSet = statementConversation.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                conversation.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable,conversation.stream());
+    }
+
+    @Override
+    public Iterable<Message> getMessagesSentByUserChronologically(String userEmail) {
+        List<Message> conversation = new ArrayList<>();
+        String sqlFilterConversationByTime = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                FROM messages m
+                WHERE m.sender_email = (?)
+                ORDER BY send_time""";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, userEmail);
+            ResultSet resultSet = statementConversation.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                conversation.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conversation;
+    }
+
+    @Override
+    public Page<Message> getMessagesSentByUserChronologically(String userEmail, Pageable pageable) {
+        List<Message> conversation = new ArrayList<>();
+        String sqlFilterConversationByTime = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                FROM messages m
+                WHERE m.sender_email = (?)
+                ORDER BY send_time
+                offset (?) limit (?)
+                """;
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, userEmail);
+            int pageSize=pageable.getPageSize();
+            int pageNr=pageable.getPageNumber();
+            int start=(pageNr-1)*pageSize;
+            statementConversation.setInt(2,start);
+            statementConversation.setInt(3,pageSize);
+            ResultSet resultSet = statementConversation.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                conversation.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable,conversation.stream());
+    }
+
     /**
      * extracts the current message from a ResultSet
      *
