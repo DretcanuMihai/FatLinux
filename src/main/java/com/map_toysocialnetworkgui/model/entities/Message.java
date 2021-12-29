@@ -8,6 +8,7 @@ public class Message extends Entity<Integer> {
     private final String fromEmail;
     private final List<String> toEmails;
     private final String messageText;
+    private final String messageSubject;
     private final LocalDateTime sendTime;
     private final Integer parentMessageId;
 
@@ -18,15 +19,17 @@ public class Message extends Entity<Integer> {
      * @param fromEmail       - email of sender
      * @param toEmails        - emails of receivers
      * @param messageText     - message content
+     * @param messageSubject  - message subject
      * @param sendTime        - date of sending
      * @param parentMessageId - id of parent message (can be null)
      */
-    public Message(Integer id, String fromEmail, List<String> toEmails, String messageText, LocalDateTime sendTime,
+    public Message(Integer id, String fromEmail, List<String> toEmails, String messageText, String messageSubject, LocalDateTime sendTime,
                    Integer parentMessageId) {
         super(id);
         this.fromEmail = fromEmail;
         this.toEmails = new ArrayList<>(toEmails);
         this.messageText = messageText;
+        this.messageSubject = messageSubject;
         this.sendTime = sendTime;
         this.parentMessageId = parentMessageId;
     }
@@ -56,6 +59,15 @@ public class Message extends Entity<Integer> {
      */
     public String getMessageText() {
         return messageText;
+    }
+
+    /**
+     * gets subject of message
+     *
+     * @return said subject
+     */
+    public String getMessageSubject() {
+        return messageSubject;
     }
 
     /**

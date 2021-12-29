@@ -60,7 +60,7 @@ public class MessageService {
      * @throws AdministrationException       - if the id is already in use
      */
     public void addRootMessage(MessageDTO dto) throws ValidationException, AdministrationException {
-        Message message = new Message(null, dto.getFromEmail(),dto.getToEmails(),dto.getMessageText(), LocalDateTime.now(), null);
+        Message message = new Message(null, dto.getFromEmail(),dto.getToEmails(),dto.getMessageText(), dto.getMessageSubject(), LocalDateTime.now(), null);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
     }
@@ -79,7 +79,7 @@ public class MessageService {
         Message parentMessage = getMessage(dto.getParentMessageId());
         if (!parentMessage.getToEmails().contains(dto.getFromEmail()))
             throw new AdministrationException("Error: User is not one of the recipients of the message!;\n");
-        Message message = new Message(null, dto.getFromEmail(), List.of(parentMessage.getFromEmail()), dto.getMessageText(), LocalDateTime.now(),
+        Message message = new Message(null, dto.getFromEmail(), List.of(parentMessage.getFromEmail()), dto.getMessageText(), dto.getMessageSubject(), LocalDateTime.now(),
                 dto.getParentMessageId());
         messageValidator.validateDefault(message);
         messageRepo.save(message);
@@ -97,6 +97,7 @@ public class MessageService {
 
         String fromEmail=dto.getFromEmail();
         String messageText=dto.getMessageText();
+        String messageSubject = dto.getMessageSubject();
         Integer replyMessageID=dto.getParentMessageId();
 
         Message parentMessage = getMessage(replyMessageID);
@@ -105,7 +106,7 @@ public class MessageService {
         List<String> receivers = parentMessage.getToEmails();
         receivers.add(parentMessage.getFromEmail());
         receivers.remove(fromEmail);
-        Message message = new Message(0, fromEmail, receivers, messageText, LocalDateTime.now(),
+        Message message = new Message(0, fromEmail, receivers, messageText, messageSubject, LocalDateTime.now(),
                 replyMessageID);
         messageValidator.validateDefault(message);
         messageRepo.save(message);

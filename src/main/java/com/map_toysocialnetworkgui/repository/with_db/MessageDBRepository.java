@@ -55,11 +55,12 @@ public class MessageDBRepository implements MessageRepositoryInterface {
             fromEmail = null;
         List<String> toEmails = getReceiverEmailsOf(id);
         String messageText = resultSet.getString("message_text");
+        String messageSubject = resultSet.getString("message_subject");
         LocalDateTime sendTime = resultSet.getTimestamp("send_time").toLocalDateTime();
         Integer repliedMessageId = resultSet.getInt("parent_message_id");
         if (resultSet.wasNull())
             repliedMessageId = null;
-        return new Message(id, fromEmail, toEmails, messageText, sendTime, repliedMessageId);
+        return new Message(id, fromEmail, toEmails, messageText, messageSubject, sendTime, repliedMessageId);
     }
 
     /**
@@ -97,18 +98,19 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     @Override
     public boolean save(Message message) {
         boolean toReturn = false;
-        String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
-                "VALUES (?, ?, ?, ?)";
+        String sqlSave = "INSERT INTO messages(sender_email, message_text, message_subject, send_time, parent_message_id) " +
+                "VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementInsertMessage = connection.prepareStatement(sqlSave, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             statementInsertMessage.setString(1, message.getFromEmail());
             statementInsertMessage.setString(2, message.getMessageText());
-            statementInsertMessage.setTimestamp(3, Timestamp.valueOf(message.getSendTime()));
+            statementInsertMessage.setString(3, message.getMessageSubject());
+            statementInsertMessage.setTimestamp(4, Timestamp.valueOf(message.getSendTime()));
             if (message.getParentMessageId() != null)
-                statementInsertMessage.setInt(4, message.getParentMessageId());
+                statementInsertMessage.setInt(5, message.getParentMessageId());
             else
-                statementInsertMessage.setNull(4, Types.INTEGER);
+                statementInsertMessage.setNull(5, Types.INTEGER);
 
             statementInsertMessage.executeUpdate();
 
@@ -170,7 +172,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
      * @param id - the message's id
      */
     private void deleteDeliveriesOf(Integer id){
-        String sqlDeleteMessageDeliveries="DELETE from message_deliveries where message_id=(?)";
+        String sqlDeleteMessageDeliveries="DELETE from message_deliveries where message_id = (?)";
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
 
             PreparedStatement statementDeleteMessageDeliveries= connection.prepareStatement(sqlDeleteMessageDeliveries);
@@ -193,20 +195,21 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     @Override
     public boolean update(Message message) {
         boolean toReturn=false;
-        String sqlUpdateMessage="UPDATE messages set sender_email=(?),message_text=(?),send_time=(?),parent_message_id=(?) where message_id=(?)";
+        String sqlUpdateMessage="UPDATE messages set sender_email=(?),message_text=(?), message_subject = (?), send_time=(?),parent_message_id=(?) where message_id=(?)";
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
 
             PreparedStatement statementUpdateMessage = connection.prepareStatement(sqlUpdateMessage);
 
             statementUpdateMessage.setString(1,message.getFromEmail());
             statementUpdateMessage.setString(2,message.getMessageText());
-            statementUpdateMessage.setTimestamp(3,Timestamp.valueOf(message.getSendTime()));
+            statementUpdateMessage.setString(3, message.getMessageSubject());
+            statementUpdateMessage.setTimestamp(4,Timestamp.valueOf(message.getSendTime()));
             if(message.getParentMessageId()==null)
-                statementUpdateMessage.setNull(4,Types.INTEGER);
+                statementUpdateMessage.setNull(5,Types.INTEGER);
             else
-                statementUpdateMessage.setInt(4,message.getParentMessageId());
+                statementUpdateMessage.setInt(5,message.getParentMessageId());
 
-            statementUpdateMessage.setInt(5,message.getId());
+            statementUpdateMessage.setInt(6,message.getId());
             int rows=statementUpdateMessage.executeUpdate();
             updateDeliveriesOf(message);
             toReturn=(rows!=0);
@@ -255,7 +258,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     public Iterable<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) {
         List<Message> conversation = new ArrayList<>();
         String sqlFilterConversationByTime = """
-                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                SELECT m.message_id, m.sender_email, m.message_text, m.message_subject, m.send_time, m.parent_message_id
                 FROM messages m INNER JOIN message_deliveries md\s
                 ON m.message_id = md.message_id\s
                 WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))

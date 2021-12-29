@@ -17,10 +17,12 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     UserUIDTO loggedUser;
     // Controllers
     SearchFriendsController searchFriendsController;
+    InboxController inboxController;
     FriendsViewController friendsViewController;
     // View parents
     Parent mainPageRoot;
     Parent searchForFriendRoot;
+    Parent inboxRoot;
     Parent showFriendsRoot;
     // FXML
     @FXML
@@ -33,28 +35,32 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     private void initLoadersAndControllers() throws IOException {
         URL mainPageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/mainPage-view.fxml");
         URL searchForFriendURL = getClass().getResource("/com/map_toysocialnetworkgui/views/searchFriend-view.fxml");
+        URL inboxURL = getClass().getResource("/com/map_toysocialnetworkgui/views/inbox-view.fxml");
         URL showFriendsURL = getClass().getResource("/com/map_toysocialnetworkgui/views/friends-view.fxml");
 
         FXMLLoader mainPageLoader = new FXMLLoader(mainPageURL);
         FXMLLoader searchForFriendLoader = new FXMLLoader(searchForFriendURL);
+        FXMLLoader inboxLoader = new FXMLLoader(inboxURL);
         FXMLLoader showFriendsLoader = new FXMLLoader(showFriendsURL);
 
         this.mainPageRoot = mainPageLoader.load();
         this.searchForFriendRoot = searchForFriendLoader.load();
+        this.inboxRoot = inboxLoader.load();
         this.showFriendsRoot = showFriendsLoader.load();
 
         this.searchFriendsController = searchForFriendLoader.getController();
+        this.inboxController = inboxLoader.getController();
         this.friendsViewController = showFriendsLoader.getController();
     }
 
     private void initSearchBar() {
         this.searchBar.setOnKeyPressed(keyEvent -> {
-                    if (keyEvent.getCode() == KeyCode.ENTER) {
-                        searchFriendsController.setSearchText(searchBar.getText());
-                        searchFriendsController.init();
-                        mainBorderPane.setCenter(searchForFriendRoot);
-                    }
-                });
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                searchFriendsController.setSearchText(searchBar.getText());
+                searchFriendsController.init();
+                mainBorderPane.setCenter(searchForFriendRoot);
+            }
+        });
     }
 
     public void init(UserUIDTO user) throws IOException {
@@ -72,6 +78,13 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     public void searchForFriend() {
         searchFriendsController.setLoggedUser(loggedUser);
         searchFriendsController.setService(this.service);
+    }
+
+    public void showInbox() {
+        inboxController.setLoggedUser(loggedUser);
+        inboxController.setService(this.service);
+        inboxController.init();
+        mainBorderPane.setCenter(inboxRoot);
     }
 
     public void showFriends() {

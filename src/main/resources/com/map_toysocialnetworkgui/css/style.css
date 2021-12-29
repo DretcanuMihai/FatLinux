@@ -165,3 +165,13 @@
 .list-view:focused .list-cell:focused {
     -fx-background-color: #ff7700;
 }
+
+.inboxViewControlButtons, .inboxMessagingButtons {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+}
+
+.inboxViewControlButtons:hover, .inboxMessagingButtons:hover {
+    -fx-background-color: #F04A00;
+}
