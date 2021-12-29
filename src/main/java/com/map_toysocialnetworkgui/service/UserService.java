@@ -3,6 +3,8 @@ package com.map_toysocialnetworkgui.service;
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.UserValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
@@ -116,12 +118,22 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     }
 
     /**
-     * returns a collection of all the users in repo
+     * returns an iterable of all the users in repo
      *
-     * @return said collection
+     * @return said iterable
      */
     public Iterable<User> getAllUsers() {
         return usersRepo.findAll();
+    }
+
+    /**
+     * returns a page of all the users in repo
+     * @param pageable - pageable for paging
+     *
+     * @return said page
+     */
+    public Page<User> getAllUsers(Pageable pageable) {
+        return usersRepo.findAll(pageable);
     }
 
     /**
@@ -166,5 +178,32 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
         if (found == null || found.getPasswordHash() != userPassword)
             throw new AdministrationException("Invalid email or password!\n");
         return found;
+    }
+
+    /**
+     * returns an iterable of all the users in repo with certain string inside of them
+     * @param string - sais string
+     *
+     * @return said iterable
+     * @throws ValidationException if string is null
+     */
+    public Iterable<User> filterUsers(String string)throws ValidationException {
+        if(string==null)
+            throw new ValidationException("Error: string must be non null;\n");
+        return usersRepo.getUsersByName(string);
+    }
+
+    /**
+     * returns a page of all the users in repo that have a certain string in their names
+     * @param string - said string
+     * @param pageable - pageable for paging
+     *
+     * @return said page
+     * @throws ValidationException if string is null
+     */
+    public Page<User> filterUsers(String string, Pageable pageable)throws ValidationException {
+        if(string==null)
+            throw new ValidationException("Error: string must be non null;\n");
+        return usersRepo.getUsersByName(string,pageable);
     }
 }

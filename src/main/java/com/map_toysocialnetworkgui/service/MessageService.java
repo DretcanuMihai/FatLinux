@@ -3,6 +3,8 @@ package com.map_toysocialnetworkgui.service;
 import com.map_toysocialnetworkgui.model.entities.Message;
 import com.map_toysocialnetworkgui.model.validators.MessageValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
@@ -124,12 +126,27 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
      *
      * @param email1 - first user's email
      * @param email2 - second user's email
-     * @return a list of DTOs for said messages
+     * @return an iterable of the messages in the conversation
      * @throws ValidationException if the emails are the same
      */
     public Iterable<Message> getConversationBetweenUsers(String email1, String email2) throws ValidationException {
         if (Objects.equals(email1, email2))
             throw new ValidationException("Error: user emails must be different;\n");
         return messageRepo.getMessagesBetweenUsersChronologically(email1, email2);
+    }
+
+    /**
+     * returns a page of the conversation between two users sorted chronologically
+     *
+     * @param email1 - first user's email
+     * @param email2 - second user's email
+     * @param pageable - for paging
+     * @return said page
+     * @throws ValidationException if the emails are the same
+     */
+    public Page<Message> getConversationBetweenUsers(String email1, String email2, Pageable pageable) throws ValidationException {
+        if (Objects.equals(email1, email2))
+            throw new ValidationException("Error: user emails must be different;\n");
+        return messageRepo.getMessagesBetweenUsersChronologically(email1, email2,pageable);
     }
 }
