@@ -1,10 +1,21 @@
 package com.map_toysocialnetworkgui.controllers;
 
+import com.map_toysocialnetworkgui.model.entities.Message;
+import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 public class ComposeMessageController extends AbstractControllerWithTitleBar {
     // Data
@@ -12,6 +23,14 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
     // FXML
     @FXML
     Button closeComposeMessageWindowButton;
+    @FXML
+    TextField fromTextField;
+    @FXML
+    TextField toTextField;
+    @FXML
+    TextField subjectTextField;
+    @FXML
+    TextArea messageTextArea;
 
     @Override
     public void initAppExitButton() {
@@ -32,39 +51,28 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
         this.loggedUser = loggedUser;
     }
 
-    /*
+    public void init() {
+        fromTextField.setPromptText(loggedUser.getEmail());
+    }
+
     public void sendMessage() {
         try {
-            String firstName = firstNameTextField.getText();
-            String lastName = lastNameTextField.getText();
-            String email = emailTextField.getText();
-            int passwordHash = passwordTextField.getText().hashCode();
-            int confirmPasswordHash = confirmPasswordTextField.getText().hashCode();
-            registerSuccessMessageLabel.setText("");
-            registerPasswordMatchErrorLabel.setText("");
+            String fromEmail = fromTextField.getPromptText();
+            List<String> toEmails = Arrays.stream(toTextField.getText().split(", ")).toList();
+            String messageSubject = subjectTextField.getText();
+            String messageText = messageTextArea.getText();
 
-            if (passwordHash != confirmPasswordHash)
-                registerPasswordMatchErrorLabel.setText("Passwords do not match!");
-            else {
-                UserServiceDTO userServiceDTO = new UserServiceDTO(email, firstName, lastName, passwordHash);
-                service.createUserAccount(userServiceDTO);
-                registerSuccessMessageLabel.setText("Account created successfully!");
-                firstNameTextField.clear();
-                lastNameTextField.clear();
-                emailTextField.clear();
-                passwordTextField.clear();
-                confirmPasswordTextField.clear();
-            }
+            Message message = new Message(null, fromEmail, toEmails, messageText, messageSubject, LocalDateTime.now(), null);
+            MessageDTO messageDTO = new MessageDTO(message);
+            this.service.sendRootMessage(messageDTO);
         } catch (ValidationException | AdministrationException ex) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning!");
-            alert.setHeaderText("Register warning!");
+            alert.setHeaderText("Compose message warning!");
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
         }
     }
-
-     */
 
     public void close() {
         ((Stage) closeComposeMessageWindowButton.getScene().getWindow()).close();

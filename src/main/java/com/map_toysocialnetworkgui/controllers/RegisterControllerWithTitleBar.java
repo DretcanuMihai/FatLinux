@@ -27,6 +27,14 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
     @FXML
     Label registerPasswordMatchErrorLabel;
 
+    public void clearAllFields() {
+        firstNameTextField.clear();
+        lastNameTextField.clear();
+        emailTextField.clear();
+        passwordTextField.clear();
+        confirmPasswordTextField.clear();
+    }
+
     public void signUp() {
         try {
             String firstName = firstNameTextField.getText();
@@ -43,11 +51,7 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
                 UserServiceDTO userServiceDTO = new UserServiceDTO(email, firstName, lastName, passwordHash);
                 service.createUserAccount(userServiceDTO);
                 registerSuccessMessageLabel.setText("Account created successfully!");
-                firstNameTextField.clear();
-                lastNameTextField.clear();
-                emailTextField.clear();
-                passwordTextField.clear();
-                confirmPasswordTextField.clear();
+                clearAllFields();
             }
         } catch (ValidationException | AdministrationException ex) {
             Alert alert = new Alert(Alert.AlertType.WARNING);

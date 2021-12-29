@@ -25,9 +25,9 @@ public class MessageValidator implements Validator<Message> {
         if (toEmails.size() != new HashSet<>(toEmails).size() || toEmails.contains(fromEmail))
             message += "Invalid list of recipient emails! Emails must be different and shouldn't contain the sender" +
                     " email;\n";
-        if (subject == null || subject.length() > messageSubjectMaxSize)
+        if (subject == null || subject.equals("") || subject.length() > messageSubjectMaxSize)
             message += "Invalid message subject! Must be non null and not have more than " + messageSubjectMaxSize + " characters;\n";
-        if (text == null || text.length() > messageTextMaxSize)
+        if (text == null || text.equals("") || text.length() > messageTextMaxSize)
             message += "Invalid message text! Must be non null and not have more than " + messageTextMaxSize + " characters;\n";
         if (message.length() != 0) {
             throw new ValidationException(message);

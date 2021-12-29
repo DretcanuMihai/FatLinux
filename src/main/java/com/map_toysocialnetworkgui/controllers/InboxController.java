@@ -130,6 +130,7 @@ public class InboxController extends AbstractController {
         ComposeMessageController composeMessageController = composeMessageWindowLoader.getController();
         composeMessageController.setService(this.service);
         composeMessageController.setLoggedUser(this.loggedUser);
+        composeMessageController.init();
 
         Parent composeMessageWindowParent = composeMessageWindowLoader.getRoot();
         Scene scene = new Scene(composeMessageWindowParent);

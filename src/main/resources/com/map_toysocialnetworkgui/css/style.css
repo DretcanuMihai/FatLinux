@@ -175,3 +175,23 @@
 .inboxViewControlButtons:hover, .inboxMessagingButtons:hover {
     -fx-background-color: #F04A00;
 }
+
+.button#sendMessageButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+}
+
+.button#sendMessageButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.button#closeComposeMessageWindowButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #000000;
+}
+
+.button#closeComposeMessageWindowButton:hover {
+    -fx-background-color: #424043;
+}
