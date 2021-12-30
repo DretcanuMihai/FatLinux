@@ -3,6 +3,7 @@ package com.map_toysocialnetworkgui.controllers;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -45,6 +46,8 @@ public class FriendsViewController extends AbstractController {
     Button viewFriendsButton;
     @FXML
     Button viewFriendRequestsButton;
+    @FXML
+    Label emptyListLabel;
 
     /**
      * protected class that describes a friend list cell for the friends list
@@ -89,6 +92,7 @@ public class FriendsViewController extends AbstractController {
                 removeFriendButton.setOnAction(event -> {
                     service.deleteFriendship(loggedUser.getEmail(), friendshipDTO.getUser2().getEmail());
                     updateModelFriends();
+                    viewAllFriends();
                 });
 
                 setPrefHeight(80.0);
@@ -148,11 +152,13 @@ public class FriendsViewController extends AbstractController {
                     service.confirmFriendRequest(friendRequestDTO.getSender().getEmail(), friendRequestDTO.getReceiver().getEmail(), true);
                     updateModelRequests();
                     updateModelFriends();
+                    viewFriendRequests();
                 });
                 declineButton.setOnAction(event -> {
                     service.confirmFriendRequest(friendRequestDTO.getSender().getEmail(), friendRequestDTO.getReceiver().getEmail(), false);
                     updateModelRequests();
                     updateModelFriends();
+                    viewFriendRequests();
                 });
 
                 setPrefHeight(80.0);
@@ -164,8 +170,10 @@ public class FriendsViewController extends AbstractController {
 
     @FXML
     public void initialize() {
+        friendsList.setFocusModel(new NoFocusModel<>());
         friendsList.setCellFactory(param -> new FriendCell());
         friendsList.setItems(modelFriends);
+        requestsList.setFocusModel(new NoFocusModel<>());
         requestsList.setCellFactory(param -> new FriendRequestCell());
         requestsList.setItems(modelRequests);
     }
@@ -199,16 +207,32 @@ public class FriendsViewController extends AbstractController {
      * hides the friend request list and shows the friends list
      */
     public void viewAllFriends() {
-        this.friendsList.setVisible(true);
-        this.requestsList.setVisible(false);
+        if (this.friendsList.getItems().isEmpty()) {
+            this.emptyListLabel.setText("No friends to show :(");
+            this.friendsList.setVisible(false);
+            this.requestsList.setVisible(false);
+            this.emptyListLabel.setVisible(true);
+        } else {
+            this.emptyListLabel.setVisible(false);
+            this.friendsList.setVisible(true);
+            this.requestsList.setVisible(false);
+        }
     }
 
     /**
      * hides the friends list and shows the friend requests list
      */
     public void viewFriendRequests() {
-        this.friendsList.setVisible(false);
-        this.requestsList.setVisible(true);
+        if (this.requestsList.getItems().isEmpty()) {
+            this.emptyListLabel.setText("No friend requests :/");
+            this.friendsList.setVisible(false);
+            this.requestsList.setVisible(false);
+            this.emptyListLabel.setVisible(true);
+        } else {
+            this.emptyListLabel.setVisible(false);
+            this.friendsList.setVisible(false);
+            this.requestsList.setVisible(true);
+        }
     }
 
     /**
@@ -218,7 +242,6 @@ public class FriendsViewController extends AbstractController {
     public void init() {
         updateModelFriends();
         updateModelRequests();
-        this.friendsList.setVisible(true);
-        this.requestsList.setVisible(false);
+        viewAllFriends();
     }
 }

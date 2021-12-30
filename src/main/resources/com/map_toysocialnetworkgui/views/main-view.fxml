@@ -47,7 +47,7 @@
                         </ImageView>
                      </children>
                   </Pane>
-                  <TextField fx:id="searchBar" layoutX="244.0" layoutY="50.0" onMouseClicked="#searchForFriend" prefHeight="34.0" prefWidth="212.0" promptText="Search for friends..." />
+                  <TextField fx:id="searchBar" layoutX="244.0" layoutY="50.0" prefHeight="34.0" prefWidth="212.0" promptText="Search for friends..." />
                   <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/fatLinuxRegister.png" />

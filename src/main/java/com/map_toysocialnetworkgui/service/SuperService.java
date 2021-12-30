@@ -335,7 +335,7 @@ public class SuperService {
     }
 
     /**
-     * sends a reply message to another message
+     * sends a reply all message to another message
      * the receiver will be the sender of the original message and all the original receivers
      * except the replier
      *

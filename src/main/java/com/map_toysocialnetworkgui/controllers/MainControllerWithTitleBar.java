@@ -76,6 +76,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * initiates search bar's functionality
      */
     private void initSearchBar() {
+        searchFriendsController.setLoggedUser(this.loggedUser);
+        searchFriendsController.setService(this.service);
         this.searchBar.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 searchFriendsController.setSearchText(searchBar.getText());
@@ -94,9 +96,9 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     public void init(UserUIDTO user) throws IOException {
         initLoadersAndControllers();
-        initSearchBar();
         loggedUser = user;
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
+        initSearchBar();
         showMainPage();
     }
 
@@ -105,14 +107,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     public void showMainPage() {
         mainBorderPane.setCenter(mainPageRoot);
-    }
-
-    /**
-     * initiates search bar's controller
-     */
-    public void searchForFriend() {
-        searchFriendsController.setLoggedUser(loggedUser);
-        searchFriendsController.setService(this.service);
     }
 
     /**
