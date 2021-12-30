@@ -87,7 +87,7 @@ public class SearchFriendsController extends AbstractController {
             } else {
                 label.setText(user.getFirstName() + " " + user.getLastName());
                 addFriendButton.setText("Add friend");
-                addFriendButton.setDisable(false);
+                addFriendButton.setDisable(loggedUser.getEmail().equals(user.getEmail()));
                 try {
                     service.getFriendshipDTO(loggedUser.getEmail(), user.getEmail());
                     addFriendButton.setText("✔ Friends");

@@ -52,6 +52,8 @@ public class InboxController extends AbstractController {
     TextField subjectTextField;
     @FXML
     TextArea messageTextArea;
+    @FXML
+    Label noMessagesLabel;
 
     /**
      * modifies a list view's cell height and font
@@ -156,22 +158,40 @@ public class InboxController extends AbstractController {
      * hides the sent messages list and shows the received messages list
      */
     public void viewReceivedMessages() {
-        this.receivedMessagesList.setVisible(true);
-        this.sentMessagesList.setVisible(false);
-        clearAllFields();
-        replyButton.setVisible(false);
-        replyAllButton.setVisible(false);
+        if (receivedMessagesList.getItems().isEmpty()) {
+            this.receivedMessagesList.setVisible(false);
+            this.sentMessagesList.setVisible(false);
+            replyButton.setVisible(false);
+            this.replyAllButton.setVisible(false);
+            this.noMessagesLabel.setVisible(true);
+        } else {
+            this.receivedMessagesList.setVisible(true);
+            this.sentMessagesList.setVisible(false);
+            this.noMessagesLabel.setVisible(false);
+            clearAllFields();
+            this.replyButton.setVisible(false);
+            this.replyAllButton.setVisible(false);
+        }
     }
 
     /**
      * hides the received messages list and shows the sent messages list
      */
     public void viewSentMessages() {
-        this.receivedMessagesList.setVisible(false);
-        this.sentMessagesList.setVisible(true);
-        clearAllFields();
-        replyButton.setVisible(false);
-        replyAllButton.setVisible(false);
+        if (sentMessagesList.getItems().isEmpty()) {
+            this.receivedMessagesList.setVisible(false);
+            this.sentMessagesList.setVisible(false);
+            this.replyButton.setVisible(false);
+            this.replyAllButton.setVisible(false);
+            this.noMessagesLabel.setVisible(true);
+        } else {
+            this.receivedMessagesList.setVisible(false);
+            this.sentMessagesList.setVisible(true);
+            this.noMessagesLabel.setVisible(false);
+            clearAllFields();
+            this.replyButton.setVisible(false);
+            this.replyAllButton.setVisible(false);
+        }
     }
 
     /**
@@ -250,10 +270,6 @@ public class InboxController extends AbstractController {
     public void init() {
         updateModelReceivedMessages();
         updateModelSentMessages();
-        this.receivedMessagesList.setVisible(true);
-        this.sentMessagesList.setVisible(false);
-        clearAllFields();
-        replyButton.setVisible(false);
-        replyAllButton.setVisible(false);
+        viewReceivedMessages();
     }
 }
