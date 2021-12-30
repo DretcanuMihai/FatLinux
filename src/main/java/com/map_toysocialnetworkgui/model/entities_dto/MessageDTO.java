@@ -13,6 +13,7 @@ public class MessageDTO {
     private final String fromEmail;
     private final List<String> toEmails;
     private final String messageText;
+    private final String messageSubject;
     private final LocalDateTime sendTime;
     private final Integer parentMessageId;
 
@@ -26,6 +27,7 @@ public class MessageDTO {
         fromEmail = message.getFromEmail();
         toEmails = message.getToEmails();
         messageText = message.getMessageText();
+        messageSubject = message.getMessageSubject();
         sendTime = message.getSendTime();
         parentMessageId = message.getParentMessageId();
     }
@@ -64,6 +66,15 @@ public class MessageDTO {
      */
     public String getMessageText() {
         return messageText;
+    }
+
+    /**
+     * gets subject of message
+     *
+     * @return said subject
+     */
+    public String getMessageSubject() {
+        return messageSubject;
     }
 
     /**

@@ -10,7 +10,13 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 
-public class LoginController extends AbstractController{
+/**
+ * controller for login view
+ */
+public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar {
+    /**
+     * FXML data
+     */
     @FXML
     TextField emailTextField;
     @FXML
@@ -18,11 +24,15 @@ public class LoginController extends AbstractController{
     @FXML
     Label errorLabel;
 
-
+    /**
+     * logs in a user
+     *
+     * @throws IOException if an IO error occurs
+     */
     public void login() throws IOException {
         try {
-            String email=emailTextField.getText();
-            UserUIDTO user=service.login(email, passwordTextField.getText().hashCode());
+            String email = emailTextField.getText();
+            UserUIDTO user = service.login(email, passwordTextField.getText().hashCode());
             errorLabel.setText("");
             application.changeToMain(user);
         } catch (ValidationException | AdministrationException ex) {
@@ -30,6 +40,12 @@ public class LoginController extends AbstractController{
         }
     }
 
-    public void register() {
+    /**
+     * changes main window to register window
+     *
+     * @throws IOException if an IO error occurs
+     */
+    public void register() throws IOException {
+        application.changeToRegister();
     }
 }

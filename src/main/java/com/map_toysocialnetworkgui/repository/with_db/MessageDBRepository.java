@@ -14,10 +14,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * a message repository that works with a database
+ * database repository for message
  */
 public class MessageDBRepository implements MessageRepositoryInterface {
-
     /**
      * the database's URL
      */
@@ -32,7 +31,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     private final String password;
 
     /**
-     * constructor
+     * creates a database repository with an url, a username and a password
      *
      * @param url      - url of database
      * @param username - username of database
@@ -46,8 +45,9 @@ public class MessageDBRepository implements MessageRepositoryInterface {
 
     @Override
     public Message findOne(Integer id) {
-        String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
         Message message = null;
+        String sqlFind = "SELECT * FROM messages WHERE message_id = (?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementGetMessage = connection.prepareStatement(sqlFind)) {
 
@@ -66,6 +66,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     public Iterable<Message> findAll() {
         Set<Message> messages = new HashSet<>();
         String sqlMessages = "SELECT * FROM messages";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
 
@@ -83,22 +84,26 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     @Override
     public Message save(Message message) {
         Message toReturn = message;
-        String sqlSave = "INSERT INTO messages(sender_email, message_text, send_time, parent_message_id) " +
-                "VALUES (?, ?, ?, ?)";
+        String sqlSave = """
+                INSERT INTO messages(sender_email, message_text, message_subject, send_time, parent_message_id)
+                VALUES (?, ?, ?, ?, ?)
+                """;
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementInsertMessage = connection.prepareStatement(sqlSave, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             statementInsertMessage.setString(1, message.getFromEmail());
             statementInsertMessage.setString(2, message.getMessageText());
-            statementInsertMessage.setTimestamp(3, Timestamp.valueOf(message.getSendTime()));
+            statementInsertMessage.setString(3, message.getMessageSubject());
+            statementInsertMessage.setTimestamp(4, Timestamp.valueOf(message.getSendTime()));
             if (message.getParentMessageId() != null)
-                statementInsertMessage.setInt(4, message.getParentMessageId());
+                statementInsertMessage.setInt(5, message.getParentMessageId());
             else
-                statementInsertMessage.setNull(4, Types.INTEGER);
+                statementInsertMessage.setNull(5, Types.INTEGER);
 
             statementInsertMessage.executeUpdate();
 
-            // saves the list of receivers
+            // Saves the list of receivers
             int id = getMessageIDGeneratedBy(statementInsertMessage);
             message.getToEmails().forEach(email -> saveDelivery(id, email));
             message.setId(id);
@@ -113,17 +118,18 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     @Override
     public Message delete(Integer id) {
         Message toReturn = null;
-        Message message=findOne(id);
-        if(message==null)
+        Message message = findOne(id);
+        if (message == null)
             return null;
         String sqlMessages = "DELETE FROM messages WHERE message_id = (?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementMessages = connection.prepareStatement(sqlMessages)) {
 
             statementMessages.setInt(1, id);
             int rows = statementMessages.executeUpdate();
-            if(rows != 0)
-                toReturn=message;
+            if (rows != 0)
+                toReturn = message;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -132,26 +138,28 @@ public class MessageDBRepository implements MessageRepositoryInterface {
 
     @Override
     public Message update(Message message) {
-        Message toReturn=message;
-        String sqlUpdateMessage="UPDATE messages set sender_email=(?),message_text=(?),send_time=(?),parent_message_id=(?) where message_id=(?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+        Message toReturn = message;
+        String sqlUpdateMessage = """
+                UPDATE messages SET sender_email = (?), message_text = (?), message_subject = (?), send_time = (?), parent_message_id = (?) 
+                WHERE message_id = (?)
+                """;
 
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
             PreparedStatement statementUpdateMessage = connection.prepareStatement(sqlUpdateMessage);
 
-            statementUpdateMessage.setString(1,message.getFromEmail());
-            statementUpdateMessage.setString(2,message.getMessageText());
-            statementUpdateMessage.setTimestamp(3,Timestamp.valueOf(message.getSendTime()));
-            if(message.getParentMessageId()==null)
-                statementUpdateMessage.setNull(4,Types.INTEGER);
+            statementUpdateMessage.setString(1, message.getFromEmail());
+            statementUpdateMessage.setString(2, message.getMessageText());
+            statementUpdateMessage.setString(3, message.getMessageSubject());
+            statementUpdateMessage.setTimestamp(4, Timestamp.valueOf(message.getSendTime()));
+            if (message.getParentMessageId() == null)
+                statementUpdateMessage.setNull(5, Types.INTEGER);
             else
-                statementUpdateMessage.setInt(4,message.getParentMessageId());
-
-            statementUpdateMessage.setInt(5,message.getId());
-            int rows=statementUpdateMessage.executeUpdate();
+                statementUpdateMessage.setInt(5, message.getParentMessageId());
+            statementUpdateMessage.setInt(6, message.getId());
+            int rows = statementUpdateMessage.executeUpdate();
             updateDeliveriesOf(message);
-            if(rows!=0)
-                toReturn=null;
-
+            if (rows != 0)
+                toReturn = null;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -159,14 +167,40 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     }
 
     @Override
+    public Page<Message> findAll(Pageable pageable) {
+        Set<Message> messages = new HashSet<>();
+        String sql = "SELECT * FROM messages OFFSET (?) LIMIT (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statement.setInt(1, start);
+            statement.setInt(2, pageSize);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable, messages.stream());
+    }
+
+    @Override
     public Iterable<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2) {
         List<Message> conversation = new ArrayList<>();
         String sqlFilterConversationByTime = """
-                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
-                FROM messages m INNER JOIN message_deliveries md\s
-                ON m.message_id = md.message_id\s
+                SELECT m.message_id, m.sender_email, m.message_text, m.message_subject, m.send_time, m.parent_message_id
+                FROM messages m INNER JOIN message_deliveries md
+                ON m.message_id = md.message_id
                 WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
-                ORDER BY send_time""";
+                ORDER BY send_time
+                """;
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
 
@@ -186,30 +220,6 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     }
 
     @Override
-    public Page<Message> findAll(Pageable pageable) {
-        Set<Message> messages = new HashSet<>();
-        String sql = "SELECT * FROM messages offset (?) limit (?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            int pageSize=pageable.getPageSize();
-            int pageNr=pageable.getPageNumber();
-            int start=(pageNr-1)*pageSize;
-            statement.setInt(1,start);
-            statement.setInt(2,pageSize);
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                Message message = getNextFromSet(resultSet);
-                messages.add(message);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return new PageImplementation<>(pageable,messages.stream());
-    }
-
-    @Override
     public Page<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2, Pageable pageable) {
         Set<Message> messages = new HashSet<>();
         String sql = """
@@ -218,23 +228,22 @@ public class MessageDBRepository implements MessageRepositoryInterface {
                 ON m.message_id = md.message_id
                 WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
                 ORDER BY send_time
-                OFFSET (?)
-                LIMIT (?)
+                OFFSET (?) LIMIT (?)
                 """;
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            int pageSize=pageable.getPageSize();
-            int pageNr=pageable.getPageNumber();
-            int start=(pageNr-1)*pageSize;
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
             statement.setString(1, userEmail1);
             statement.setString(2, userEmail2);
             statement.setString(3, userEmail2);
             statement.setString(4, userEmail1);
-            statement.setInt(5,start);
-            statement.setInt(6,pageSize);
+            statement.setInt(5, start);
+            statement.setInt(6, pageSize);
             ResultSet resultSet = statement.executeQuery();
-
             while (resultSet.next()) {
                 Message message = getNextFromSet(resultSet);
                 messages.add(message);
@@ -242,18 +251,20 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PageImplementation<>(pageable,messages.stream());
+        return new PageImplementation<>(pageable, messages.stream());
     }
 
     @Override
-    public Iterable<Message> getMessagesSentToUserChronologically(String userEmail) {
+    public Iterable<Message> getMessagesReceivedByUserChronologically(String userEmail) {
         List<Message> conversation = new ArrayList<>();
         String sqlFilterConversationByTime = """
-                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                SELECT m.message_id, m.sender_email, m.message_text, m.message_subject, m.send_time, m.parent_message_id
                 FROM messages m INNER JOIN message_deliveries md
                 ON m.message_id = md.message_id
                 WHERE md.receiver_email = (?)
-                ORDER BY send_time""";
+                ORDER BY send_time
+                """;
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
 
@@ -270,24 +281,26 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     }
 
     @Override
-    public Page<Message> getMessagesSentToUserChronologically(String userEmail, Pageable pageable) {
+    public Page<Message> getMessagesReceivedByUserChronologically(String userEmail, Pageable pageable) {
         List<Message> conversation = new ArrayList<>();
         String sqlFilterConversationByTime = """
-                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                SELECT m.message_id, m.sender_email, m.message_text, m.message_subject, m.send_time, m.parent_message_id
                 FROM messages m INNER JOIN message_deliveries md
                 ON m.message_id = md.message_id
                 WHERE md.receiver_email = (?)
                 ORDER BY send_time
-                offset (?) limit (?)""";
+                OFFSET (?) LIMIT (?)
+                """;
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
 
             statementConversation.setString(1, userEmail);
-            int pageSize=pageable.getPageSize();
-            int pageNr=pageable.getPageNumber();
-            int start=(pageNr-1)*pageSize;
-            statementConversation.setInt(2,start);
-            statementConversation.setInt(3,pageSize);
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statementConversation.setInt(2, start);
+            statementConversation.setInt(3, pageSize);
             ResultSet resultSet = statementConversation.executeQuery();
             while (resultSet.next()) {
                 Message message = getNextFromSet(resultSet);
@@ -296,17 +309,19 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PageImplementation<>(pageable,conversation.stream());
+        return new PageImplementation<>(pageable, conversation.stream());
     }
 
     @Override
     public Iterable<Message> getMessagesSentByUserChronologically(String userEmail) {
         List<Message> conversation = new ArrayList<>();
         String sqlFilterConversationByTime = """
-                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                SELECT m.message_id, m.sender_email, m.message_text, m.message_subject, m.send_time, m.parent_message_id
                 FROM messages m
                 WHERE m.sender_email = (?)
-                ORDER BY send_time""";
+                ORDER BY send_time
+                """;
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
 
@@ -326,21 +341,22 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     public Page<Message> getMessagesSentByUserChronologically(String userEmail, Pageable pageable) {
         List<Message> conversation = new ArrayList<>();
         String sqlFilterConversationByTime = """
-                SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
+                SELECT m.message_id, m.sender_email, m.message_text, m.message_subject, m.send_time, m.parent_message_id
                 FROM messages m
                 WHERE m.sender_email = (?)
                 ORDER BY send_time
-                offset (?) limit (?)
+                OFFSET (?) LIMIT (?)
                 """;
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
 
             statementConversation.setString(1, userEmail);
-            int pageSize=pageable.getPageSize();
-            int pageNr=pageable.getPageNumber();
-            int start=(pageNr-1)*pageSize;
-            statementConversation.setInt(2,start);
-            statementConversation.setInt(3,pageSize);
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statementConversation.setInt(2, start);
+            statementConversation.setInt(3, pageSize);
             ResultSet resultSet = statementConversation.executeQuery();
             while (resultSet.next()) {
                 Message message = getNextFromSet(resultSet);
@@ -349,7 +365,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PageImplementation<>(pageable,conversation.stream());
+        return new PageImplementation<>(pageable, conversation.stream());
     }
 
     /**
@@ -366,11 +382,12 @@ public class MessageDBRepository implements MessageRepositoryInterface {
             fromEmail = null;
         List<String> toEmails = getReceiverEmailsOf(id);
         String messageText = resultSet.getString("message_text");
+        String messageSubject = resultSet.getString("message_subject");
         LocalDateTime sendTime = resultSet.getTimestamp("send_time").toLocalDateTime();
         Integer repliedMessageId = resultSet.getInt("parent_message_id");
         if (resultSet.wasNull())
             repliedMessageId = null;
-        return new Message(id, fromEmail, toEmails, messageText, sendTime, repliedMessageId);
+        return new Message(id, fromEmail, toEmails, messageText, messageSubject, sendTime, repliedMessageId);
     }
 
     /**
@@ -381,6 +398,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
      */
     private void saveDelivery(Integer messageID, String receiverEmail) {
         String sqlInsertDelivery = "INSERT INTO message_deliveries(message_id, receiver_email) VALUES (?, ?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementInsertDelivery = connection.prepareStatement(sqlInsertDelivery)) {
 
@@ -414,6 +432,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     private List<String> getReceiverEmailsOf(Integer id) {
         List<String> toEmails = new ArrayList<>();
         String sqlGetMessageDeliveries = "SELECT * FROM message_deliveries WHERE message_id = (?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementGetMessageDeliveries = connection.prepareStatement(sqlGetMessageDeliveries)) {
 
@@ -431,14 +450,16 @@ public class MessageDBRepository implements MessageRepositoryInterface {
 
     /**
      * deletes all the deliveries of a given message
+     *
      * @param id - the message's id
      */
-    private void deleteDeliveriesOf(Integer id){
-        String sqlDeleteMessageDeliveries="DELETE from message_deliveries where message_id=(?)";
+    private void deleteDeliveriesOf(Integer id) {
+        String sqlDeleteMessageDeliveries = "DELETE from message_deliveries WHERE message_id = (?)";
+
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
 
-            PreparedStatement statementDeleteMessageDeliveries= connection.prepareStatement(sqlDeleteMessageDeliveries);
-            statementDeleteMessageDeliveries.setInt(1,id);
+            PreparedStatement statementDeleteMessageDeliveries = connection.prepareStatement(sqlDeleteMessageDeliveries);
+            statementDeleteMessageDeliveries.setInt(1, id);
             statementDeleteMessageDeliveries.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -447,10 +468,11 @@ public class MessageDBRepository implements MessageRepositoryInterface {
 
     /**
      * updates the deliveries of a message in the database
+     *
      * @param message - said message - the new deliveries are taken from it
      */
-    private void updateDeliveriesOf(Message message){
+    private void updateDeliveriesOf(Message message) {
         deleteDeliveriesOf(message.getId());
-        message.getToEmails().forEach(email-> saveDelivery(message.getId(),email));
+        message.getToEmails().forEach(email -> saveDelivery(message.getId(), email));
     }
 }

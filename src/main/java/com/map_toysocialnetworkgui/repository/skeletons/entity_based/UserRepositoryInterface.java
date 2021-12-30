@@ -18,7 +18,7 @@ public interface UserRepositoryInterface extends PagingRepository<String, User> 
     /**
      * gets a page of all users who have a string in their name
      *
-     * @param string -> said string
+     * @param string   -> said string
      * @param pageable -> for paging
      * @return said page
      */

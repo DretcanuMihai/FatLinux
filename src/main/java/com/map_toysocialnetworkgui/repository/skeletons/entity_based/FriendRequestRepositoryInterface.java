@@ -6,10 +6,10 @@ import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PagingRepository;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 
-public interface FriendRequestRepositoryInterface extends
-        PagingRepository<Pair<String, String>, FriendRequest> {
-
-
+/**
+ * the interface for a generic paging friend request repository
+ */
+public interface FriendRequestRepositoryInterface extends PagingRepository<Pair<String, String>, FriendRequest> {
     /**
      * gets all friend requests sent to a user as an iterable
      *
@@ -22,7 +22,7 @@ public interface FriendRequestRepositoryInterface extends
      * gets page of user friend requests
      *
      * @param userEmail -> said user's emails
-     * @param pageable -> pageable for paging
+     * @param pageable  -> pageable for paging
      * @return a page of said friend requests
      */
     Page<FriendRequest> getFriendRequestsSentToUser(String userEmail, Pageable pageable);

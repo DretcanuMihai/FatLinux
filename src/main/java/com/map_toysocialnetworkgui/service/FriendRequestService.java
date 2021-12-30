@@ -13,12 +13,15 @@ import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.time.LocalDateTime;
 
-public class FriendRequestService extends AbstractObservable<EntityModificationEvent<Pair<String,String>>> {
-
+/**
+ * class that incorporates a service that works with friend request administration
+ */
+public class FriendRequestService extends AbstractObservable<EntityModificationEvent<Pair<String, String>>> {
     /**
      * associated friend request repo
      */
     private final FriendRequestRepositoryInterface friendRequestRepository;
+
     /**
      * associated friend request validator
      */
@@ -50,10 +53,10 @@ public class FriendRequestService extends AbstractObservable<EntityModificationE
         if (inverse != null)
             throw new AdministrationException("Error: Can't send request! Receiver already sent request to sender;\n");
         FriendRequest friendRequest = new FriendRequest(senderEmail, receiverEmail, LocalDateTime.now());
-        FriendRequest result=friendRequestRepository.save(friendRequest);
-        if(result!=null)
+        FriendRequest result = friendRequestRepository.save(friendRequest);
+        if (result != null)
             throw new AdministrationException("Error: A friend request has already been sent!;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,friendRequest.getId()));
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, friendRequest.getId()));
     }
 
     /**
@@ -64,14 +67,13 @@ public class FriendRequestService extends AbstractObservable<EntityModificationE
      * @throws ValidationException     - if any data is invalid
      * @throws AdministrationException - if any administrative problem occurs
      */
-    public void deleteFriendRequest(String senderEmail, String receiverEmail)
-            throws ValidationException, AdministrationException {
+    public void deleteFriendRequest(String senderEmail, String receiverEmail) throws ValidationException, AdministrationException {
 
         friendRequestValidator.validateEmails(senderEmail, receiverEmail);
-        FriendRequest result=friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
-        if(result==null)
+        FriendRequest result = friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
+        if (result == null)
             throw new AdministrationException("No friend request from sender to receiver exists;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,result.getId()));
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, result.getId()));
     }
 
     /**
@@ -107,11 +109,10 @@ public class FriendRequestService extends AbstractObservable<EntityModificationE
      * gets a page of a user's friend requests
      *
      * @param userEmail -> said user's emails
-     * @param pageable - for paging
+     * @param pageable  - for paging
      * @return said page
      */
-    public Page<FriendRequest> getFriendRequestsSentToUser(String userEmail,Pageable pageable) {
-        return friendRequestRepository.getFriendRequestsSentToUser(userEmail,pageable);
+    public Page<FriendRequest> getFriendRequestsSentToUser(String userEmail, Pageable pageable) {
+        return friendRequestRepository.getFriendRequestsSentToUser(userEmail, pageable);
     }
-
 }

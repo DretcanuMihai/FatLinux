@@ -1,11 +1,16 @@
 package com.map_toysocialnetworkgui.model.validators;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * message entity validator
+ */
 public class MessageValidator implements Validator<Message> {
-    static private final int maxSize = 100;
+    static private final int messageTextMaxSize = 100;
+    static private final int messageSubjectMaxSize = 50;
 
     /**
      * validates a message
@@ -20,11 +25,14 @@ public class MessageValidator implements Validator<Message> {
         String fromEmail = entity.getFromEmail();
         List<String> toEmails = entity.getToEmails();
         String text = entity.getMessageText();
+        String subject = entity.getMessageSubject();
         if (toEmails.size() != new HashSet<>(toEmails).size() || toEmails.contains(fromEmail))
             message += "Invalid list of recipient emails! Emails must be different and shouldn't contain the sender" +
                     " email;\n";
-        if (text == null || text.length() > maxSize)
-            message += "Invalid message text! Must be non null and not have more than " + maxSize + " characters;\n";
+        if (subject == null || subject.equals("") || subject.length() > messageSubjectMaxSize)
+            message += "Invalid message subject! Must be non null and not have more than " + messageSubjectMaxSize + " characters;\n";
+        if (text == null || text.equals("") || text.length() > messageTextMaxSize)
+            message += "Invalid message text! Must be non null and not have more than " + messageTextMaxSize + " characters;\n";
         if (message.length() != 0) {
             throw new ValidationException(message);
         }

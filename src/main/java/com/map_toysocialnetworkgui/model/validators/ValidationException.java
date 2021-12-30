@@ -1,7 +1,7 @@
 package com.map_toysocialnetworkgui.model.validators;
 
 /**
- * Exception specialized for validation errors
+ * exception specialized for validation errors
  */
 public class ValidationException extends RuntimeException {
     public ValidationException() {

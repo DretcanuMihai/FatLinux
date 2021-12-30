@@ -16,12 +16,13 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * a class that incorporates a service that works with user administration
+ * class that incorporates a service that works with user administration
  */
 public class UserService extends AbstractObservable<EntityModificationEvent<String>> {
     /**
      * associated users repo
      */
+
     private final UserRepositoryInterface usersRepo;
     /**
      * associated user validator
@@ -42,22 +43,22 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * creates a user account
      *
-     * @param email - email info
+     * @param email        - email info
      * @param passwordHash -password hash info
-     * @param firstName - first name info
-     * @param lastName - last name info
-     * @throws ValidationException - if the user data is invalid
-     * @throws AdministrationException       - if the email is already in use
+     * @param firstName    - first name info
+     * @param lastName     - last name info
+     * @throws ValidationException     - if the user data is invalid
+     * @throws AdministrationException - if the email is already in use
      */
     public void createUserAccount(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        User user = new User(email, passwordHash,firstName,lastName,LocalDate.now());
+        User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
         userValidator.validateDefault(user);
-        User result=usersRepo.save(user);
-        if(result!=null)
+        User result = usersRepo.save(user);
+        if (result != null)
             throw new AdministrationException("Error: email already in use;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,email));
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, email));
     }
 
     /**
@@ -79,26 +80,26 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * updates the data of a user identified by an email
      *
-     * @param email - email info
+     * @param email        - email info
      * @param passwordHash -password hash info
-     * @param firstName - first name info
-     * @param lastName - last name info
+     * @param firstName    - first name info
+     * @param lastName     - last name info
      * @throws ValidationException     - if any of the data is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
     public void updateUserAccountInfo(String email, int passwordHash, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        User user = new User(email, passwordHash,firstName,lastName,null);
+        User user = new User(email, passwordHash, firstName, lastName, null);
         userValidator.validateDefault(user);
-        User actualUser=usersRepo.findOne(email);
-        if(actualUser==null)
+        User actualUser = usersRepo.findOne(email);
+        if (actualUser == null)
             throw new AdministrationException("Error: email not in use;\n");
         actualUser.setFirstName(firstName);
         actualUser.setLastName(lastName);
         actualUser.setPasswordHash(passwordHash);
         usersRepo.update(user);
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.UPDATE,email));
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.UPDATE, email));
     }
 
     /**
@@ -110,11 +111,10 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
      */
     public void deleteUserAccount(String email) throws ValidationException, com.map_toysocialnetworkgui.service.AdministrationException {
         userValidator.validateEmail(email);
-        User result=usersRepo.delete(email);
-        if(result==null)
+        User result = usersRepo.delete(email);
+        if (result == null)
             throw new AdministrationException("Error: no user with given email;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.DELETE,email));
-
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.DELETE, email));
     }
 
     /**
@@ -128,8 +128,8 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
 
     /**
      * returns a page of all the users in repo
-     * @param pageable - pageable for paging
      *
+     * @param pageable - pageable for paging
      * @return said page
      */
     public Page<User> getAllUsers(Pageable pageable) {
@@ -143,35 +143,34 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
      * @throws AdministrationException - if any email is incorrect
      */
     public void verifyEmailCollection(Collection<String> emailList) throws AdministrationException {
-        if(emailList==null)
+        if (emailList == null)
             throw new ValidationException("Error: email list must be non null!;\n");
-        List<String> errors=new ArrayList<>();
-        emailList.forEach(email->{
-            try{
+        List<String> errors = new ArrayList<>();
+        emailList.forEach(email -> {
+            try {
                 getUserInfo(email);
-            }
-            catch(AdministrationException|ValidationException e){
-                errors.add("For email:"+email+"\n"+e.getMessage());
+            } catch (AdministrationException | ValidationException e) {
+                errors.add("For email:" + email + "\n" + e.getMessage());
             }
         });
-        StringBuilder error= new StringBuilder();
-        for(String er:errors){
+        StringBuilder error = new StringBuilder();
+        for (String er : errors) {
             error.append(er);
         }
-        if(!error.toString().equals(""))
+        if (!error.toString().equals(""))
             throw new AdministrationException(error.toString());
     }
 
     /**
      * verifies if user email and password hash exists for logging in
      *
-     * @param userEmail - said email
+     * @param userEmail    - said email
      * @param userPassword - said password hash
+     * @return the user's info
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
-     * @return the user's info
      */
-    public User login(String userEmail,int userPassword) throws ValidationException, AdministrationException {
+    public User login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
         User found = usersRepo.findOne(userEmail);
 
@@ -182,28 +181,28 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
 
     /**
      * returns an iterable of all the users in repo with certain string inside of them
-     * @param string - sais string
      *
+     * @param string - sais string
      * @return said iterable
      * @throws ValidationException if string is null
      */
-    public Iterable<User> filterUsers(String string)throws ValidationException {
-        if(string==null)
+    public Iterable<User> filterUsers(String string) throws ValidationException {
+        if (string == null)
             throw new ValidationException("Error: string must be non null;\n");
         return usersRepo.getUsersByName(string);
     }
 
     /**
      * returns a page of all the users in repo that have a certain string in their names
-     * @param string - said string
-     * @param pageable - pageable for paging
      *
+     * @param string   - said string
+     * @param pageable - pageable for paging
      * @return said page
      * @throws ValidationException if string is null
      */
-    public Page<User> filterUsers(String string, Pageable pageable)throws ValidationException {
-        if(string==null)
+    public Page<User> filterUsers(String string, Pageable pageable) throws ValidationException {
+        if (string == null)
             throw new ValidationException("Error: string must be non null;\n");
-        return usersRepo.getUsersByName(string,pageable);
+        return usersRepo.getUsersByName(string, pageable);
     }
 }

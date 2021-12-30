@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * a class that incorporates a service that works with message administration
+ * class that incorporates a service that works with message administration
  */
 public class MessageService extends AbstractObservable<EntityModificationEvent<Integer>> {
     /**
@@ -29,7 +29,7 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
     private final MessageValidator messageValidator;
 
     /**
-     * constructs a messageService having a specified message repo and validator
+     * constructs a message service having a specified message repo and validator
      *
      * @param messageRepo      - said message repo
      * @param messageValidator - said message validator
@@ -58,54 +58,53 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
     /**
      * saves a root message
      *
-     *
-     * @param fromEmail - sender email
-     * @param toEmails - a list of destination emails
+     * @param fromEmail   - sender email
+     * @param toEmails    - a list of destination emails
      * @param messageText - message's text
-     * @throws ValidationException - if the message is invalid
-     * @throws AdministrationException       - if the id is already in use
+     * @throws ValidationException     - if the message is invalid
+     * @throws AdministrationException - if the id is already in use
      */
-    public void addRootMessage(String fromEmail,List<String> toEmails,String messageText) throws ValidationException, AdministrationException {
-        Message message = new Message(null, fromEmail,toEmails,messageText, LocalDateTime.now(), null);
+    public void addRootMessage(String fromEmail, List<String> toEmails, String messageText, String messageSubject)
+            throws ValidationException, AdministrationException {
+
+        Message message = new Message(null, fromEmail, toEmails, messageText, messageSubject, LocalDateTime.now(), null);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,message.getId()));
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, message.getId()));
     }
 
     /**
      * saves a reply message
      *
-     *
-     * @param fromEmail - sender email
+     * @param fromEmail   - sender email
      * @param messageText - message's text
-     * @param parentID - parent message id
+     * @param parentID    - parent message id
      * @throws ValidationException     - if the message is invalid
      * @throws AdministrationException - if the user is not a recipient
      */
-    public void addReplyMessage(String fromEmail,String messageText,Integer parentID)
+    public void addReplyMessage(String fromEmail, String messageText, String messageSubject, Integer parentID)
             throws ValidationException, AdministrationException {
 
         Message parentMessage = getMessage(parentID);
         if (!parentMessage.getToEmails().contains(fromEmail))
             throw new AdministrationException("Error: User is not one of the recipients of the message!;\n");
-        Message message = new Message(null, fromEmail, List.of(parentMessage.getFromEmail()), messageText, LocalDateTime.now(),
-                parentID);
+        Message message = new Message(null, fromEmail, List.of(parentMessage.getFromEmail()), messageText,
+                messageSubject, LocalDateTime.now(), parentID);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,message.getId()));
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, message.getId()));
     }
 
     /**
      * saves a reply message sent to every person who can see the original message
      *
-     *
-     * @param fromEmail - sender email
+     * @param fromEmail   - sender email
      * @param messageText - message's text
-     * @param parentID - parent message id
+     * @param parentID    - parent message id
      * @throws ValidationException     - if the message is invalid
      * @throws AdministrationException - if the user is not one of the recipients
      */
-    public void addReplyAllMessage(String fromEmail,String messageText,Integer parentID)
+    public void addReplyAllMessage(String fromEmail, String messageText, String messageSubject, Integer parentID)
             throws ValidationException, AdministrationException {
 
         Message parentMessage = getMessage(parentID);
@@ -114,11 +113,11 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
         List<String> receivers = parentMessage.getToEmails();
         receivers.add(parentMessage.getFromEmail());
         receivers.remove(fromEmail);
-        Message message = new Message(0, fromEmail, receivers, messageText, LocalDateTime.now(),
+        Message message = new Message(0, fromEmail, receivers, messageText, messageSubject, LocalDateTime.now(),
                 parentID);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD,message.getId()));
+        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, message.getId()));
     }
 
     /**
@@ -138,8 +137,8 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
     /**
      * returns a page of the conversation between two users sorted chronologically
      *
-     * @param email1 - first user's email
-     * @param email2 - second user's email
+     * @param email1   - first user's email
+     * @param email2   - second user's email
      * @param pageable - for paging
      * @return said page
      * @throws ValidationException if the emails are the same
@@ -147,7 +146,7 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
     public Page<Message> getConversationBetweenUsers(String email1, String email2, Pageable pageable) throws ValidationException {
         if (Objects.equals(email1, email2))
             throw new ValidationException("Error: user emails must be different;\n");
-        return messageRepo.getMessagesBetweenUsersChronologically(email1, email2,pageable);
+        return messageRepo.getMessagesBetweenUsersChronologically(email1, email2, pageable);
     }
 
     /**
@@ -156,19 +155,19 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
      * @param email - first user's email
      * @return an iterable of the messages
      */
-    public Iterable<Message> getMessagesSentToUser(String email){
-        return messageRepo.getMessagesSentToUserChronologically(email);
+    public Iterable<Message> getMessagesSentToUser(String email) {
+        return messageRepo.getMessagesReceivedByUserChronologically(email);
     }
 
     /**
      * returns the messages sent to an user
      *
-     * @param email - first user's email
+     * @param email    - first user's email
      * @param pageable - for paging
      * @return said page
      */
-    public Page<Message> getMessagesSentToUser(String email, Pageable pageable){
-        return messageRepo.getMessagesSentToUserChronologically(email,pageable);
+    public Page<Message> getMessagesSentToUser(String email, Pageable pageable) {
+        return messageRepo.getMessagesReceivedByUserChronologically(email, pageable);
     }
 
     /**
@@ -177,18 +176,18 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
      * @param email - first user's email
      * @return an iterable of the messages
      */
-    public Iterable<Message> getMessagesSentByUser(String email){
+    public Iterable<Message> getMessagesSentByUser(String email) {
         return messageRepo.getMessagesSentByUserChronologically(email);
     }
 
     /**
      * returns the messages sent by an user
      *
-     * @param email - first user's email
+     * @param email    - first user's email
      * @param pageable - for paging
      * @return said page
      */
-    public Page<Message> getMessagesSentByUser(String email, Pageable pageable){
-        return messageRepo.getMessagesSentByUserChronologically(email,pageable);
+    public Page<Message> getMessagesSentByUser(String email, Pageable pageable) {
+        return messageRepo.getMessagesSentByUserChronologically(email, pageable);
     }
 }
