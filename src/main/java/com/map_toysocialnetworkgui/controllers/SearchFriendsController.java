@@ -46,6 +46,64 @@ public class SearchFriendsController extends AbstractController {
     @FXML
     Label searchFailedLabel;
 
+    @FXML
+    public void initialize() {
+        searchFriendsList.setFocusModel(new NoFocusModel<>());
+        searchFriendsList.setCellFactory(param -> new UserCell());
+        searchFriendsList.setItems(modelSearch);
+    }
+
+    /**
+     * sets the currently logged-in user
+     *
+     * @param loggedUser - said user
+     */
+    public void setLoggedUser(UserUIDTO loggedUser) {
+        this.loggedUser = loggedUser;
+    }
+
+    /**
+     * sets the current text to search after
+     *
+     * @param searchText - said text
+     */
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
+    }
+
+    /**
+     * updates the observable list of users (for searching)
+     */
+    public void updateModelUsers() {
+        if (searchText.equals("")) {
+            searchFriendsList.setVisible(false);
+            searchFailedLabel.setVisible(true);
+        } else {
+            try {
+                Collection<UserUIDTO> foundUsers = StreamSupport.stream(service.filterUsers(searchText).spliterator(), false)
+                        .collect(Collectors.toList());
+                if (foundUsers.isEmpty()) {
+                    searchFriendsList.setVisible(false);
+                    searchFailedLabel.setVisible(true);
+                } else {
+                    modelSearch.setAll(foundUsers);
+                    searchFriendsList.setVisible(true);
+                    searchFailedLabel.setVisible(false);
+                }
+            } catch (ValidationException ex) {
+                searchFriendsList.setVisible(false);
+                searchFailedLabel.setVisible(true);
+            }
+        }
+    }
+
+    /**
+     * initiates the list
+     */
+    public void init() {
+        updateModelUsers();
+    }
+
     /**
      * protected class that describes a user list cell for the users list
      */
@@ -123,63 +181,5 @@ public class SearchFriendsController extends AbstractController {
                 setGraphic(root);
             }
         }
-    }
-
-    @FXML
-    public void initialize() {
-        searchFriendsList.setFocusModel(new NoFocusModel<>());
-        searchFriendsList.setCellFactory(param -> new UserCell());
-        searchFriendsList.setItems(modelSearch);
-    }
-
-    /**
-     * sets the currently logged-in user
-     *
-     * @param loggedUser - said user
-     */
-    public void setLoggedUser(UserUIDTO loggedUser) {
-        this.loggedUser = loggedUser;
-    }
-
-    /**
-     * sets the current text to search after
-     *
-     * @param searchText - said text
-     */
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
-    }
-
-    /**
-     * updates the observable list of users (for searching)
-     */
-    public void updateModelUsers() {
-        if (searchText.equals("")) {
-            searchFriendsList.setVisible(false);
-            searchFailedLabel.setVisible(true);
-        } else {
-            try {
-                Collection<UserUIDTO> foundUsers = StreamSupport.stream(service.filterUsers(searchText).spliterator(), false)
-                        .collect(Collectors.toList());
-                if (foundUsers.isEmpty()) {
-                    searchFriendsList.setVisible(false);
-                    searchFailedLabel.setVisible(true);
-                } else {
-                    modelSearch.setAll(foundUsers);
-                    searchFriendsList.setVisible(true);
-                    searchFailedLabel.setVisible(false);
-                }
-            } catch (ValidationException ex) {
-                searchFriendsList.setVisible(false);
-                searchFailedLabel.setVisible(true);
-            }
-        }
-    }
-
-    /**
-     * initiates the list
-     */
-    public void init() {
-        updateModelUsers();
     }
 }

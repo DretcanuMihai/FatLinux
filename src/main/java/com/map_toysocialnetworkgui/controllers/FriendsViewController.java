@@ -49,6 +49,83 @@ public class FriendsViewController extends AbstractController {
     @FXML
     Label emptyListLabel;
 
+    @FXML
+    public void initialize() {
+        friendsList.setFocusModel(new NoFocusModel<>());
+        friendsList.setCellFactory(param -> new FriendCell());
+        friendsList.setItems(modelFriends);
+        requestsList.setFocusModel(new NoFocusModel<>());
+        requestsList.setCellFactory(param -> new FriendRequestCell());
+        requestsList.setItems(modelRequests);
+    }
+
+    /**
+     * sets the currently logged-in user
+     *
+     * @param loggedUser - said user
+     */
+    public void setLoggedUser(UserUIDTO loggedUser) {
+        this.loggedUser = loggedUser;
+    }
+
+    /**
+     * updates the observable list of friends
+     */
+    public void updateModelFriends() {
+        Collection<FriendshipDTO> allFriends = service.getAllFriendshipDTOsOfUser(loggedUser.getEmail());
+        modelFriends.setAll(allFriends);
+    }
+
+    /**
+     * updates the observable list of friend requests
+     */
+    public void updateModelRequests() {
+        Collection<FriendRequestDTO> allFriendRequests = service.getFriendRequestsSentToUser(loggedUser.getEmail());
+        modelRequests.setAll(allFriendRequests);
+    }
+
+    /**
+     * hides the friend request list and shows the friends list
+     */
+    public void viewAllFriends() {
+        if (this.friendsList.getItems().isEmpty()) {
+            this.emptyListLabel.setText("No friends to show :(");
+            this.friendsList.setVisible(false);
+            this.requestsList.setVisible(false);
+            this.emptyListLabel.setVisible(true);
+        } else {
+            this.emptyListLabel.setVisible(false);
+            this.friendsList.setVisible(true);
+            this.requestsList.setVisible(false);
+        }
+    }
+
+    /**
+     * hides the friends list and shows the friend requests list
+     */
+    public void viewFriendRequests() {
+        if (this.requestsList.getItems().isEmpty()) {
+            this.emptyListLabel.setText("No friend requests :/");
+            this.friendsList.setVisible(false);
+            this.requestsList.setVisible(false);
+            this.emptyListLabel.setVisible(true);
+        } else {
+            this.emptyListLabel.setVisible(false);
+            this.friendsList.setVisible(false);
+            this.requestsList.setVisible(true);
+        }
+    }
+
+    /**
+     * initiates the lists
+     * friends list is by default visible
+     */
+    public void init() {
+        updateModelFriends();
+        updateModelRequests();
+        viewAllFriends();
+    }
+
     /**
      * protected class that describes a friend list cell for the friends list
      */
@@ -166,82 +243,5 @@ public class FriendsViewController extends AbstractController {
                 setGraphic(root);
             }
         }
-    }
-
-    @FXML
-    public void initialize() {
-        friendsList.setFocusModel(new NoFocusModel<>());
-        friendsList.setCellFactory(param -> new FriendCell());
-        friendsList.setItems(modelFriends);
-        requestsList.setFocusModel(new NoFocusModel<>());
-        requestsList.setCellFactory(param -> new FriendRequestCell());
-        requestsList.setItems(modelRequests);
-    }
-
-    /**
-     * sets the currently logged-in user
-     *
-     * @param loggedUser - said user
-     */
-    public void setLoggedUser(UserUIDTO loggedUser) {
-        this.loggedUser = loggedUser;
-    }
-
-    /**
-     * updates the observable list of friends
-     */
-    public void updateModelFriends() {
-        Collection<FriendshipDTO> allFriends = service.getAllFriendshipDTOsOfUser(loggedUser.getEmail());
-        modelFriends.setAll(allFriends);
-    }
-
-    /**
-     * updates the observable list of friend requests
-     */
-    public void updateModelRequests() {
-        Collection<FriendRequestDTO> allFriendRequests = service.getFriendRequestsSentToUser(loggedUser.getEmail());
-        modelRequests.setAll(allFriendRequests);
-    }
-
-    /**
-     * hides the friend request list and shows the friends list
-     */
-    public void viewAllFriends() {
-        if (this.friendsList.getItems().isEmpty()) {
-            this.emptyListLabel.setText("No friends to show :(");
-            this.friendsList.setVisible(false);
-            this.requestsList.setVisible(false);
-            this.emptyListLabel.setVisible(true);
-        } else {
-            this.emptyListLabel.setVisible(false);
-            this.friendsList.setVisible(true);
-            this.requestsList.setVisible(false);
-        }
-    }
-
-    /**
-     * hides the friends list and shows the friend requests list
-     */
-    public void viewFriendRequests() {
-        if (this.requestsList.getItems().isEmpty()) {
-            this.emptyListLabel.setText("No friend requests :/");
-            this.friendsList.setVisible(false);
-            this.requestsList.setVisible(false);
-            this.emptyListLabel.setVisible(true);
-        } else {
-            this.emptyListLabel.setVisible(false);
-            this.friendsList.setVisible(false);
-            this.requestsList.setVisible(true);
-        }
-    }
-
-    /**
-     * initiates the lists
-     * friends list is by default visible
-     */
-    public void init() {
-        updateModelFriends();
-        updateModelRequests();
-        viewAllFriends();
     }
 }
