@@ -568,17 +568,17 @@ public class SuperService {
     }
 
     /**
-     * returns the messages sent to a user
+     * returns the messages received by a user
      *
      * @param email - first user's email
      * @return an iterable of the messages
      * @throws ValidationException     - is email is invalid
      * @throws AdministrationException - if user doesn't exist
      */
-    public Iterable<MessageDTO> getMessagesSentToUser(String email) throws ValidationException, AdministrationException {
+    public Iterable<MessageDTO> getMessagesReceivedByUser(String email) throws ValidationException, AdministrationException {
         userService.getUserInfo(email);
         List<MessageDTO> messageDTOList = new ArrayList<>();
-        messageService.getMessagesSentToUser(email).forEach(message -> messageDTOList.add(new MessageDTO(message)));
+        messageService.getMessagesReceivedByUser(email).forEach(message -> messageDTOList.add(new MessageDTO(message)));
         return messageDTOList;
     }
 
@@ -591,10 +591,10 @@ public class SuperService {
      * @throws ValidationException     - is email or pageable is invalid
      * @throws AdministrationException - if user doesn't exist
      */
-    public Page<MessageDTO> getMessagesSentToUser(String email, Pageable pageable) throws ValidationException, AdministrationException {
+    public Page<MessageDTO> getMessagesReceivedByUser(String email, Pageable pageable) throws ValidationException, AdministrationException {
         validatePageable(pageable);
         userService.getUserInfo(email);
-        Page<Message> page = messageService.getMessagesSentToUser(email, pageable);
+        Page<Message> page = messageService.getMessagesReceivedByUser(email, pageable);
         Stream<MessageDTO> stream = page.getContent().map(MessageDTO::new);
         return new PageImplementation<>(page.getPageable(), stream);
     }

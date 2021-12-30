@@ -25,7 +25,7 @@
          <children>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="250.0" spacing="30.0">
                <children>
-                  <Button fx:id="viewSentMessagesButton" mnemonicParsing="false" onAction="#viewSentMessages" styleClass="inboxViewControlButtons" text="View Sent">
+                  <Button fx:id="viewSentMessagesButton" mnemonicParsing="false" onAction="#viewSentMessages" text="View Sent">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -39,17 +39,17 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="250.0" prefHeight="50.0" prefWidth="390.0" spacing="30.0">
                <children>
-                  <Button fx:id="replyButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply">
+                  <Button fx:id="replyButton" mnemonicParsing="false" onAction="#openWindowForReply" styleClass="inboxMessagingButtons" text="Reply">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="replyAllButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply All">
+                  <Button fx:id="replyAllButton" mnemonicParsing="false" onAction="#openWindowForReplyAll" styleClass="inboxMessagingButtons" text="Reply All">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="composeButton" mnemonicParsing="false" onAction="#openComposeMessageWindow" styleClass="inboxMessagingButtons" text="Compose">
+                  <Button fx:id="composeNewButton" mnemonicParsing="false" onAction="#openWindowForComposeNew" text="Compose New">
                      <font>
                         <Font size="13.0" />
                      </font>

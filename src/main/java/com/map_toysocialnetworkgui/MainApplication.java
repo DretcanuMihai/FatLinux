@@ -33,7 +33,7 @@ public class MainApplication extends Application {
     SuperService service;
 
     /**
-     * loader files
+     * URL files
      */
     URL loginFXMLURL;
     URL mainFXMLURL;

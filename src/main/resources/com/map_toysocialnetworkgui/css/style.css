@@ -176,13 +176,33 @@
     -fx-background-color: #F04A00;
 }
 
-.button#sendMessageButton {
+.button#viewSentMessagesButton {
+    fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #000000;
+}
+
+.button#viewSentMessagesButton:hover {
+    -fx-background-color: #424043;
+}
+
+.button#composeNewButton {
+    fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #000000;
+}
+
+.button#composeNewButton:hover {
+    -fx-background-color: #424043;
+}
+
+.composeMessageMainButton {
     -fx-focus-traversable: false;
     -fx-background-radius: 10px;
     -fx-background-color: #ff7700;
 }
 
-.button#sendMessageButton:hover {
+.composeMessageMainButton:hover {
     -fx-background-color: #F04A00;
 }
 

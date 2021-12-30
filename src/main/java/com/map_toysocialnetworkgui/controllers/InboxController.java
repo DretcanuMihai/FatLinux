@@ -14,7 +14,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
+import java.util.stream.StreamSupport;
 
 /**
  * controller for inbox view
@@ -28,16 +30,16 @@ public class InboxController extends AbstractController {
     /**
      * observable lists for sent and received messages
      */
-    ObservableList<String> modelReceivedMessages = FXCollections.observableArrayList();
-    ObservableList<String> modelSentMessages = FXCollections.observableArrayList();
+    ObservableList<MessageDTO> modelReceivedMessages = FXCollections.observableArrayList();
+    ObservableList<MessageDTO> modelSentMessages = FXCollections.observableArrayList();
 
     /**
      * FXML data
      */
     @FXML
-    ListView<String> receivedMessagesList;
+    ListView<MessageDTO> receivedMessagesList;
     @FXML
-    ListView<String> sentMessagesList;
+    ListView<MessageDTO> sentMessagesList;
     @FXML
     Button replyButton;
     @FXML
@@ -56,17 +58,17 @@ public class InboxController extends AbstractController {
      *
      * @param list - said list
      */
-    public void setCustomCell(ListView<String> list) {
+    public void setCustomCell(ListView<MessageDTO> list) {
         list.setCellFactory(lst -> new ListCell<>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
+            protected void updateItem(MessageDTO messageDTO, boolean empty) {
+                super.updateItem(messageDTO, empty);
                 if (empty) {
                     setText(null);
                 } else {
                     setPrefHeight(45.0);
                     setFont(new Font(15));
-                    setText(item);
+                    setText(messageDTO.getMessageSubject());
                 }
             }
         });
@@ -99,44 +101,55 @@ public class InboxController extends AbstractController {
         messageTextArea.clear();
     }
 
+    public void fillDataForMessage(MessageDTO message) {
+        fromTextField.setText(message.getFromEmail());
+        toTextField.clear();
+        for (String receivers : message.getToEmails()) {
+            toTextField.appendText(receivers);
+            toTextField.appendText(", ");
+        }
+        toTextField.deleteText(toTextField.getText().length() - 2, toTextField.getText().length());
+        subjectTextField.setText(message.getMessageSubject());
+        messageTextArea.setText(message.getMessageText());
+    }
+
     /**
      * updates the observable list of received messages
      * selected message will display the contents of the message and show reply and reply all buttons
      */
     public void updateModelReceivedMessages() {
-        Collection<MessageDTO> receivedMessages = service.getConversation(loggedUser.getEmail(), "test@yahoo.com");
-        Collection<String> receivedMessagesSubjects = receivedMessages.stream()
-                .map(MessageDTO::getMessageSubject).toList();
+        Collection<MessageDTO> receivedMessages = StreamSupport
+                .stream(service.getMessagesReceivedByUser(loggedUser.getEmail()).spliterator(), false).toList();
 
         receivedMessagesList.setOnMouseClicked(event -> {
-            for (MessageDTO receivedMessage : receivedMessages) {
-                if (receivedMessagesList.getSelectionModel().getSelectedItem() == null) {
-                    clearAllFields();
-                } else if (receivedMessagesList.getSelectionModel().getSelectedItem().equals(receivedMessage.getMessageSubject())) {
-                    fromTextField.setText(receivedMessage.getFromEmail());
-                    toTextField.clear();
-                    for (String receivers : receivedMessage.getToEmails()) {
-                        toTextField.appendText(receivers);
-                        toTextField.appendText(", ");
-                    }
-                    toTextField.deleteText(toTextField.getText().length() - 2, toTextField.getText().length());
-                    subjectTextField.setText(receivedMessage.getMessageSubject());
-                    messageTextArea.setText(receivedMessage.getMessageText());
-                    replyButton.setVisible(true);
-                    replyAllButton.setVisible(true);
-                    return;
-                }
+            if (receivedMessagesList.getSelectionModel().getSelectedItem() == null) {
+                clearAllFields();
+            } else {
+                fillDataForMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+                replyButton.setVisible(true);
+                replyAllButton.setVisible(true);
             }
         });
-        modelReceivedMessages.setAll(receivedMessagesSubjects);
+        modelReceivedMessages.setAll(receivedMessages);
     }
 
     /**
      * updates the observable list of sent messages
-     * selected message will display the contents of the message and show reply and reply all buttons
      */
     public void updateModelSentMessages() {
-        // TODO
+        Collection<MessageDTO> sentMessages = StreamSupport
+                .stream(service.getMessagesSentByUser(loggedUser.getEmail()).spliterator(), false).toList();
+
+        sentMessagesList.setOnMouseClicked(event -> {
+            if (sentMessagesList.getSelectionModel().getSelectedItem() == null) {
+                clearAllFields();
+            } else {
+                fillDataForMessage(sentMessagesList.getSelectionModel().getSelectedItem());
+                replyButton.setVisible(false);
+                replyAllButton.setVisible(false);
+            }
+        });
+        modelSentMessages.setAll(sentMessages);
     }
 
     /**
@@ -162,26 +175,71 @@ public class InboxController extends AbstractController {
     }
 
     /**
-     * opens the message composing window
+     * show the window for a root of a certain loader
      *
-     * @throws IOException if an IO error occurs
+     * @param root - said root
      */
-    public void openComposeMessageWindow() throws IOException {
-        FXMLLoader composeMessageWindowLoader = new FXMLLoader(getClass()
-                .getResource("/com/map_toysocialnetworkgui/views/composeMessage-view.fxml"));
-        composeMessageWindowLoader.load();
-        ComposeMessageController composeMessageController = composeMessageWindowLoader.getController();
-        composeMessageController.setService(this.service);
-        composeMessageController.setLoggedUser(this.loggedUser);
-        composeMessageController.init();
-
-        Parent composeMessageWindowParent = composeMessageWindowLoader.getRoot();
-        Scene scene = new Scene(composeMessageWindowParent);
+    private void showWindow(Parent root) {
+        Scene scene = new Scene(root);
         Stage composeMessageStage = new Stage();
         composeMessageStage.setScene(scene);
         composeMessageStage.initStyle(StageStyle.UNDECORATED);
         composeMessageStage.centerOnScreen();
         composeMessageStage.show();
+    }
+
+    /**
+     * opens the window for composing a new message
+     *
+     * @throws IOException if an IO error occurs
+     */
+    public void openWindowForComposeNew() throws IOException {
+        URL composeMessageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/composeMessage-view.fxml");
+        FXMLLoader composeMessageWindowLoader = new FXMLLoader(composeMessageURL);
+        Parent composeMessageWindowRoot = composeMessageWindowLoader.load();
+        ComposeMessageController composeMessageWindowController = composeMessageWindowLoader.getController();
+        composeMessageWindowController.setService(this.service);
+        composeMessageWindowController.setLoggedUser(this.loggedUser);
+        composeMessageWindowController.setPrimaryFunction("composeNew");
+        composeMessageWindowController.setSelectedMessage(null);
+        composeMessageWindowController.init();
+        showWindow(composeMessageWindowRoot);
+    }
+
+    /**
+     * opens the window for composing reply message for an existing message
+     *
+     * @throws IOException if an IO error occurs
+     */
+    public void openWindowForReply() throws IOException {
+        URL composeMessageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/composeMessage-view.fxml");
+        FXMLLoader composeMessageWindowLoader = new FXMLLoader(composeMessageURL);
+        Parent composeMessageWindowRoot = composeMessageWindowLoader.load();
+        ComposeMessageController composeMessageWindowController = composeMessageWindowLoader.getController();
+        composeMessageWindowController.setService(this.service);
+        composeMessageWindowController.setLoggedUser(this.loggedUser);
+        composeMessageWindowController.setPrimaryFunction("reply");
+        composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+        composeMessageWindowController.init();
+        showWindow(composeMessageWindowRoot);
+    }
+
+    /**
+     * opens the window for composing reply all message for an existing message thread
+     *
+     * @throws IOException if an IO error occurs
+     */
+    public void openWindowForReplyAll() throws IOException {
+        URL composeMessageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/composeMessage-view.fxml");
+        FXMLLoader composeMessageWindowLoader = new FXMLLoader(composeMessageURL);
+        Parent composeMessageWindowRoot = composeMessageWindowLoader.load();
+        ComposeMessageController composeMessageWindowController = composeMessageWindowLoader.getController();
+        composeMessageWindowController.setService(this.service);
+        composeMessageWindowController.setLoggedUser(this.loggedUser);
+        composeMessageWindowController.setPrimaryFunction("replyAll");
+        composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+        composeMessageWindowController.init();
+        showWindow(composeMessageWindowRoot);
     }
 
     /**

@@ -150,23 +150,23 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
     }
 
     /**
-     * returns the messages sent to an user
+     * returns the messages received by a user
      *
      * @param email - first user's email
      * @return an iterable of the messages
      */
-    public Iterable<Message> getMessagesSentToUser(String email) {
+    public Iterable<Message> getMessagesReceivedByUser(String email) {
         return messageRepo.getMessagesReceivedByUserChronologically(email);
     }
 
     /**
-     * returns the messages sent to an user
+     * returns the messages received by a user
      *
      * @param email    - first user's email
      * @param pageable - for paging
      * @return said page
      */
-    public Page<Message> getMessagesSentToUser(String email, Pageable pageable) {
+    public Page<Message> getMessagesReceivedByUser(String email, Pageable pageable) {
         return messageRepo.getMessagesReceivedByUserChronologically(email, pageable);
     }
 
