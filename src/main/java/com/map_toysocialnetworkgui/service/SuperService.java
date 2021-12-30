@@ -299,6 +299,18 @@ public class SuperService {
     }
 
     /**
+     * gets a messageDTO by its id
+     *
+     * @param id - said id
+     * @return said messageDTO
+     * @throws ValidationException     - if id is invalid
+     * @throws AdministrationException - if no message with requested id exists
+     */
+    public MessageDTO getMessageDTO(Integer id) throws ValidationException, AdministrationException {
+        return new MessageDTO(messageService.getMessage(id));
+    }
+
+    /**
      * sends a root message (a message that isn't a reply) to one or more users
      *
      * @param fromEmail      - sender email

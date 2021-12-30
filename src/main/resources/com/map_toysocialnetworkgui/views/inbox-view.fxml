@@ -35,7 +35,7 @@
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="viewReceivedMessagesButton" mnemonicParsing="false" onAction="#viewReceivedMessages" styleClass="inboxViewControlButtons" text="View Received">
+                  <Button fx:id="viewReceivedMessagesButton" mnemonicParsing="false" onAction="#viewReceivedMessages" text="View Received">
                      <font>
                         <Font size="13.0" />
                      </font>

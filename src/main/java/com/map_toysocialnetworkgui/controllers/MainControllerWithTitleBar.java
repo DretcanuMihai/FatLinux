@@ -115,6 +115,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     public void showInbox() {
         inboxController.setLoggedUser(loggedUser);
         inboxController.setService(this.service);
+        this.service.addMessageObserver(inboxController);
         inboxController.init();
         mainBorderPane.setCenter(inboxRoot);
     }

@@ -2,6 +2,9 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.observer.Observer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,7 +24,7 @@ import java.util.stream.StreamSupport;
 /**
  * controller for inbox view
  */
-public class InboxController extends AbstractController {
+public class InboxController extends AbstractController implements Observer<EntityModificationEvent<Integer>> {
     /**
      * currently logged-in user
      */
@@ -40,6 +43,10 @@ public class InboxController extends AbstractController {
     ListView<MessageDTO> receivedMessagesList;
     @FXML
     ListView<MessageDTO> sentMessagesList;
+    @FXML
+    Button viewReceivedMessagesButton;
+    @FXML
+    Button viewSentMessagesButton;
     @FXML
     Button replyButton;
     @FXML
@@ -155,9 +162,57 @@ public class InboxController extends AbstractController {
     }
 
     /**
+     * colors a button in orange and adds hover effect
+     *
+     * @param button - said button
+     */
+    private void setButtonOrange(Button button) {
+        button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 10px;
+                -fx-background-color: #ff7700;
+                """);
+        button.setOnMouseEntered(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 10px;
+                -fx-background-color: #F04A00;
+                """));
+        button.setOnMouseExited(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 10px;
+                -fx-background-color: #ff7700;
+                """));
+    }
+
+    /**
+     * colors a button in black and adds hover effect
+     *
+     * @param button - said button
+     */
+    private void setButtonBlack(Button button) {
+        button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 10px;
+                -fx-background-color: #000000;
+                """);
+        button.setOnMouseEntered(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 10px;
+                -fx-background-color: #424043;
+                """));
+        button.setOnMouseExited(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 10px;
+                -fx-background-color: #000000;
+                """));
+    }
+
+    /**
      * hides the sent messages list and shows the received messages list
      */
     public void viewReceivedMessages() {
+        setButtonOrange(viewReceivedMessagesButton);
+        setButtonBlack(viewSentMessagesButton);
         if (receivedMessagesList.getItems().isEmpty()) {
             this.receivedMessagesList.setVisible(false);
             this.sentMessagesList.setVisible(false);
@@ -178,6 +233,8 @@ public class InboxController extends AbstractController {
      * hides the received messages list and shows the sent messages list
      */
     public void viewSentMessages() {
+        setButtonOrange(viewSentMessagesButton);
+        setButtonBlack(viewReceivedMessagesButton);
         if (sentMessagesList.getItems().isEmpty()) {
             this.receivedMessagesList.setVisible(false);
             this.sentMessagesList.setVisible(false);
@@ -271,5 +328,32 @@ public class InboxController extends AbstractController {
         updateModelReceivedMessages();
         updateModelSentMessages();
         viewReceivedMessages();
+    }
+
+    @Override
+    public void update(EntityModificationEvent<Integer> event) {
+        ChangeEventType type = event.getType();
+        if (type == ChangeEventType.DELETE)
+            updateForDelete(event.getModifiedEntityID());
+        if (type == ChangeEventType.UPDATE)
+            updateForUpdate(event.getModifiedEntityID());
+        if (type == ChangeEventType.ADD)
+            updateForAdd(event.getModifiedEntityID());
+    }
+
+    public void updateForDelete(Integer id) {
+        // TODO
+    }
+
+    public void updateForAdd(Integer id) {
+        MessageDTO messageDTO = service.getMessageDTO(id);
+        if (messageDTO.getFromEmail().equals(loggedUser.getEmail()))
+            modelSentMessages.add(0, messageDTO);
+        if (messageDTO.getToEmails().contains(loggedUser.getEmail()))
+            modelReceivedMessages.add(0, messageDTO);
+    }
+
+    public void updateForUpdate(Integer id) {
+        // TODO
     }
 }

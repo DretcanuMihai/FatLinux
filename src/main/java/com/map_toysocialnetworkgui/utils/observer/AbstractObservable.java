@@ -17,7 +17,8 @@ public class AbstractObservable<E extends Event> implements Observable<E> {
 
     @Override
     public void addObserver(Observer<E> observer) {
-        observerList.add(observer);
+        if (!observerList.contains(observer))
+            observerList.add(observer);
     }
 
     @Override

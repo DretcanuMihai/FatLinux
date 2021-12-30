@@ -30,7 +30,7 @@
                               <Font size="13.0" />
                            </font>
                         </Button>
-                        <Button fx:id="sendReplyAllMessageButton" layoutY="10.0" mnemonicParsing="false" onAction="#sendReplyAllMessage" prefHeight="30.0" prefWidth="130.0" styleClass="composeMessageMainButton" text="Send reply" visible="false">
+                        <Button fx:id="sendReplyAllMessageButton" layoutY="10.0" mnemonicParsing="false" onAction="#sendReplyAllMessage" prefHeight="30.0" prefWidth="130.0" styleClass="composeMessageMainButton" text="Send reply to all" visible="false">
                            <font>
                               <Font size="13.0" />
                            </font>

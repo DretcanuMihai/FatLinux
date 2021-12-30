@@ -176,16 +176,6 @@
     -fx-background-color: #F04A00;
 }
 
-.button#viewSentMessagesButton {
-    fx-focus-traversable: false;
-    -fx-background-radius: 10px;
-    -fx-background-color: #000000;
-}
-
-.button#viewSentMessagesButton:hover {
-    -fx-background-color: #424043;
-}
-
 .button#composeNewButton {
     fx-focus-traversable: false;
     -fx-background-radius: 10px;
