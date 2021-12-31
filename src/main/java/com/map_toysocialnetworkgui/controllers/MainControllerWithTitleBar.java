@@ -4,9 +4,9 @@ import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
@@ -45,6 +45,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     BorderPane mainBorderPane;
     @FXML
     TextField searchBar;
+    @FXML
+    Button searchForFriendsButton;
 
     /**
      * initiates loaders and controllers for child views
@@ -73,21 +75,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     }
 
     /**
-     * initiates search bar's functionality
-     */
-    private void initSearchBar() {
-        searchFriendsController.setLoggedUser(this.loggedUser);
-        searchFriendsController.setService(this.service);
-        this.searchBar.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode() == KeyCode.ENTER) {
-                searchFriendsController.setSearchText(searchBar.getText());
-                searchFriendsController.init();
-                mainBorderPane.setCenter(searchForFriendRoot);
-            }
-        });
-    }
-
-    /**
      * initiates the main controller with the currently logged-in user
      * shows the main page view
      *
@@ -98,7 +85,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         initLoadersAndControllers();
         loggedUser = user;
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
-        initSearchBar();
         showMainPage();
     }
 
@@ -107,6 +93,14 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     public void showMainPage() {
         mainBorderPane.setCenter(mainPageRoot);
+    }
+
+    public void showSearchFriends() {
+        searchFriendsController.setLoggedUser(this.loggedUser);
+        searchFriendsController.setService(this.service);
+        searchFriendsController.setSearchText(searchBar.getText());
+        searchFriendsController.init();
+        mainBorderPane.setCenter(searchForFriendRoot);
     }
 
     /**
