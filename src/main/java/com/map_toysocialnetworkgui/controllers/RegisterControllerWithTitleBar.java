@@ -31,6 +31,8 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
     Label registerSuccessMessageLabel;
     @FXML
     Label registerPasswordMatchErrorLabel;
+    @FXML
+    Label passwordTooShortErrorLabel;
 
     /**
      * clears all text fields and text areas
@@ -56,8 +58,11 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
             int confirmPasswordHash = confirmPasswordTextField.getText().hashCode();
             registerSuccessMessageLabel.setText("");
             registerPasswordMatchErrorLabel.setText("");
+            passwordTooShortErrorLabel.setText("");
 
-            if (passwordHash != confirmPasswordHash)
+            if (passwordTextField.getText().length() < 4)
+                passwordTooShortErrorLabel.setText("Password has to be at least 4 characters long!");
+            else if (passwordHash != confirmPasswordHash)
                 registerPasswordMatchErrorLabel.setText("Passwords do not match!");
             else {
                 service.createUserAccount(email, passwordHash, firstName, lastName);

@@ -26,6 +26,10 @@
     -fx-text-fill: red;
 }
 
+.label#passwordTooShortErrorLabel {
+    -fx-text-fill: red;
+}
+
 .text-field {
     -fx-prompt-text-fill: gray;
     -fx-background-radius: 10px;
