@@ -5,7 +5,7 @@ import com.map_toysocialnetworkgui.utils.structures.Pair;
 import java.time.LocalDateTime;
 
 /**
- * Class that describes a friend request
+ * class that describes a friend request
  */
 public class FriendRequest extends Entity<Pair<String, String>> {
     /**
@@ -14,7 +14,8 @@ public class FriendRequest extends Entity<Pair<String, String>> {
     LocalDateTime sendTime;
 
     /**
-     * Constructor
+     * creates a friend request between a sender and a receiver
+     * friend request sent at sendTime
      *
      * @param sender   - user that sent the friend request
      * @param receiver - user that will receive the friend request

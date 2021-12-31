@@ -5,16 +5,18 @@ import com.map_toysocialnetworkgui.model.entities.User;
 
 import java.time.LocalDateTime;
 
+/**
+ * DTO class for friend request entity
+ */
 public class FriendRequestDTO {
     /**
-     * Send date info
+     * send date info
      */
-
     private final LocalDateTime sendTime;
+
     /**
      * users info
      */
-
     private final UserUIDTO sender, receiver;
 
     /**

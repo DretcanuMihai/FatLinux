@@ -1,6 +1,9 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 
@@ -10,10 +13,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Repository in database for friend request
+ * database repository for friend request
  */
 public class FriendRequestDBRepository implements FriendRequestRepositoryInterface {
-
     /**
      * the database's URL
      */
@@ -28,7 +30,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     private final String password;
 
     /**
-     * constructor
+     * creates a database repository with an url, a username and a password
      *
      * @param url      - url of database
      * @param username - username of database
@@ -40,43 +42,8 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
         this.password = password;
     }
 
-    /**
-     * gets the next Friend Request from a given Result Set
-     *
-     * @param result - said set
-     * @return the next friend request
-     * @throws SQLException - if any problems occur
-     */
-    private FriendRequest getNextFromSet(ResultSet result) throws SQLException {
-        String email1 = result.getString("sender_email");
-        String email2 = result.getString("receiver_email");
-        LocalDateTime sendTime = result.getTimestamp("send_time").toLocalDateTime();
-        return new FriendRequest(email1, email2, sendTime);
-    }
-
     @Override
-    public boolean save(FriendRequest friendRequest) {
-        if (contains(friendRequest.getId()))
-            return false;
-        boolean toReturn = false;
-        String sqlSave = "INSERT INTO friend_requests(sender_email, receiver_email, send_time) VALUES (?, ?, ?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
-
-            statementSave.setString(1, friendRequest.getSender());
-            statementSave.setString(2, friendRequest.getReceiver());
-            statementSave.setTimestamp(3, Timestamp.valueOf(friendRequest.getSendTime()));
-            statementSave.execute();
-            toReturn = true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return toReturn;
-    }
-
-    @Override
-    public FriendRequest get(Pair<String, String> id) {
+    public FriendRequest findOne(Pair<String, String> id) {
         FriendRequest toReturn = null;
         String sqlFind = "SELECT * FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
 
@@ -89,7 +56,6 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
             if (result.next()) {
                 toReturn = getNextFromSet(result);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -97,14 +63,13 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     }
 
     @Override
-    public Iterable<FriendRequest> getAll() {
+    public Iterable<FriendRequest> findAll() {
         Set<FriendRequest> friendRequests = new HashSet<>();
         String sql = "SELECT * FROM friend_requests";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
-
             while (resultSet.next()) {
                 FriendRequest friendRequest = getNextFromSet(resultSet);
                 friendRequests.add(friendRequest);
@@ -117,17 +82,18 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     }
 
     @Override
-    public boolean update(FriendRequest friendRequest) {
-        boolean toReturn = false;
-        String sqlUpdate = "UPDATE friend_requests SET send_time=(?) WHERE sender_email = (?) and receiver_email=(?)";
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
+    public FriendRequest save(FriendRequest friendRequest) {
+        FriendRequest toReturn = friendRequest;
+        String sqlSave = "INSERT INTO friend_requests(sender_email, receiver_email, send_time) VALUES (?, ?, ?)";
 
-            statementUpdate.setTimestamp(1, Timestamp.valueOf(friendRequest.getSendTime()));
-            statementUpdate.setString(2, friendRequest.getSender());
-            statementUpdate.setString(3, friendRequest.getReceiver());
-            int affectedRows = statementUpdate.executeUpdate();
-            toReturn = (affectedRows != 0);
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
+
+            statementSave.setString(1, friendRequest.getSender());
+            statementSave.setString(2, friendRequest.getReceiver());
+            statementSave.setTimestamp(3, Timestamp.valueOf(friendRequest.getSendTime()));
+            statementSave.execute();
+            toReturn = null;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -135,16 +101,41 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     }
 
     @Override
-    public boolean delete(Pair<String, String> id) {
-        boolean toReturn = false;
+    public FriendRequest delete(Pair<String, String> id) {
+        FriendRequest toReturn = null;
+        FriendRequest friendRequest = findOne(id);
+        if (friendRequest == null)
+            return null;
         String sqlDelete = "DELETE FROM friend_requests WHERE (sender_email = (?) AND receiver_email = (?))";
+
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementDelete = connection.prepareStatement(sqlDelete)) {
 
             statementDelete.setString(1, id.getFirst());
             statementDelete.setString(2, id.getSecond());
             int rows = statementDelete.executeUpdate();
-            toReturn = (rows != 0);
+            if (rows != 0)
+                toReturn = friendRequest;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
+    @Override
+    public FriendRequest update(FriendRequest friendRequest) {
+        FriendRequest toReturn = friendRequest;
+        String sqlUpdate = "UPDATE friend_requests SET send_time=(?) WHERE sender_email = (?) AND receiver_email=(?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
+
+            statementUpdate.setTimestamp(1, Timestamp.valueOf(friendRequest.getSendTime()));
+            statementUpdate.setString(2, friendRequest.getSender());
+            statementUpdate.setString(3, friendRequest.getReceiver());
+            int affectedRows = statementUpdate.executeUpdate();
+            if (affectedRows != 0)
+                toReturn = null;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -154,7 +145,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
     @Override
     public Iterable<FriendRequest> getFriendRequestsSentToUser(String userEmail) {
         Set<FriendRequest> friendRequests = new HashSet<>();
-        String sql = "SELECT * FROM friend_requests where receiver_email=(?)";
+        String sql = "SELECT * FROM friend_requests WHERE receiver_email = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -170,5 +161,68 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
             e.printStackTrace();
         }
         return friendRequests;
+    }
+
+    @Override
+    public Page<FriendRequest> findAll(Pageable pageable) {
+        Set<FriendRequest> friendRequests = new HashSet<>();
+        String sql = "SELECT * FROM friend_requests OFFSET (?) LIMIT (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statement.setInt(1, start);
+            statement.setInt(2, pageSize);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                FriendRequest friendRequest = getNextFromSet(resultSet);
+                friendRequests.add(friendRequest);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable, friendRequests.stream());
+    }
+
+    @Override
+    public Page<FriendRequest> getFriendRequestsSentToUser(String userEmail, Pageable pageable) {
+        Set<FriendRequest> friendRequests = new HashSet<>();
+        String sql = "SELECT * FROM friend_requests WHERE receiver_email = (?) OFFSET (?) LIMIT (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, userEmail);
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statement.setInt(2, start);
+            statement.setInt(3, pageSize);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                FriendRequest friendRequest = getNextFromSet(resultSet);
+                friendRequests.add(friendRequest);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable, friendRequests.stream());
+    }
+
+    /**
+     * gets the next Friend Request from a given Result Set
+     *
+     * @param result - said set
+     * @return the next friend request
+     * @throws SQLException - if any problems occur
+     */
+    private FriendRequest getNextFromSet(ResultSet result) throws SQLException {
+        String email1 = result.getString("sender_email");
+        String email2 = result.getString("receiver_email");
+        LocalDateTime sendTime = result.getTimestamp("send_time").toLocalDateTime();
+        return new FriendRequest(email1, email2, sendTime);
     }
 }

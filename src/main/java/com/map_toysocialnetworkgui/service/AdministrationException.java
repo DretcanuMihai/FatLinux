@@ -1,7 +1,7 @@
 package com.map_toysocialnetworkgui.service;
 
 /**
- * An Exception class specialized on Service Administration errors
+ * exception class specialized on service administration errors
  */
 public class AdministrationException extends RuntimeException {
     public AdministrationException() {
