@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -47,7 +48,10 @@
                         </ImageView>
                      </children>
                   </Pane>
-                  <TextField fx:id="searchBar" layoutX="244.0" layoutY="50.0" onMouseClicked="#searchForFriend" prefHeight="34.0" prefWidth="212.0" promptText="Search for friends..." />
+                  <TextField fx:id="searchBar" layoutX="244.0" layoutY="50.0" prefHeight="34.0" prefWidth="159.0" promptText="Search for friends...">
+                     <font>
+                        <Font size="13.0" />
+                     </font></TextField>
                   <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/fatLinuxRegister.png" />
@@ -63,6 +67,7 @@
                         <Font name="MV Boli" size="20.0" />
                      </font>
                   </Label>
+                  <Button fx:id="searchForFriendsButton" layoutX="402.0" layoutY="50.0" mnemonicParsing="false" onAction="#showSearchFriends" prefHeight="34.0" prefWidth="54.0" />
                </children>
             </AnchorPane>
          </top>

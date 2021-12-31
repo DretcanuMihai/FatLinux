@@ -26,6 +26,10 @@
     -fx-text-fill: red;
 }
 
+.label#passwordTooShortErrorLabel {
+    -fx-text-fill: red;
+}
+
 .text-field {
     -fx-prompt-text-fill: gray;
     -fx-background-radius: 10px;
@@ -126,11 +130,15 @@
 }
 
 .text-field#searchBar {
+    -fx-background-radius: 20 0 0 20;
+}
+
+.button#searchForFriendsButton {
+    -fx-background-radius: 0 20 20 0;
     -fx-background-image: url("../images/searchIcon.png");
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: 8px center;
     -fx-background-size: 25;
-    -fx-padding: 0 0 0 38;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
 }
 
 .label#menuLabel0 {
@@ -176,13 +184,23 @@
     -fx-background-color: #F04A00;
 }
 
-.button#sendMessageButton {
+.button#composeNewButton {
+    fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #000000;
+}
+
+.button#composeNewButton:hover {
+    -fx-background-color: #424043;
+}
+
+.composeMessageMainButton {
     -fx-focus-traversable: false;
     -fx-background-radius: 10px;
     -fx-background-color: #ff7700;
 }
 
-.button#sendMessageButton:hover {
+.composeMessageMainButton:hover {
     -fx-background-color: #F04A00;
 }
 

@@ -17,6 +17,11 @@
          <children>
             <ListView fx:id="receivedMessagesList" prefHeight="460.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <ListView fx:id="sentMessagesList" prefHeight="460.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <Label fx:id="noMessagesLabel" alignment="CENTER" layoutX="54.0" layoutY="187.0" text="No messages " visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </left>
@@ -25,12 +30,12 @@
          <children>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="250.0" spacing="30.0">
                <children>
-                  <Button fx:id="viewSentMessagesButton" mnemonicParsing="false" onAction="#viewSentMessages" styleClass="inboxViewControlButtons" text="View Sent">
+                  <Button fx:id="viewSentMessagesButton" mnemonicParsing="false" onAction="#viewSentMessages" text="View Sent">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="viewReceivedMessagesButton" mnemonicParsing="false" onAction="#viewReceivedMessages" styleClass="inboxViewControlButtons" text="View Received">
+                  <Button fx:id="viewReceivedMessagesButton" mnemonicParsing="false" onAction="#viewReceivedMessages" text="View Received">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -39,17 +44,17 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="250.0" prefHeight="50.0" prefWidth="390.0" spacing="30.0">
                <children>
-                  <Button fx:id="replyButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply">
+                  <Button fx:id="replyButton" mnemonicParsing="false" onAction="#openWindowForReply" styleClass="inboxMessagingButtons" text="Reply">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="replyAllButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply All">
+                  <Button fx:id="replyAllButton" mnemonicParsing="false" onAction="#openWindowForReplyAll" styleClass="inboxMessagingButtons" text="Reply All">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="composeButton" mnemonicParsing="false" onAction="#openComposeMessageWindow" styleClass="inboxMessagingButtons" text="Compose">
+                  <Button fx:id="composeNewButton" mnemonicParsing="false" onAction="#openWindowForComposeNew" text="Compose New">
                      <font>
                         <Font size="13.0" />
                      </font>
