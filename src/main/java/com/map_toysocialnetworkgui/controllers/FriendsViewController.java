@@ -4,6 +4,7 @@ import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
+import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -49,8 +50,14 @@ public class FriendsViewController extends AbstractController {
     @FXML
     Label emptyListLabel;
 
+    /**
+     * button styling class
+     */
+    ButtonColoring buttonColoring;
+
     @FXML
     public void initialize() {
+        buttonColoring = new ButtonColoring();
         friendsList.setFocusModel(new NoFocusModel<>());
         friendsList.setCellFactory(param -> new FriendCell());
         friendsList.setItems(modelFriends);
@@ -88,6 +95,8 @@ public class FriendsViewController extends AbstractController {
      * hides the friend request list and shows the friends list
      */
     public void viewAllFriends() {
+        buttonColoring.setButtonOrange(viewFriendsButton);
+        buttonColoring.setButtonBlack(viewFriendRequestsButton);
         if (this.friendsList.getItems().isEmpty()) {
             this.emptyListLabel.setText("No friends to show :(");
             this.friendsList.setVisible(false);
@@ -104,6 +113,8 @@ public class FriendsViewController extends AbstractController {
      * hides the friends list and shows the friend requests list
      */
     public void viewFriendRequests() {
+        buttonColoring.setButtonOrange(viewFriendRequestsButton);
+        buttonColoring.setButtonBlack(viewFriendsButton);
         if (this.requestsList.getItems().isEmpty()) {
             this.emptyListLabel.setText("No friend requests :/");
             this.friendsList.setVisible(false);
