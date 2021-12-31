@@ -5,6 +5,7 @@ import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
+import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -63,6 +64,11 @@ public class InboxController extends AbstractController implements Observer<Enti
     Label noMessagesLabel;
 
     /**
+     * button styling class
+     */
+    ButtonColoring buttonColoring;
+
+    /**
      * modifies a list view's cell height and font
      *
      * @param list - said list
@@ -85,6 +91,7 @@ public class InboxController extends AbstractController implements Observer<Enti
 
     @FXML
     public void initialize() {
+        buttonColoring = new ButtonColoring();
         setCustomCell(receivedMessagesList);
         setCustomCell(sentMessagesList);
         receivedMessagesList.setItems(modelReceivedMessages);
@@ -162,57 +169,11 @@ public class InboxController extends AbstractController implements Observer<Enti
     }
 
     /**
-     * colors a button in orange and adds hover effect
-     *
-     * @param button - said button
-     */
-    private void setButtonOrange(Button button) {
-        button.setStyle("""
-                -fx-focus-traversable: false;
-                -fx-background-radius: 10px;
-                -fx-background-color: #ff7700;
-                """);
-        button.setOnMouseEntered(event -> button.setStyle("""
-                -fx-focus-traversable: false;
-                -fx-background-radius: 10px;
-                -fx-background-color: #F04A00;
-                """));
-        button.setOnMouseExited(event -> button.setStyle("""
-                -fx-focus-traversable: false;
-                -fx-background-radius: 10px;
-                -fx-background-color: #ff7700;
-                """));
-    }
-
-    /**
-     * colors a button in black and adds hover effect
-     *
-     * @param button - said button
-     */
-    private void setButtonBlack(Button button) {
-        button.setStyle("""
-                -fx-focus-traversable: false;
-                -fx-background-radius: 10px;
-                -fx-background-color: #000000;
-                """);
-        button.setOnMouseEntered(event -> button.setStyle("""
-                -fx-focus-traversable: false;
-                -fx-background-radius: 10px;
-                -fx-background-color: #424043;
-                """));
-        button.setOnMouseExited(event -> button.setStyle("""
-                -fx-focus-traversable: false;
-                -fx-background-radius: 10px;
-                -fx-background-color: #000000;
-                """));
-    }
-
-    /**
      * hides the sent messages list and shows the received messages list
      */
     public void viewReceivedMessages() {
-        setButtonOrange(viewReceivedMessagesButton);
-        setButtonBlack(viewSentMessagesButton);
+        buttonColoring.setButtonOrange(viewReceivedMessagesButton);
+        buttonColoring.setButtonBlack(viewSentMessagesButton);
         if (receivedMessagesList.getItems().isEmpty()) {
             this.receivedMessagesList.setVisible(false);
             this.sentMessagesList.setVisible(false);
@@ -233,8 +194,8 @@ public class InboxController extends AbstractController implements Observer<Enti
      * hides the received messages list and shows the sent messages list
      */
     public void viewSentMessages() {
-        setButtonOrange(viewSentMessagesButton);
-        setButtonBlack(viewReceivedMessagesButton);
+        buttonColoring.setButtonOrange(viewSentMessagesButton);
+        buttonColoring.setButtonBlack(viewReceivedMessagesButton);
         if (sentMessagesList.getItems().isEmpty()) {
             this.receivedMessagesList.setVisible(false);
             this.sentMessagesList.setVisible(false);
