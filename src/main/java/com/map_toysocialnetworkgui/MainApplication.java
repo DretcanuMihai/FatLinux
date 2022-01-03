@@ -125,44 +125,16 @@ public class MainApplication extends Application {
     }
 
     /**
-     * initiates a loader with a URL
-     *
-     * @param url - said URL
-     * @return said loader
-     * @throws IOException if an IO error occurs
-     */
-    private FXMLLoader initLoader(URL url) throws IOException {
-        FXMLLoader loader = new FXMLLoader(url);
-        loader.load();
-        AbstractControllerWithTitleBar controller = loader.getController();
-        controller.setService(service);
-        controller.setApplication(this);
-        return loader;
-    }
-
-    /**
-     * changes the main window
-     *
-     * @param loader - loader of the new window
-     */
-    private void modifyMainWindowWith(FXMLLoader loader) {
-        Parent parent = loader.getRoot();
-        Scene scene = new Scene(parent);
-        primaryStage.setScene(scene);
-        primaryStage.centerOnScreen();
-    }
-
-    /**
      * changes to main view
      *
      * @param user - currently logged-in user
      * @throws IOException if an IO error occurs
      */
     public void changeToMain(UserUIDTO user) throws IOException {
-        FXMLLoader mainLoader = initLoader(mainFXMLURL);
+        FXMLLoader mainLoader=(FXMLLoader) mainScene.getUserData();
         MainControllerWithTitleBar controller = mainLoader.getController();
         controller.init(user);
-        modifyMainWindowWith(mainLoader);
+        primaryStage.setScene(mainScene);
     }
 
     /**
@@ -171,8 +143,7 @@ public class MainApplication extends Application {
      * @throws IOException if an IO error occurs
      */
     public void changeToRegister() throws IOException {
-        FXMLLoader registerLoader = initLoader(registerFXMLURL);
-        modifyMainWindowWith(registerLoader);
+        primaryStage.setScene(registerScene);
     }
 
     /**
