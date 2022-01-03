@@ -85,5 +85,11 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
      */
     public void back() throws IOException {
         application.changeToLogin();
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        clearAllFields();
     }
 }

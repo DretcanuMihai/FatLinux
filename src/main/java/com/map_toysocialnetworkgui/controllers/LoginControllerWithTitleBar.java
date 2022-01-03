@@ -35,6 +35,7 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
             UserUIDTO user = service.login(email, passwordTextField.getText().hashCode());
             errorLabel.setText("");
             application.changeToMain(user);
+            reset();
         } catch (ValidationException | AdministrationException ex) {
             errorLabel.setText(ex.getMessage());
         }
@@ -47,12 +48,11 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
      */
     public void register() throws IOException {
         application.changeToRegister();
-        this.reset();
+        reset();
     }
 
     @Override
     public void reset() {
-        this.reset();
         emailTextField.setText("");
         passwordTextField.setText("");
         errorLabel.setText("");
