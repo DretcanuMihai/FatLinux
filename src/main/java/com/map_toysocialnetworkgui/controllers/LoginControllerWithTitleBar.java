@@ -47,5 +47,14 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
      */
     public void register() throws IOException {
         application.changeToRegister();
+        this.reset();
+    }
+
+    @Override
+    public void reset() {
+        this.reset();
+        emailTextField.setText("");
+        passwordTextField.setText("");
+        errorLabel.setText("");
     }
 }

@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui;
 
 import com.map_toysocialnetworkgui.controllers.AbstractControllerWithTitleBar;
+import com.map_toysocialnetworkgui.controllers.LoginControllerWithTitleBar;
 import com.map_toysocialnetworkgui.controllers.MainControllerWithTitleBar;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
@@ -40,6 +41,13 @@ public class MainApplication extends Application {
     URL registerFXMLURL;
 
     /**
+     * scenes
+     */
+    Scene loginScene;
+    Scene mainScene;
+    Scene registerScene;
+
+    /**
      * stages
      */
     Stage primaryStage;
@@ -48,6 +56,9 @@ public class MainApplication extends Application {
         launch(args);
     }
 
+    /**
+     * initiates the Service
+     */
     private void initService() {
         // Repositories
         UserRepositoryInterface userRepo = new UserDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
@@ -82,10 +93,35 @@ public class MainApplication extends Application {
         registerFXMLURL = getClass().getResource("views/register-view.fxml");
     }
 
+    /**
+     * initiates all scenes
+     * @throws IOException - if any error occurs
+     */
+    private void initScenes() throws IOException {
+        loginScene=initScene(loginFXMLURL);
+        mainScene=initScene(mainFXMLURL);
+        registerScene=initScene(registerFXMLURL);
+    }
+
     @Override
-    public void init() {
+    public void init() throws IOException {
         initService();
         initURLs();
+        initScenes();
+    }
+
+    /**
+     * initiates a scene described by an url
+     * @param url - said url
+     * @throws IOException - if any error occurs
+     */
+    private Scene initScene(URL url) throws IOException {
+        FXMLLoader loader = new FXMLLoader(url);
+        Parent parent=loader.load();
+        AbstractControllerWithTitleBar controller = loader.getController();
+        controller.setService(service);
+        controller.setApplication(this);
+        return new Scene(parent);
     }
 
     /**
@@ -145,16 +181,14 @@ public class MainApplication extends Application {
      * @throws IOException if an IO error occurs
      */
     public void changeToLogin() throws IOException {
-        FXMLLoader loginLoader = initLoader(loginFXMLURL);
-        modifyMainWindowWith(loginLoader);
+        primaryStage.setScene(loginScene);
     }
 
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
         primaryStage.initStyle(StageStyle.UNDECORATED);
-        FXMLLoader loginLoader = initLoader(loginFXMLURL);
-        modifyMainWindowWith(loginLoader);
+        changeToLogin();
         primaryStage.show();
     }
 }
