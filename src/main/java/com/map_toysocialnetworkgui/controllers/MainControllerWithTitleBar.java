@@ -48,6 +48,13 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     @FXML
     Button searchForFriendsButton;
 
+    @FXML
+    @Override
+    public void initialize() throws IOException {
+        super.initialize();
+        initLoadersAndControllers();
+    }
+
     /**
      * initiates loaders and controllers for child views
      *
@@ -82,7 +89,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * @throws IOException if an IO error occurs
      */
     public void init(UserUIDTO user) throws IOException {
-        initLoadersAndControllers();
         loggedUser = user;
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
         showMainPage();
@@ -95,6 +101,9 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         mainBorderPane.setCenter(mainPageRoot);
     }
 
+    /**
+     * shows searched users
+     */
     public void showSearchFriends() {
         searchFriendsController.setLoggedUser(this.loggedUser);
         searchFriendsController.setService(this.service);
@@ -131,5 +140,17 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     public void logout() throws IOException {
         application.changeToLogin();
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        searchFriendsController.reset();
+        inboxController.reset();
+        friendsViewController.reset();
+
+        loggedUser=null;
+        userNameLabel.setText("");
+        searchBar.setText("");
     }
 }

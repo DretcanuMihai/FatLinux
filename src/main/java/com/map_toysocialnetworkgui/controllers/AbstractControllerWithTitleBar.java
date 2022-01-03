@@ -9,6 +9,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 /**
  * class that describes an abstract view controller with a custom title bar
  */
@@ -91,7 +93,7 @@ public class AbstractControllerWithTitleBar extends AbstractController{
     }
 
     @FXML
-    public void initialize() {
+    public void initialize() throws IOException {
         setTitleBarOnMousePressedDragWindow();
         initAppExitButton();
         initAppMinimizeButton();
