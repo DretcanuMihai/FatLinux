@@ -212,6 +212,52 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
         return new PageImplementation<>(pageable, friendRequests.stream());
     }
 
+    @Override
+    public Iterable<FriendRequest> getFriendRequestsSentByUser(String userEmail) {
+        Set<FriendRequest> friendRequests = new HashSet<>();
+        String sql = "SELECT * FROM friend_requests WHERE sender_email = (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, userEmail);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                FriendRequest friendRequest = getNextFromSet(resultSet);
+                friendRequests.add(friendRequest);
+            }
+            return friendRequests;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return friendRequests;
+    }
+
+    @Override
+    public Page<FriendRequest> getFriendRequestsSentByUser(String userEmail, Pageable pageable) {
+        Set<FriendRequest> friendRequests = new HashSet<>();
+        String sql = "SELECT * FROM friend_requests WHERE sender_email = (?) OFFSET (?) LIMIT (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, userEmail);
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statement.setInt(2, start);
+            statement.setInt(3, pageSize);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                FriendRequest friendRequest = getNextFromSet(resultSet);
+                friendRequests.add(friendRequest);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable, friendRequests.stream());
+    }
+
     /**
      * gets the next Friend Request from a given Result Set
      *

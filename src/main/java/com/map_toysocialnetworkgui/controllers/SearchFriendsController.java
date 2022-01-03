@@ -1,5 +1,8 @@
 package com.map_toysocialnetworkgui.controllers;
 
+import com.map_toysocialnetworkgui.model.entities.FriendRequest;
+import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
@@ -32,6 +35,8 @@ public class SearchFriendsController extends AbstractController {
      * observable lists for search
      */
     ObservableList<UserUIDTO> modelSearch = FXCollections.observableArrayList();
+    Collection<String> friendEmails;
+    Collection<String> friendRequestedEmails;
 
     /**
      * FXML data
@@ -87,6 +92,12 @@ public class SearchFriendsController extends AbstractController {
      * search given the search text
      */
     public void search(String text) {
+        friendEmails=service.getAllFriendshipDTOsOfUser(loggedUser.getEmail()).stream()
+                .map(friendshipDTO -> friendshipDTO.getUser2().getEmail())
+                .collect(Collectors.toSet());
+        friendRequestedEmails=service.getFriendRequestsSentByUser(loggedUser.getEmail()).stream()
+                .map(friendRequestDTO -> friendRequestDTO.getReceiver().getEmail())
+                .collect(Collectors.toSet());
         updateModelUsers(text);
     }
 
@@ -118,6 +129,7 @@ public class SearchFriendsController extends AbstractController {
             addFriendButton.setStyle(IDLE_BUTTON_STYLE);
             addFriendButton.setOnMouseEntered(event -> addFriendButton.setStyle(HOVERED_BUTTON_STYLE));
             addFriendButton.setOnMouseExited(event -> addFriendButton.setStyle(IDLE_BUTTON_STYLE));
+            addFriendButton.setText("Add friend");
 
             root.getChildren().addAll(addFriendButton);
         }
@@ -130,20 +142,18 @@ public class SearchFriendsController extends AbstractController {
                 setGraphic(null);
             } else {
                 label.setText(user.getFirstName() + " " + user.getLastName());
-                addFriendButton.setText("Add friend");
                 addFriendButton.setDisable(loggedUser.getEmail().equals(user.getEmail()));
-                try {
-                    service.getFriendshipDTO(loggedUser.getEmail(), user.getEmail());
+                if(friendEmails.contains(user.getEmail())) {
+
                     addFriendButton.setText("✔ Friends");
                     addFriendButton.setDisable(true);
-                } catch (ValidationException | AdministrationException ex) {
-                    service.getFriendRequestsSentToUser(user.getEmail()).forEach(FriendRequestDTO -> {
-                        if (FriendRequestDTO.getSender().getEmail().equals(loggedUser.getEmail())) {
-                            addFriendButton.setText("Cancel friend request");
-                            addFriendButton.setDisable(false);
-                        }
-                    });
                 }
+                else if(friendRequestedEmails.contains(user.getEmail())){
+
+                    addFriendButton.setText("Cancel friend request");
+                    addFriendButton.setDisable(false);
+                }
+
                 addFriendButton.setOnAction(event -> {
                     if (addFriendButton.getText().equals("Add friend")) {
                         try {
@@ -173,5 +183,7 @@ public class SearchFriendsController extends AbstractController {
     public void reset() {
         loggedUser=null;
         modelSearch.setAll();
+        friendEmails=null;
+        friendRequestedEmails=null;
     }
 }

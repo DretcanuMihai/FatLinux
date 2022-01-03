@@ -93,6 +93,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
         initSearchFriendsController();
         initInboxController();
+        initFriendsController();
         showMainPage();
     }
 
@@ -104,7 +105,11 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         inboxController.setLoggedUser(loggedUser);
         inboxController.setService(this.service);
         this.service.addMessageObserver(inboxController);
-
+        inboxController.initModels();
+    }
+    private void initFriendsController(){
+        friendsViewController.setLoggedUser(loggedUser);
+        friendsViewController.setService(this.service);
     }
 
     /**
@@ -134,8 +139,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows the friends view
      */
     public void showFriends() {
-        friendsViewController.setLoggedUser(loggedUser);
-        friendsViewController.setService(this.service);
         friendsViewController.init();
         mainBorderPane.setCenter(showFriendsRoot);
     }

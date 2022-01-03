@@ -26,6 +26,7 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 public class MainApplication extends Application {
     /**
@@ -52,6 +53,12 @@ public class MainApplication extends Application {
      */
     Stage primaryStage;
 
+    /**
+     * controllers
+     */
+    MainControllerWithTitleBar mainController;
+
+    //parolamea
     public static void main(String[] args) {
         launch(args);
     }
@@ -99,7 +106,7 @@ public class MainApplication extends Application {
      */
     private void initScenes() throws IOException {
         loginScene=initScene(loginFXMLURL);
-        mainScene=initScene(mainFXMLURL);
+        mainScene=initMainScene(mainFXMLURL);
         registerScene=initScene(registerFXMLURL);
     }
 
@@ -125,15 +132,27 @@ public class MainApplication extends Application {
     }
 
     /**
+     * initiates a main scene described by an url and sets the MainController for app
+     * @param url - said url
+     * @throws IOException - if any error occurs
+     */
+    private Scene initMainScene(URL url) throws IOException {
+        FXMLLoader loader = new FXMLLoader(url);
+        Parent parent=loader.load();
+        mainController = loader.getController();
+        mainController.setService(service);
+        mainController.setApplication(this);
+        return new Scene(parent);
+    }
+
+    /**
      * changes to main view
      *
      * @param user - currently logged-in user
      * @throws IOException if an IO error occurs
      */
     public void changeToMain(UserUIDTO user) throws IOException {
-        FXMLLoader mainLoader=(FXMLLoader) mainScene.getUserData();
-        MainControllerWithTitleBar controller = mainLoader.getController();
-        controller.init(user);
+        mainController.init(user);
         primaryStage.setScene(mainScene);
     }
 
