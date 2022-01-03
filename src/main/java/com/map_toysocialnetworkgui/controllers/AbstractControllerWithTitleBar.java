@@ -12,16 +12,7 @@ import javafx.stage.Stage;
 /**
  * class that describes an abstract view controller with a custom title bar
  */
-public class AbstractControllerWithTitleBar {
-    /**
-     * associated super service
-     */
-    protected SuperService service;
-
-    /**
-     * associated application
-     */
-    protected MainApplication application;
+public class AbstractControllerWithTitleBar extends AbstractController{
 
     /**
      * Window control buttons and title bar
@@ -105,30 +96,5 @@ public class AbstractControllerWithTitleBar {
         initAppExitButton();
         initAppMinimizeButton();
         initAppMaximizeButton();
-    }
-
-    /**
-     * sets associated super service
-     *
-     * @param service - said super service
-     */
-    public void setService(SuperService service) {
-        this.service = service;
-    }
-
-    /**
-     * sets associated application
-     *
-     * @param application - said application
-     */
-    public void setApplication(MainApplication application) {
-        this.application = application;
-    }
-
-    /**
-     * resets data on the window to default
-     */
-    public void reset(){
-
     }
 }
