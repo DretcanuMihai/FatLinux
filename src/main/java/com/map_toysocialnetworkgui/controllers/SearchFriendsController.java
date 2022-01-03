@@ -29,11 +29,6 @@ public class SearchFriendsController extends AbstractController {
     UserUIDTO loggedUser;
 
     /**
-     * current text to search after
-     */
-    String searchText;
-
-    /**
      * observable lists for search
      */
     ObservableList<UserUIDTO> modelSearch = FXCollections.observableArrayList();
@@ -63,18 +58,9 @@ public class SearchFriendsController extends AbstractController {
     }
 
     /**
-     * sets the current text to search after
-     *
-     * @param searchText - said text
-     */
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
-    }
-
-    /**
      * updates the observable list of users (for searching)
      */
-    public void updateModelUsers() {
+    public void updateModelUsers(String searchText) {
         if (searchText.equals("")) {
             searchFriendsList.setVisible(false);
             searchFailedLabel.setVisible(true);
@@ -98,10 +84,10 @@ public class SearchFriendsController extends AbstractController {
     }
 
     /**
-     * initiates the list
+     * search given the search text
      */
-    public void init() {
-        updateModelUsers();
+    public void search(String text) {
+        updateModelUsers(text);
     }
 
     /**
@@ -181,5 +167,11 @@ public class SearchFriendsController extends AbstractController {
                 setGraphic(root);
             }
         }
+    }
+
+    @Override
+    public void reset() {
+        loggedUser=null;
+        modelSearch.setAll();
     }
 }

@@ -91,7 +91,20 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     public void init(UserUIDTO user) throws IOException {
         loggedUser = user;
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
+        initSearchFriendsController();
+        initInboxController();
         showMainPage();
+    }
+
+    private void initSearchFriendsController(){
+        searchFriendsController.setLoggedUser(this.loggedUser);
+        searchFriendsController.setService(this.service);
+    }
+    private void initInboxController(){
+        inboxController.setLoggedUser(loggedUser);
+        inboxController.setService(this.service);
+        this.service.addMessageObserver(inboxController);
+
     }
 
     /**
@@ -105,10 +118,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows searched users
      */
     public void showSearchFriends() {
-        searchFriendsController.setLoggedUser(this.loggedUser);
-        searchFriendsController.setService(this.service);
-        searchFriendsController.setSearchText(searchBar.getText());
-        searchFriendsController.init();
+        searchFriendsController.search(searchBar.getText());
         mainBorderPane.setCenter(searchForFriendRoot);
     }
 
@@ -116,9 +126,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows the inbox view
      */
     public void showInbox() {
-        inboxController.setLoggedUser(loggedUser);
-        inboxController.setService(this.service);
-        this.service.addMessageObserver(inboxController);
         inboxController.init();
         mainBorderPane.setCenter(inboxRoot);
     }
