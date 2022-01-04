@@ -11,33 +11,36 @@ public class User extends Entity<String> {
      * associated join date
      */
     private final LocalDate joinDate;
+
     /**
      * associated first name
      */
     private String firstName;
+
     /**
      * associated last name
      */
     private String lastName;
+
     /**
      * associated passwordHash
      */
-    private int passwordHash;
+    private String encryptedPassword;
 
     /**
      * creates a user based on the given information
      *
-     * @param email        - user's email
-     * @param passwordHash - user's password's hashcode
-     * @param firstName    - user's first name
-     * @param lastName     - user's last name
-     * @param joinDate     - the date the user joined
+     * @param email             - user's email
+     * @param encryptedPassword - user's encrypted password
+     * @param firstName         - user's first name
+     * @param lastName          - user's last name
+     * @param joinDate          - the date the user joined
      */
-    public User(String email, int passwordHash, String firstName, String lastName, LocalDate joinDate) {
+    public User(String email, String encryptedPassword, String firstName, String lastName, LocalDate joinDate) {
         super(email);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.passwordHash = passwordHash;
+        this.encryptedPassword = encryptedPassword;
         this.joinDate = joinDate;
     }
 
@@ -91,17 +94,17 @@ public class User extends Entity<String> {
      *
      * @return said hash
      */
-    public int getPasswordHash() {
-        return passwordHash;
+    public String getEncryptedPassword() {
+        return encryptedPassword;
     }
 
     /**
      * sets the user's password's hash
      *
-     * @param passwordHash - new password hash
+     * @param encryptedPassword - new password hash
      */
-    public void setPasswordHash(int passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setEncryptedPassword(String encryptedPassword) {
+        this.encryptedPassword = encryptedPassword;
     }
 
     /**
@@ -127,7 +130,7 @@ public class User extends Entity<String> {
         if (!(o instanceof User user))
             return false;
         return Objects.equals(getEmail(), user.getEmail()) && Objects.equals(firstName, user.firstName)
-                && Objects.equals(passwordHash, user.passwordHash) && Objects.equals(joinDate, user.joinDate);
+                && Objects.equals(encryptedPassword, user.encryptedPassword) && Objects.equals(joinDate, user.joinDate);
     }
 
     /**
@@ -137,6 +140,6 @@ public class User extends Entity<String> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getEmail(), firstName, passwordHash, joinDate);
+        return Objects.hash(getEmail(), firstName, encryptedPassword, joinDate);
     }
 }

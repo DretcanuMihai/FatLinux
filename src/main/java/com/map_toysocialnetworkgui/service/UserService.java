@@ -43,17 +43,17 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * creates a user account
      *
-     * @param email        - email info
-     * @param passwordHash -password hash info
-     * @param firstName    - first name info
-     * @param lastName     - last name info
+     * @param email             - email info
+     * @param encryptedPassword - encrypted password info
+     * @param firstName         - first name info
+     * @param lastName          - last name info
      * @throws ValidationException     - if the user data is invalid
      * @throws AdministrationException - if the email is already in use
      */
-    public void createUserAccount(String email, int passwordHash, String firstName, String lastName)
+    public void createUserAccount(String email, String encryptedPassword, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
+        User user = new User(email, encryptedPassword, firstName, lastName, LocalDate.now());
         userValidator.validateDefault(user);
         User result = usersRepo.save(user);
         if (result != null)
@@ -80,24 +80,24 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * updates the data of a user identified by an email
      *
-     * @param email        - email info
-     * @param passwordHash -password hash info
-     * @param firstName    - first name info
-     * @param lastName     - last name info
+     * @param email             - email info
+     * @param encryptedPassword - encrypted password info
+     * @param firstName         - first name info
+     * @param lastName          - last name info
      * @throws ValidationException     - if any of the data is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public void updateUserAccountInfo(String email, int passwordHash, String firstName, String lastName)
+    public void updateUserAccountInfo(String email, String encryptedPassword, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        User user = new User(email, passwordHash, firstName, lastName, null);
+        User user = new User(email, encryptedPassword, firstName, lastName, null);
         userValidator.validateDefault(user);
         User actualUser = usersRepo.findOne(email);
         if (actualUser == null)
             throw new AdministrationException("Error: email not in use;\n");
         actualUser.setFirstName(firstName);
         actualUser.setLastName(lastName);
-        actualUser.setPasswordHash(passwordHash);
+        actualUser.setEncryptedPassword(encryptedPassword);
         usersRepo.update(user);
         notifyObservers(new EntityModificationEvent<>(ChangeEventType.UPDATE, email));
     }
@@ -164,17 +164,17 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * verifies if user email and password hash exists for logging in
      *
-     * @param userEmail    - said email
-     * @param userPassword - said password hash
+     * @param userEmail         - said email
+     * @param encryptedPassword - said encrypted password
      * @return the user's info
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public User login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
+    public User login(String userEmail, String encryptedPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
         User found = usersRepo.findOne(userEmail);
 
-        if (found == null || found.getPasswordHash() != userPassword)
+        if (found == null || !found.getEncryptedPassword().equals(encryptedPassword))
             throw new AdministrationException("Invalid email or password!\n");
         return found;
     }

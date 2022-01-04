@@ -2,13 +2,14 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
+import com.map_toysocialnetworkgui.utils.cryptography.EncryptorAES256GCMPassword;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * controller for register view
@@ -32,7 +33,7 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
     @FXML
     Label registerPasswordMatchErrorLabel;
     @FXML
-    Label passwordTooShortErrorLabel;
+    Label passwordLengthErrorLabel;
 
     /**
      * clears all text fields and text areas
@@ -54,18 +55,21 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
             String firstName = firstNameTextField.getText();
             String lastName = lastNameTextField.getText();
             String email = emailTextField.getText();
-            int passwordHash = passwordTextField.getText().hashCode();
-            int confirmPasswordHash = confirmPasswordTextField.getText().hashCode();
+            String password = passwordTextField.getText();
+            String confirmPassword = confirmPasswordTextField.getText();
             registerSuccessMessageLabel.setText("");
             registerPasswordMatchErrorLabel.setText("");
-            passwordTooShortErrorLabel.setText("");
+            passwordLengthErrorLabel.setText("");
 
-            if (passwordTextField.getText().length() < 4)
-                passwordTooShortErrorLabel.setText("Password has to be at least 4 characters long!");
-            else if (passwordHash != confirmPasswordHash)
+            if (password.length() < 8)
+                passwordLengthErrorLabel.setText("Password has to be at least 8 characters long!");
+            else if (!password.equals(confirmPassword))
                 registerPasswordMatchErrorLabel.setText("Passwords do not match!");
             else {
-                service.createUserAccount(email, passwordHash, firstName, lastName);
+                // Encrypts the password using AES-256-GCM with user email as the password
+                String securedPassword = EncryptorAES256GCMPassword
+                        .encrypt(password.getBytes(StandardCharsets.UTF_8), email);
+                service.createUserAccount(email, securedPassword, firstName, lastName);
                 registerSuccessMessageLabel.setText("Account created successfully!");
                 clearAllFields();
             }
@@ -75,6 +79,8 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
             alert.setHeaderText("Register warning!");
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -3,12 +3,13 @@ package com.map_toysocialnetworkgui.controllers;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
+import com.map_toysocialnetworkgui.utils.cryptography.EncryptorAES256GCMPassword;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * controller for login view
@@ -26,18 +27,23 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
 
     /**
      * logs in a user
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void login() throws IOException {
+    public void login() {
         try {
             String email = emailTextField.getText();
-            UserUIDTO user = service.login(email, passwordTextField.getText().hashCode());
+            String password = passwordTextField.getText();
+
+            // Encrypts the password using AES-256-GCM with user email as the password
+            String securedPassword = EncryptorAES256GCMPassword
+                    .encrypt(password.getBytes(StandardCharsets.UTF_8), email);
+            UserUIDTO user = service.login(email, securedPassword);
             errorLabel.setText("");
             application.changeToMain(user);
             reset();
         } catch (ValidationException | AdministrationException ex) {
             errorLabel.setText(ex.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
