@@ -174,6 +174,25 @@ public class SuperService {
     }
 
     /**
+     * returns information of a friend request sent by a user to another user
+     *
+     * @param sender   - sender email
+     * @param receiver - receiver email
+     * @return a FriendRequestDTO with said information
+     * @throws ValidationException     if any validation error occurs
+     * @throws AdministrationException if any administration error occurs
+     */
+    public FriendRequestDTO getFriendRequestDTO(String sender, String receiver)
+            throws ValidationException, AdministrationException {
+
+        userService.verifyEmailCollection(List.of(sender, receiver));
+        User user1 = userService.getUserInfo(sender);
+        User user2 = userService.getUserInfo(receiver);
+        FriendRequest friendRequest = friendRequestService.getFriendRequest(sender,receiver);
+        return new FriendRequestDTO(friendRequest, user1, user2);
+    }
+
+    /**
      * returns a collection of all friendship data in the form of FriendshipDTOs
      *
      * @return said collection
@@ -481,6 +500,49 @@ public class SuperService {
         Page<FriendRequest> page = friendRequestService.getFriendRequestsSentToUser(userEmail, pageable);
         Stream<FriendRequestDTO> stream = page.getContent().map(request -> {
             User sender = userService.getUserInfo(request.getSender());
+            return new FriendRequestDTO(request, sender, receiver);
+        });
+        return new PageImplementation<>(page.getPageable(), stream);
+    }
+
+    /**
+     * gets a collection of DTOs of all the friend requests sent to a user
+     *
+     * @param userEmail - said user's email
+     * @return said collection
+     * @throws ValidationException     if the user email is invalid
+     * @throws AdministrationException - if the user doesn't exist
+     */
+    public Collection<FriendRequestDTO> getFriendRequestsSentByUser(String userEmail)
+            throws ValidationException, AdministrationException {
+
+        User sender = userService.getUserInfo(userEmail);
+        Collection<FriendRequestDTO> friendRequestDTOS = new ArrayList<>();
+        friendRequestService.getFriendRequestsSentByUser(userEmail).forEach(
+                request -> {
+                    User receiver = userService.getUserInfo(request.getReceiver());
+                    friendRequestDTOS.add(new FriendRequestDTO(request, sender, receiver));
+                });
+        return friendRequestDTOS;
+    }
+
+    /**
+     * gets a page of DTOs of all the friend requests sent to a user
+     *
+     * @param userEmail - said user's email
+     * @param pageable  - for paging
+     * @return said page
+     * @throws ValidationException     if the user email or pageable is invalid
+     * @throws AdministrationException - if the user doesn't exist
+     */
+    public Page<FriendRequestDTO> getFriendRequestsSentByUser(String userEmail, Pageable pageable)
+            throws ValidationException, AdministrationException {
+
+        validatePageable(pageable);
+        User sender = userService.getUserInfo(userEmail);
+        Page<FriendRequest> page = friendRequestService.getFriendRequestsSentByUser(userEmail, pageable);
+        Stream<FriendRequestDTO> stream = page.getContent().map(request -> {
+            User receiver = userService.getUserInfo(request.getReceiver());
             return new FriendRequestDTO(request, sender, receiver);
         });
         return new PageImplementation<>(page.getPageable(), stream);

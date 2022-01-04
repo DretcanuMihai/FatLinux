@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
+import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
@@ -10,6 +11,7 @@ import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
 import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
+import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.time.LocalDateTime;
 
@@ -114,5 +116,45 @@ public class FriendRequestService extends AbstractObservable<EntityModificationE
      */
     public Page<FriendRequest> getFriendRequestsSentToUser(String userEmail, Pageable pageable) {
         return friendRequestRepository.getFriendRequestsSentToUser(userEmail, pageable);
+    }
+
+    /**
+     * gets all friend requests sent by a user as an iterable
+     *
+     * @param userEmail -> said user's emails
+     * @return said iterable
+     */
+    public Iterable<FriendRequest> getFriendRequestsSentByUser(String userEmail) {
+        return friendRequestRepository.getFriendRequestsSentByUser(userEmail);
+    }
+
+    /**
+     * gets a page of a user's sent friend requests
+     *
+     * @param userEmail -> said user's emails
+     * @param pageable  - for paging
+     * @return said page
+     */
+    public Page<FriendRequest> getFriendRequestsSentByUser(String userEmail, Pageable pageable) {
+        return friendRequestRepository.getFriendRequestsSentByUser(userEmail, pageable);
+    }
+
+    /**
+     * gets a friendRequest sent by a sender to a receiver
+     * said emails are assumed to belong to actual valid users
+     *
+     * @param sender - sender's email
+     * @param receiver - receiver's email
+     * @return said friendship
+     * @throws ValidationException     - if the emails are equal
+     * @throws AdministrationException - if a friendship doesn't exist between the two users
+     */
+    public FriendRequest getFriendRequest(String sender, String receiver)
+            throws ValidationException, AdministrationException{
+        friendRequestValidator.validateEmails(sender,receiver);
+        FriendRequest friendRequest = friendRequestRepository.findOne(new Pair<>(sender,receiver));
+        if (friendRequest == null)
+            throw new AdministrationException("Error: Users aren't friends!\n");
+        return friendRequest;
     }
 }

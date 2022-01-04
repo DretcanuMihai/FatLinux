@@ -255,4 +255,11 @@ public class FriendsViewController extends AbstractController {
             }
         }
     }
+
+    @Override
+    public void reset() {
+        super.reset();
+        modelFriends.setAll();
+        modelRequests.setAll();
+    }
 }

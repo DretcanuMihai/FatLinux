@@ -48,6 +48,13 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     @FXML
     Button searchForFriendsButton;
 
+    @FXML
+    @Override
+    public void initialize() throws IOException {
+        super.initialize();
+        initLoadersAndControllers();
+    }
+
     /**
      * initiates loaders and controllers for child views
      *
@@ -82,10 +89,27 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * @throws IOException if an IO error occurs
      */
     public void init(UserUIDTO user) throws IOException {
-        initLoadersAndControllers();
         loggedUser = user;
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
+        initSearchFriendsController();
+        initInboxController();
+        initFriendsController();
         showMainPage();
+    }
+
+    private void initSearchFriendsController(){
+        searchFriendsController.setLoggedUser(this.loggedUser);
+        searchFriendsController.setService(this.service);
+    }
+    private void initInboxController(){
+        inboxController.setLoggedUser(loggedUser);
+        inboxController.setService(this.service);
+        this.service.addMessageObserver(inboxController);
+        inboxController.initModels();
+    }
+    private void initFriendsController(){
+        friendsViewController.setLoggedUser(loggedUser);
+        friendsViewController.setService(this.service);
     }
 
     /**
@@ -95,11 +119,11 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         mainBorderPane.setCenter(mainPageRoot);
     }
 
+    /**
+     * shows searched users
+     */
     public void showSearchFriends() {
-        searchFriendsController.setLoggedUser(this.loggedUser);
-        searchFriendsController.setService(this.service);
-        searchFriendsController.setSearchText(searchBar.getText());
-        searchFriendsController.init();
+        searchFriendsController.search(searchBar.getText());
         mainBorderPane.setCenter(searchForFriendRoot);
     }
 
@@ -107,9 +131,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows the inbox view
      */
     public void showInbox() {
-        inboxController.setLoggedUser(loggedUser);
-        inboxController.setService(this.service);
-        this.service.addMessageObserver(inboxController);
         inboxController.init();
         mainBorderPane.setCenter(inboxRoot);
     }
@@ -118,8 +139,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows the friends view
      */
     public void showFriends() {
-        friendsViewController.setLoggedUser(loggedUser);
-        friendsViewController.setService(this.service);
         friendsViewController.init();
         mainBorderPane.setCenter(showFriendsRoot);
     }
@@ -131,5 +150,17 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     public void logout() throws IOException {
         application.changeToLogin();
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        searchFriendsController.reset();
+        inboxController.reset();
+        friendsViewController.reset();
+
+        loggedUser=null;
+        userNameLabel.setText("");
+        searchBar.setText("");
     }
 }

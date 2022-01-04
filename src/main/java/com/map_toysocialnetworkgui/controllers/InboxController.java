@@ -133,7 +133,7 @@ public class InboxController extends AbstractController implements Observer<Enti
      * updates the observable list of received messages
      * selected message will display the contents of the message and show reply and reply all buttons
      */
-    public void updateModelReceivedMessages() {
+    public void initModelReceivedMessages() {
         Collection<MessageDTO> receivedMessages = StreamSupport
                 .stream(service.getMessagesReceivedByUser(loggedUser.getEmail()).spliterator(), false).toList();
 
@@ -152,7 +152,7 @@ public class InboxController extends AbstractController implements Observer<Enti
     /**
      * updates the observable list of sent messages
      */
-    public void updateModelSentMessages() {
+    public void initModelSentMessages() {
         Collection<MessageDTO> sentMessages = StreamSupport
                 .stream(service.getMessagesSentByUser(loggedUser.getEmail()).spliterator(), false).toList();
 
@@ -166,6 +166,16 @@ public class InboxController extends AbstractController implements Observer<Enti
             }
         });
         modelSentMessages.setAll(sentMessages);
+    }
+
+    /**
+     * initiates the lists
+     * received messages list is by default visible
+     * reply and replyAll buttons are by default hidden
+     */
+    public void initModels() {
+        initModelReceivedMessages();
+        initModelSentMessages();
     }
 
     /**
@@ -286,10 +296,9 @@ public class InboxController extends AbstractController implements Observer<Enti
      * reply and replyAll buttons are by default hidden
      */
     public void init() {
-        updateModelReceivedMessages();
-        updateModelSentMessages();
         viewReceivedMessages();
     }
+
 
     @Override
     public void update(EntityModificationEvent<Integer> event) {
@@ -316,5 +325,13 @@ public class InboxController extends AbstractController implements Observer<Enti
 
     public void updateForUpdate(Integer id) {
         // TODO
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        clearAllFields();
+        modelReceivedMessages.setAll();
+        modelSentMessages.setAll();
     }
 }
