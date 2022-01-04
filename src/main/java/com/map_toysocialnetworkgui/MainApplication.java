@@ -58,7 +58,6 @@ public class MainApplication extends Application {
      */
     MainControllerWithTitleBar mainController;
 
-    //parolamea
     public static void main(String[] args) {
         launch(args);
     }
