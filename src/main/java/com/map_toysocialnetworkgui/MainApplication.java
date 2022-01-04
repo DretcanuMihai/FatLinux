@@ -1,7 +1,6 @@
 package com.map_toysocialnetworkgui;
 
 import com.map_toysocialnetworkgui.controllers.AbstractControllerWithTitleBar;
-import com.map_toysocialnetworkgui.controllers.LoginControllerWithTitleBar;
 import com.map_toysocialnetworkgui.controllers.MainControllerWithTitleBar;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
@@ -26,7 +25,6 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 
 public class MainApplication extends Application {
     /**
@@ -101,12 +99,13 @@ public class MainApplication extends Application {
 
     /**
      * initiates all scenes
+     *
      * @throws IOException - if any error occurs
      */
     private void initScenes() throws IOException {
-        loginScene=initScene(loginFXMLURL);
-        mainScene=initMainScene(mainFXMLURL);
-        registerScene=initScene(registerFXMLURL);
+        loginScene = initScene(loginFXMLURL);
+        mainScene = initMainScene(mainFXMLURL);
+        registerScene = initScene(registerFXMLURL);
     }
 
     @Override
@@ -118,12 +117,13 @@ public class MainApplication extends Application {
 
     /**
      * initiates a scene described by an url
+     *
      * @param url - said url
      * @throws IOException - if any error occurs
      */
     private Scene initScene(URL url) throws IOException {
         FXMLLoader loader = new FXMLLoader(url);
-        Parent parent=loader.load();
+        Parent parent = loader.load();
         AbstractControllerWithTitleBar controller = loader.getController();
         controller.setService(service);
         controller.setApplication(this);
@@ -132,12 +132,13 @@ public class MainApplication extends Application {
 
     /**
      * initiates a main scene described by an url and sets the MainController for app
+     *
      * @param url - said url
      * @throws IOException - if any error occurs
      */
     private Scene initMainScene(URL url) throws IOException {
         FXMLLoader loader = new FXMLLoader(url);
-        Parent parent=loader.load();
+        Parent parent = loader.load();
         mainController = loader.getController();
         mainController.setService(service);
         mainController.setApplication(this);
@@ -153,28 +154,27 @@ public class MainApplication extends Application {
     public void changeToMain(UserUIDTO user) throws IOException {
         mainController.init(user);
         primaryStage.setScene(mainScene);
+        primaryStage.centerOnScreen();
     }
 
     /**
      * changes to register view
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void changeToRegister() throws IOException {
+    public void changeToRegister() {
         primaryStage.setScene(registerScene);
+        primaryStage.centerOnScreen();
     }
 
     /**
      * changes to login view
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void changeToLogin() throws IOException {
+    public void changeToLogin() {
         primaryStage.setScene(loginScene);
+        primaryStage.centerOnScreen();
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         primaryStage = stage;
         primaryStage.initStyle(StageStyle.UNDECORATED);
         changeToLogin();

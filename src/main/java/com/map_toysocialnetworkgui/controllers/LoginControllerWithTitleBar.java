@@ -43,10 +43,8 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
 
     /**
      * changes main window to register window
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void register() throws IOException {
+    public void register() {
         application.changeToRegister();
         reset();
     }

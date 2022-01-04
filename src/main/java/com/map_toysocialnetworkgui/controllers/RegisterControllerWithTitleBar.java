@@ -80,10 +80,8 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
 
     /**
      * changes the register window to log in window
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void back() throws IOException {
+    public void back() {
         application.changeToLogin();
         reset();
     }
