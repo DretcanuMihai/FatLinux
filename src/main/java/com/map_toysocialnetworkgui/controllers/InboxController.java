@@ -53,6 +53,8 @@ public class InboxController extends AbstractController implements Observer<Enti
     @FXML
     Button replyAllButton;
     @FXML
+    Button composeNewButton;
+    @FXML
     TextField fromTextField;
     @FXML
     TextField toTextField;
@@ -67,6 +69,21 @@ public class InboxController extends AbstractController implements Observer<Enti
      * button styling class
      */
     ButtonColoring buttonColoring;
+
+    /**
+     * compose message view controller
+     */
+    ComposeMessageController composeMessageWindowController;
+
+    /**
+     * compose message scene
+     */
+    Scene composeMessageScene;
+
+    /**
+     * compose message stage
+     */
+    Stage composeMessageStage;
 
     /**
      * modifies a list view's cell height and font
@@ -89,13 +106,50 @@ public class InboxController extends AbstractController implements Observer<Enti
         });
     }
 
+    /**
+     * initializes inbox window elements
+     */
+    public void initInboxElements() {
+        this.buttonColoring = new ButtonColoring();
+        setCustomCell(this.receivedMessagesList);
+        setCustomCell(this.sentMessagesList);
+        this.receivedMessagesList.setItems(this.modelReceivedMessages);
+        this.sentMessagesList.setItems(this.modelSentMessages);
+
+        this.composeNewButton.setOnAction(event -> {
+            this.composeMessageWindowController.setPrimaryFunction(this.composeNewButton.getText());
+            this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+            openComposeMessageWindow();
+        });
+        this.replyButton.setOnAction(event -> {
+            this.composeMessageWindowController.setPrimaryFunction(this.replyButton.getText());
+            this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+            openComposeMessageWindow();
+        });
+        this.replyAllButton.setOnAction(event -> {
+            this.composeMessageWindowController.setPrimaryFunction(this.replyAllButton.getText());
+            this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+            openComposeMessageWindow();
+        });
+    }
+
+    /**
+     * initiates the scene for message composition
+     *
+     * @throws IOException - if an IO error occurs
+     */
+    public void initComposeMessageScene() throws IOException {
+        URL composeMessageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/composeMessage-view.fxml");
+        FXMLLoader composeMessageWindowLoader = new FXMLLoader(composeMessageURL);
+        Parent composeMessageWindowRoot = composeMessageWindowLoader.load();
+        this.composeMessageWindowController = composeMessageWindowLoader.getController();
+        this.composeMessageScene = new Scene(composeMessageWindowRoot);
+    }
+
     @FXML
-    public void initialize() {
-        buttonColoring = new ButtonColoring();
-        setCustomCell(receivedMessagesList);
-        setCustomCell(sentMessagesList);
-        receivedMessagesList.setItems(modelReceivedMessages);
-        sentMessagesList.setItems(modelSentMessages);
+    public void initialize() throws IOException {
+        initInboxElements();
+        initComposeMessageScene();
     }
 
     /**
@@ -223,71 +277,19 @@ public class InboxController extends AbstractController implements Observer<Enti
     }
 
     /**
-     * show the window for a root of a certain loader
-     *
-     * @param root - said root
+     * initializes compose message window's elements
      */
-    private void showWindow(Parent root) {
-        Scene scene = new Scene(root);
-        Stage composeMessageStage = new Stage();
-        composeMessageStage.setScene(scene);
-        composeMessageStage.initStyle(StageStyle.UNDECORATED);
-        composeMessageStage.centerOnScreen();
-        composeMessageStage.show();
+    public void initComposeMessageWindow() {
+        this.composeMessageStage = new Stage();
+        this.composeMessageWindowController.setService(this.service);
+        this.composeMessageWindowController.setLoggedUser(this.loggedUser);
+        this.composeMessageStage.setScene(this.composeMessageScene);
+        this.composeMessageStage.initStyle(StageStyle.UNDECORATED);
+        this.composeMessageStage.centerOnScreen();
     }
 
-    /**
-     * opens the window for composing a new message
-     *
-     * @throws IOException if an IO error occurs
-     */
-    public void openWindowForComposeNew() throws IOException {
-        URL composeMessageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/composeMessage-view.fxml");
-        FXMLLoader composeMessageWindowLoader = new FXMLLoader(composeMessageURL);
-        Parent composeMessageWindowRoot = composeMessageWindowLoader.load();
-        ComposeMessageController composeMessageWindowController = composeMessageWindowLoader.getController();
-        composeMessageWindowController.setService(this.service);
-        composeMessageWindowController.setLoggedUser(this.loggedUser);
-        composeMessageWindowController.setPrimaryFunction("composeNew");
-        composeMessageWindowController.setSelectedMessage(null);
-        composeMessageWindowController.init();
-        showWindow(composeMessageWindowRoot);
-    }
-
-    /**
-     * opens the window for composing reply message for an existing message
-     *
-     * @throws IOException if an IO error occurs
-     */
-    public void openWindowForReply() throws IOException {
-        URL composeMessageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/composeMessage-view.fxml");
-        FXMLLoader composeMessageWindowLoader = new FXMLLoader(composeMessageURL);
-        Parent composeMessageWindowRoot = composeMessageWindowLoader.load();
-        ComposeMessageController composeMessageWindowController = composeMessageWindowLoader.getController();
-        composeMessageWindowController.setService(this.service);
-        composeMessageWindowController.setLoggedUser(this.loggedUser);
-        composeMessageWindowController.setPrimaryFunction("reply");
-        composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
-        composeMessageWindowController.init();
-        showWindow(composeMessageWindowRoot);
-    }
-
-    /**
-     * opens the window for composing reply all message for an existing message thread
-     *
-     * @throws IOException if an IO error occurs
-     */
-    public void openWindowForReplyAll() throws IOException {
-        URL composeMessageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/composeMessage-view.fxml");
-        FXMLLoader composeMessageWindowLoader = new FXMLLoader(composeMessageURL);
-        Parent composeMessageWindowRoot = composeMessageWindowLoader.load();
-        ComposeMessageController composeMessageWindowController = composeMessageWindowLoader.getController();
-        composeMessageWindowController.setService(this.service);
-        composeMessageWindowController.setLoggedUser(this.loggedUser);
-        composeMessageWindowController.setPrimaryFunction("replyAll");
-        composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
-        composeMessageWindowController.init();
-        showWindow(composeMessageWindowRoot);
+    public void openComposeMessageWindow() {
+        this.composeMessageStage.show();
     }
 
     /**
@@ -297,6 +299,7 @@ public class InboxController extends AbstractController implements Observer<Enti
      */
     public void init() {
         viewReceivedMessages();
+        initComposeMessageWindow();
     }
 
 
@@ -311,10 +314,20 @@ public class InboxController extends AbstractController implements Observer<Enti
             updateForAdd(event.getModifiedEntityID());
     }
 
+    /**
+     * method for delete (observer pattern)
+     *
+     * @param id - id of modified entity
+     */
     public void updateForDelete(Integer id) {
         // TODO
     }
 
+    /**
+     * method for add (observer pattern)
+     *
+     * @param id - id of modified entity
+     */
     public void updateForAdd(Integer id) {
         MessageDTO messageDTO = service.getMessageDTO(id);
         if (messageDTO.getFromEmail().equals(loggedUser.getEmail()))
@@ -323,6 +336,11 @@ public class InboxController extends AbstractController implements Observer<Enti
             modelReceivedMessages.add(0, messageDTO);
     }
 
+    /**
+     * method for update (observer pattern)
+     *
+     * @param id - id of modified entity
+     */
     public void updateForUpdate(Integer id) {
         // TODO
     }

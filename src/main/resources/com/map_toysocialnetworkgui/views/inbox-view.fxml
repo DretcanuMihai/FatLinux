@@ -44,17 +44,17 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="250.0" prefHeight="50.0" prefWidth="390.0" spacing="30.0">
                <children>
-                  <Button fx:id="replyButton" mnemonicParsing="false" onAction="#openWindowForReply" styleClass="inboxMessagingButtons" text="Reply">
+                  <Button fx:id="replyButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="replyAllButton" mnemonicParsing="false" onAction="#openWindowForReplyAll" styleClass="inboxMessagingButtons" text="Reply All">
+                  <Button fx:id="replyAllButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply All">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="composeNewButton" mnemonicParsing="false" onAction="#openWindowForComposeNew" text="Compose New">
+                  <Button fx:id="composeNewButton" mnemonicParsing="false" text="Compose New">
                      <font>
                         <Font size="13.0" />
                      </font>
