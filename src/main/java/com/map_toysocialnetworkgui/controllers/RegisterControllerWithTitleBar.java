@@ -87,5 +87,8 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
     @Override
     public void reset() {
         clearAllFields();
+        registerSuccessMessageLabel.setText("");
+        registerPasswordMatchErrorLabel.setText("");
+        passwordLengthErrorLabel.setText("");
     }
 }
