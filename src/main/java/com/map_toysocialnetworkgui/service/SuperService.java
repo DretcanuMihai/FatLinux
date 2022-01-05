@@ -75,10 +75,10 @@ public class SuperService {
     /**
      * adds a user to the repo
      *
-     * @param email        - email info
-     * @param password - password hash info
-     * @param firstName    - first name info
-     * @param lastName     - last name info
+     * @param email     - email info
+     * @param password  - password hash info
+     * @param firstName - first name info
+     * @param lastName  - last name info
      * @throws ValidationException     - if the user data is invalid
      * @throws AdministrationException - if the email is already in use
      */
@@ -90,17 +90,17 @@ public class SuperService {
     /**
      * modifies the account identified by email with the other given information
      *
-     * @param email        - email info
-     * @param passwordHash - password hash info
-     * @param firstName    - first name info
-     * @param lastName     - last name info
+     * @param email     - email info
+     * @param password  - password info
+     * @param firstName - first name info
+     * @param lastName  - last name info
      * @throws ValidationException     if any of the data is invalid
      * @throws AdministrationException if a user with said email doesn't exist
      */
-    public void updateUser(String email, String passwordHash, String firstName, String lastName)
+    public void updateUser(String email, String password, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
-        userService.updateUserAccountInfo(email, passwordHash, firstName, lastName);
+        userService.updateUserAccountInfo(email, password, firstName, lastName);
     }
 
     /**
@@ -551,7 +551,7 @@ public class SuperService {
     /**
      * logs in a user
      *
-     * @param userEmail - said user's email
+     * @param userEmail    - said user's email
      * @param userPassword - said user's password
      * @return said user's info
      * @throws ValidationException     - if said user's email is invalid
