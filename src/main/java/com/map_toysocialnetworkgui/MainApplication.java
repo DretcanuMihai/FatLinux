@@ -149,9 +149,8 @@ public class MainApplication extends Application {
      * changes to main view
      *
      * @param user - currently logged-in user
-     * @throws IOException if an IO error occurs
      */
-    public void changeToMain(UserUIDTO user) throws IOException {
+    public void changeToMain(UserUIDTO user) {
         mainController.init(user);
         primaryStage.setScene(mainScene);
         primaryStage.centerOnScreen();

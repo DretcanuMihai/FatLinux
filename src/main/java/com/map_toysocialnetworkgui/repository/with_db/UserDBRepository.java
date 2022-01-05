@@ -82,13 +82,13 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public User save(User user) {
         User toReturn = user;
-        String sqlSave = "INSERT INTO users(email, encrypted_password, first_name, last_name, join_date) VALUES (?, ?, ?, ?, ?)";
+        String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
 
             statementSave.setString(1, user.getEmail());
-            statementSave.setString(2, user.getEncryptedPassword());
+            statementSave.setString(2, user.getPasswordHash());
             statementSave.setString(3, user.getFirstName());
             statementSave.setString(4, user.getLastName());
             statementSave.setDate(5, Date.valueOf(user.getJoinDate()));
@@ -123,12 +123,12 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public User update(User user) {
         User toReturn = user;
-        String sqlUpdate = "UPDATE users SET encrypted_password = (?), first_name = (?), last_name = (?), join_date = (?) WHERE email = (?)";
+        String sqlUpdate = "UPDATE users SET password_hash = (?), first_name = (?), last_name = (?), join_date = (?) WHERE email = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
 
-            statementUpdate.setString(1, user.getEncryptedPassword());
+            statementUpdate.setString(1, user.getPasswordHash());
             statementUpdate.setString(2, user.getFirstName());
             statementUpdate.setString(3, user.getLastName());
             statementUpdate.setDate(4, Date.valueOf(user.getJoinDate()));
@@ -222,9 +222,9 @@ public class UserDBRepository implements UserRepositoryInterface {
     private User getNextFromSet(ResultSet resultSet) throws SQLException {
         String email = resultSet.getString("email");
         String firstName = resultSet.getString("first_name");
-        String encryptedPassword = resultSet.getString("encrypted_password");
+        String passwordHash = resultSet.getString("password_hash");
         LocalDate joinDate = resultSet.getDate("join_date").toLocalDate();
         String lastName = resultSet.getString("last_name");
-        return new User(email, encryptedPassword, firstName, lastName, joinDate);
+        return new User(email, passwordHash, firstName, lastName, joinDate);
     }
 }

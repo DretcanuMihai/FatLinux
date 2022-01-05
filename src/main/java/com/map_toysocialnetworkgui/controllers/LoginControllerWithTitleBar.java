@@ -1,15 +1,15 @@
 package com.map_toysocialnetworkgui.controllers;
 
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
-import com.map_toysocialnetworkgui.utils.cryptography.EncryptorAES256GCMPassword;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * controller for login view
@@ -33,17 +33,18 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
             String email = emailTextField.getText();
             String password = passwordTextField.getText();
 
-            // Encrypts the password using AES-256-GCM with user email as the password
-            String securedPassword = EncryptorAES256GCMPassword
-                    .encrypt(password.getBytes(StandardCharsets.UTF_8), email);
-            UserUIDTO user = service.login(email, securedPassword);
-            errorLabel.setText("");
-            application.changeToMain(user);
-            reset();
+            User user = service.login(email);
+            Argon2 argon2 = Argon2Factory.create();
+            if (argon2.verify(user.getPasswordHash(), password.toCharArray())) {
+                UserUIDTO userUIDTO = new UserUIDTO(user);
+                errorLabel.setText("");
+                application.changeToMain(userUIDTO);
+                reset();
+            }
+            else
+                errorLabel.setText("Invalid email or password!\n");
         } catch (ValidationException | AdministrationException ex) {
             errorLabel.setText(ex.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

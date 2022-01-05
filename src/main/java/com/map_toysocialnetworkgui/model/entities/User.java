@@ -25,22 +25,22 @@ public class User extends Entity<String> {
     /**
      * associated passwordHash
      */
-    private String encryptedPassword;
+    private String passwordHash;
 
     /**
      * creates a user based on the given information
      *
-     * @param email             - user's email
-     * @param encryptedPassword - user's encrypted password
-     * @param firstName         - user's first name
-     * @param lastName          - user's last name
-     * @param joinDate          - the date the user joined
+     * @param email        - user's email
+     * @param passwordHash - user's password hash
+     * @param firstName    - user's first name
+     * @param lastName     - user's last name
+     * @param joinDate     - the date the user joined
      */
-    public User(String email, String encryptedPassword, String firstName, String lastName, LocalDate joinDate) {
+    public User(String email, String passwordHash, String firstName, String lastName, LocalDate joinDate) {
         super(email);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.encryptedPassword = encryptedPassword;
+        this.passwordHash = passwordHash;
         this.joinDate = joinDate;
     }
 
@@ -94,17 +94,17 @@ public class User extends Entity<String> {
      *
      * @return said hash
      */
-    public String getEncryptedPassword() {
-        return encryptedPassword;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
     /**
      * sets the user's password's hash
      *
-     * @param encryptedPassword - new password hash
+     * @param passwordHash - new password hash
      */
-    public void setEncryptedPassword(String encryptedPassword) {
-        this.encryptedPassword = encryptedPassword;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     /**
@@ -130,7 +130,7 @@ public class User extends Entity<String> {
         if (!(o instanceof User user))
             return false;
         return Objects.equals(getEmail(), user.getEmail()) && Objects.equals(firstName, user.firstName)
-                && Objects.equals(encryptedPassword, user.encryptedPassword) && Objects.equals(joinDate, user.joinDate);
+                && Objects.equals(passwordHash, user.passwordHash) && Objects.equals(joinDate, user.joinDate);
     }
 
     /**
@@ -140,6 +140,6 @@ public class User extends Entity<String> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getEmail(), firstName, encryptedPassword, joinDate);
+        return Objects.hash(getEmail(), firstName, passwordHash, joinDate);
     }
 }
