@@ -65,10 +65,7 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
             else if (!password.equals(confirmPassword))
                 registerPasswordMatchErrorLabel.setText("Passwords do not match!");
             else {
-                // Hashes the password using argon2i algorithm
-                Argon2 argon2 = Argon2Factory.create();
-                String passwordHash = argon2.hash(22, 65536, 1, password.toCharArray());
-                service.createUserAccount(email, passwordHash, firstName, lastName);
+                service.createUserAccount(email, password, firstName, lastName);
                 registerSuccessMessageLabel.setText("Account created successfully!");
                 clearAllFields();
             }

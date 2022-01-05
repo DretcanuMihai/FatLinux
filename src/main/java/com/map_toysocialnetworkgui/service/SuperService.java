@@ -76,15 +76,15 @@ public class SuperService {
      * adds a user to the repo
      *
      * @param email        - email info
-     * @param passwordHash - password hash info
+     * @param password - password hash info
      * @param firstName    - first name info
      * @param lastName     - last name info
      * @throws ValidationException     - if the user data is invalid
      * @throws AdministrationException - if the email is already in use
      */
-    public void createUserAccount(String email, String passwordHash, String firstName, String lastName)
+    public void createUserAccount(String email, String password, String firstName, String lastName)
             throws ValidationException, AdministrationException {
-        userService.createUserAccount(email, passwordHash, firstName, lastName);
+        userService.createUserAccount(email, password, firstName, lastName);
     }
 
     /**
@@ -552,12 +552,14 @@ public class SuperService {
      * logs in a user
      *
      * @param userEmail - said user's email
-     * @return said user
+     * @param userPassword - said user's password
+     * @return said user's info
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public User login(String userEmail) throws ValidationException, AdministrationException {
-        return userService.login(userEmail);
+    public UserUIDTO login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
+        User user = userService.login(userEmail, userPassword);
+        return new UserUIDTO(user);
     }
 
     /**

@@ -9,6 +9,8 @@ import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserReposit
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
 import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,16 +45,19 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * creates a user account
      *
-     * @param email        - email info
-     * @param passwordHash - password hash info
-     * @param firstName    - first name info
-     * @param lastName     - last name info
+     * @param email     - email info
+     * @param password  - password info
+     * @param firstName - first name info
+     * @param lastName  - last name info
      * @throws ValidationException     - if the user data is invalid
      * @throws AdministrationException - if the email is already in use
      */
-    public void createUserAccount(String email, String passwordHash, String firstName, String lastName)
+    public void createUserAccount(String email, String password, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
+        // Hashes the password using argon2i algorithm
+        Argon2 argon2 = Argon2Factory.create();
+        String passwordHash = argon2.hash(22, 65536, 1, password.toCharArray());
         User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
         userValidator.validateDefault(user);
         User result = usersRepo.save(user);
@@ -80,16 +85,19 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * updates the data of a user identified by an email
      *
-     * @param email        - email info
-     * @param passwordHash - password hash info
-     * @param firstName    - first name info
-     * @param lastName     - last name info
+     * @param email     - email info
+     * @param password  - password info
+     * @param firstName - first name info
+     * @param lastName  - last name info
      * @throws ValidationException     - if any of the data is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public void updateUserAccountInfo(String email, String passwordHash, String firstName, String lastName)
+    public void updateUserAccountInfo(String email, String password, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
+        // Hashes the password using argon2i algorithm
+        Argon2 argon2 = Argon2Factory.create();
+        String passwordHash = argon2.hash(22, 65536, 1, password.toCharArray());
         User user = new User(email, passwordHash, firstName, lastName, null);
         userValidator.validateDefault(user);
         User actualUser = usersRepo.findOne(email);
@@ -164,16 +172,18 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * verifies if user exists for logging in
      *
-     * @param userEmail - said email
+     * @param userEmail    - said user's email
+     * @param userPassword - said user's password
      * @return the user's info
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public User login(String userEmail) throws ValidationException, AdministrationException {
+    public User login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
         User found = usersRepo.findOne(userEmail);
+        Argon2 argon2 = Argon2Factory.create();
 
-        if (found == null)
+        if (found == null || !argon2.verify(found.getPasswordHash(), userPassword.toCharArray()))
             throw new AdministrationException("Invalid email or password!\n");
         else
             return found;
