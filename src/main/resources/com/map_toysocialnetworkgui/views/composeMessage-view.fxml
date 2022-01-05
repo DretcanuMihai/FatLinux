@@ -18,25 +18,11 @@
          <children>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="125.0">
                <children>
-                  <Pane prefHeight="30.0" prefWidth="130.0">
-                     <children>
-                        <Button fx:id="sendMessageButton" layoutY="10.0" mnemonicParsing="false" onAction="#sendNewMessage" prefHeight="30.0" prefWidth="130.0" styleClass="composeMessageMainButton" text="Send">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="sendReplyMessageButton" layoutY="10.0" mnemonicParsing="false" onAction="#sendReplyMessage" prefHeight="30.0" prefWidth="130.0" styleClass="composeMessageMainButton" text="Send reply" visible="false">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="sendReplyAllMessageButton" layoutY="10.0" mnemonicParsing="false" onAction="#sendReplyAllMessage" prefHeight="30.0" prefWidth="130.0" styleClass="composeMessageMainButton" text="Send reply to all" visible="false">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                        </Button>
-                     </children>
-                  </Pane>
+                  <Button fx:id="sendMessageButton" mnemonicParsing="false" onAction="#sendMessage" prefHeight="30.0" prefWidth="130.0" styleClass="composeMessageMainButton" text="Send">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
                   <Button fx:id="closeComposeMessageWindowButton" mnemonicParsing="false" onAction="#close" prefHeight="30.0" prefWidth="130.0" text="Close">
                      <font>
                         <Font size="13.0" />

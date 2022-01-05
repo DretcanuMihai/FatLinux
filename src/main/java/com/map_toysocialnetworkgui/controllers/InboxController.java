@@ -119,16 +119,19 @@ public class InboxController extends AbstractController implements Observer<Enti
         this.composeNewButton.setOnAction(event -> {
             this.composeMessageWindowController.setPrimaryFunction(this.composeNewButton.getText());
             this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+            this.composeMessageWindowController.init();
             openComposeMessageWindow();
         });
         this.replyButton.setOnAction(event -> {
             this.composeMessageWindowController.setPrimaryFunction(this.replyButton.getText());
             this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+            this.composeMessageWindowController.init();
             openComposeMessageWindow();
         });
         this.replyAllButton.setOnAction(event -> {
             this.composeMessageWindowController.setPrimaryFunction(this.replyAllButton.getText());
             this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+            this.composeMessageWindowController.init();
             openComposeMessageWindow();
         });
     }
