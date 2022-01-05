@@ -158,6 +158,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         searchFriendsController.reset();
         inboxController.reset();
         friendsViewController.reset();
+        this.service.removeMessageObserver(inboxController);
+
 
         loggedUser=null;
         userNameLabel.setText("");

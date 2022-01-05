@@ -612,6 +612,15 @@ public class SuperService {
     }
 
     /**
+     * removes an observer from message notifications
+     *
+     * @param observer - said observer
+     */
+    public void removeMessageObserver(Observer<EntityModificationEvent<Integer>> observer) {
+        messageService.removeObserver(observer);
+    }
+
+    /**
      * returns an iterable of all the users in repo with certain string inside them
      *
      * @param string - said string
