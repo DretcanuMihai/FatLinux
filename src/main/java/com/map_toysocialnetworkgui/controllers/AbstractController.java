@@ -38,7 +38,5 @@ public class AbstractController {
     /**
      * resets data on the window to default
      */
-    public void reset(){
-
-    }
+    public void reset() {}
 }

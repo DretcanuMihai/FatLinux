@@ -1,7 +1,5 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.MainApplication;
-import com.map_toysocialnetworkgui.service.SuperService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
@@ -14,7 +12,7 @@ import java.io.IOException;
 /**
  * class that describes an abstract view controller with a custom title bar
  */
-public class AbstractControllerWithTitleBar extends AbstractController{
+public class AbstractControllerWithTitleBar extends AbstractController {
 
     /**
      * Window control buttons and title bar
