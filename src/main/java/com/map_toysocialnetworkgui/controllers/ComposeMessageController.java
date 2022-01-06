@@ -170,7 +170,7 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
      */
     public void sendMessage() {
         try {
-            String fromEmail = fromTextField.getPromptText();
+            String fromEmail = fromTextField.getPromptText().replace(" (me)", "");
             List<String> toEmails = Arrays.stream(toTextField.getText().split(", ")).toList();
             String messageSubject = subjectTextField.getText();
             String messageText = messageTextArea.getText();
