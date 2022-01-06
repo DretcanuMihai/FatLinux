@@ -5,14 +5,20 @@ import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
+import com.map_toysocialnetworkgui.utils.structures.ConversationCustomVBox;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -44,6 +50,10 @@ public class InboxController extends AbstractController implements Observer<Enti
     ListView<MessageDTO> receivedMessagesList;
     @FXML
     ListView<MessageDTO> sentMessagesList;
+    @FXML
+    VBox conversationVBox;
+    @FXML
+    ScrollPane conversationScrollPane;
     @FXML
     Button viewReceivedMessagesButton;
     @FXML
@@ -136,6 +146,16 @@ public class InboxController extends AbstractController implements Observer<Enti
             this.composeMessageWindowController.init();
             openComposeMessageWindow();
         });
+
+        this.conversationScrollPane.vvalueProperty().addListener(
+                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+                    if (newValue.doubleValue() == 0) {
+                        ConversationCustomVBox child = new ConversationCustomVBox(2);
+                        VBox.setVgrow(child, Priority.ALWAYS);
+                        conversationVBox.getChildren().add(0, child);
+                    }
+                }
+        );
     }
 
     /**
@@ -177,6 +197,7 @@ public class InboxController extends AbstractController implements Observer<Enti
     }
 
     public void fillDataForMessage(MessageDTO message) {
+        /*
         if (fromTextField.isVisible() && inboxFromLabel.isVisible())
             fromTextField.setText(message.getFromEmail());
         toTextField.clear();
@@ -190,6 +211,20 @@ public class InboxController extends AbstractController implements Observer<Enti
         toTextField.deleteText(toTextField.getText().length() - 2, toTextField.getText().length());
         subjectTextField.setText(message.getMessageSubject());
         messageTextArea.setText(message.getMessageText());
+         */
+        ConversationCustomVBox root1 = new ConversationCustomVBox(2);
+        root1.setStyle("-fx-background-color: black");
+        root1.changeTextAreaId("highlightedMessageTextArea");
+        ConversationCustomVBox root2 = new ConversationCustomVBox(2);
+
+        conversationVBox.getChildren().clear();
+        if (message.getParentMessageId() != null) {
+            conversationVBox.getChildren().add(0, root1);
+            conversationVBox.getChildren().add(0, root2);
+        }
+        else {
+            conversationVBox.getChildren().add(0, root1);
+        }
     }
 
     /**
@@ -247,8 +282,8 @@ public class InboxController extends AbstractController implements Observer<Enti
     public void viewReceivedMessages() {
         buttonColoring.setButtonOrange(viewReceivedMessagesButton);
         buttonColoring.setButtonBlack(viewSentMessagesButton);
-        inboxFromLabel.setVisible(true);
-        fromTextField.setVisible(true);
+        //inboxFromLabel.setVisible(true);
+        //fromTextField.setVisible(true);
         if (receivedMessagesList.getItems().isEmpty()) {
             this.receivedMessagesList.setVisible(false);
             this.sentMessagesList.setVisible(false);
@@ -259,7 +294,7 @@ public class InboxController extends AbstractController implements Observer<Enti
             this.receivedMessagesList.setVisible(true);
             this.sentMessagesList.setVisible(false);
             this.noMessagesLabel.setVisible(false);
-            clearAllFields();
+            //clearAllFields();
             this.replyButton.setVisible(false);
             this.replyAllButton.setVisible(false);
         }
@@ -271,8 +306,8 @@ public class InboxController extends AbstractController implements Observer<Enti
     public void viewSentMessages() {
         buttonColoring.setButtonOrange(viewSentMessagesButton);
         buttonColoring.setButtonBlack(viewReceivedMessagesButton);
-        inboxFromLabel.setVisible(false);
-        fromTextField.setVisible(false);
+        //inboxFromLabel.setVisible(false);
+        //fromTextField.setVisible(false);
         if (sentMessagesList.getItems().isEmpty()) {
             this.receivedMessagesList.setVisible(false);
             this.sentMessagesList.setVisible(false);
@@ -314,7 +349,6 @@ public class InboxController extends AbstractController implements Observer<Enti
         viewReceivedMessages();
         initComposeMessageWindow();
     }
-
 
     @Override
     public void update(EntityModificationEvent<Integer> event) {
@@ -364,5 +398,42 @@ public class InboxController extends AbstractController implements Observer<Enti
         clearAllFields();
         modelReceivedMessages.setAll();
         modelSentMessages.setAll();
+        conversationVBox.getChildren().clear();
     }
+
+//    protected class ReplyCell extends ListCell<MessageDTO> {
+//        HBox root = new HBox(10);
+//        Region region = new Region();
+//        Label label = new Label("Null");
+//
+//        /**
+//         * user cell that has a label and a button that chan change its text
+//         */
+//        public ReplyCell() {
+//            super();
+//            label.setFont(new Font(25.0));
+//
+//            root.setAlignment(Pos.CENTER_LEFT);
+//            root.setPadding(new Insets(5, 10, 5, 10));
+//            root.getChildren().add(label);
+//            HBox.setHgrow(region, Priority.ALWAYS);
+//            root.getChildren().add(region);
+//        }
+//
+//        @Override
+//        protected void updateItem(MessageDTO message, boolean empty) {
+//            super.updateItem(message, empty);
+//            if (message == null || empty) {
+//                setText(null);
+//                setGraphic(null);
+//            } else {
+//                label.setText(message.getMessageSubject());
+//
+//                setPrefHeight(204.0);
+//                setText(null);
+//                setGraphic(root);
+//            }
+//        }
+//    }
+
 }
