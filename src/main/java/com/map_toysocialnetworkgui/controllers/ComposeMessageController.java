@@ -97,6 +97,7 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
 
     @Override
     public void reset() {
+        super.reset();
         this.sendMessageButton.setText("");
         this.fromTextField.setPromptText("");
         this.toTextField.clear();
@@ -138,12 +139,10 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
                 this.fromTextField.setPromptText(this.loggedUser.getEmail());
 
                 List<String> receivers = this.selectedMessage.getToEmails();
-                receivers.add(this.selectedMessage.getFromEmail());
-                receivers.remove(this.loggedUser.getEmail());
-
-                String sendTo = receivers.toString().replaceAll("\\[", "");
-                sendTo = sendTo.replaceAll("]", ", ");
-                sendTo = sendTo.substring(0, sendTo.length() - 2);
+                String sendToString = receivers.toString().replaceAll("\\[", "");
+                sendToString = sendToString.replaceAll("]", ", ");
+                sendToString = sendToString.substring(0, sendToString.length() - 2);
+                String sendTo = sendToString.replace(this.loggedUser.getEmail(), this.selectedMessage.getFromEmail());
                 this.toTextField.setPromptText(sendTo);
                 this.subjectTextField.setText("Re:" + this.selectedMessage.getMessageSubject());
             }
