@@ -63,6 +63,8 @@ public class InboxController extends AbstractController implements Observer<Enti
     @FXML
     TextArea messageTextArea;
     @FXML
+    Label inboxFromLabel;
+    @FXML
     Label noMessagesLabel;
 
     /**
@@ -175,10 +177,14 @@ public class InboxController extends AbstractController implements Observer<Enti
     }
 
     public void fillDataForMessage(MessageDTO message) {
-        fromTextField.setText(message.getFromEmail());
+        if (fromTextField.isVisible() && inboxFromLabel.isVisible())
+            fromTextField.setText(message.getFromEmail());
         toTextField.clear();
         for (String receivers : message.getToEmails()) {
-            toTextField.appendText(receivers);
+            if (receivers.equals(loggedUser.getEmail()))
+                toTextField.appendText("me");
+            else
+                toTextField.appendText(receivers);
             toTextField.appendText(", ");
         }
         toTextField.deleteText(toTextField.getText().length() - 2, toTextField.getText().length());
@@ -241,6 +247,8 @@ public class InboxController extends AbstractController implements Observer<Enti
     public void viewReceivedMessages() {
         buttonColoring.setButtonOrange(viewReceivedMessagesButton);
         buttonColoring.setButtonBlack(viewSentMessagesButton);
+        inboxFromLabel.setVisible(true);
+        fromTextField.setVisible(true);
         if (receivedMessagesList.getItems().isEmpty()) {
             this.receivedMessagesList.setVisible(false);
             this.sentMessagesList.setVisible(false);
@@ -263,6 +271,8 @@ public class InboxController extends AbstractController implements Observer<Enti
     public void viewSentMessages() {
         buttonColoring.setButtonOrange(viewSentMessagesButton);
         buttonColoring.setButtonBlack(viewReceivedMessagesButton);
+        inboxFromLabel.setVisible(false);
+        fromTextField.setVisible(false);
         if (sentMessagesList.getItems().isEmpty()) {
             this.receivedMessagesList.setVisible(false);
             this.sentMessagesList.setVisible(false);

@@ -118,25 +118,28 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
                 this.fromTextField.setEditable(false);
                 this.toTextField.setEditable(true);
                 this.subjectTextField.setEditable(true);
-                this.fromTextField.setPromptText(this.loggedUser.getEmail());
+                this.fromTextField.setPromptText(this.loggedUser.getEmail() + " (me)");
             }
             case "Reply" -> {
                 reset();
                 this.sendMessageButton.setText("Send reply");
                 this.fromTextField.setEditable(false);
                 this.toTextField.setEditable(false);
-                this.subjectTextField.setEditable(true);
-                this.fromTextField.setPromptText(this.loggedUser.getEmail());
+                this.subjectTextField.setEditable(false);
+                this.fromTextField.setPromptText(this.loggedUser.getEmail() + " (me)");
                 this.toTextField.setPromptText(this.selectedMessage.getFromEmail());
-                this.subjectTextField.setText("Re:" + this.selectedMessage.getMessageSubject());
+                if (this.selectedMessage.getMessageSubject().contains("Re: "))
+                    this.subjectTextField.setText(this.selectedMessage.getMessageSubject());
+                else
+                    this.subjectTextField.setText("Re: " + this.selectedMessage.getMessageSubject());
             }
             case "Reply All" -> {
                 reset();
                 this.sendMessageButton.setText("Send reply to all");
                 this.fromTextField.setEditable(false);
                 this.toTextField.setEditable(false);
-                this.subjectTextField.setEditable(true);
-                this.fromTextField.setPromptText(this.loggedUser.getEmail());
+                this.subjectTextField.setEditable(false);
+                this.fromTextField.setPromptText(this.loggedUser.getEmail() + " (me)");
 
                 List<String> receivers = this.selectedMessage.getToEmails();
                 String sendToString = receivers.toString().replaceAll("\\[", "");
@@ -144,7 +147,10 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
                 sendToString = sendToString.substring(0, sendToString.length() - 2);
                 String sendTo = sendToString.replace(this.loggedUser.getEmail(), this.selectedMessage.getFromEmail());
                 this.toTextField.setPromptText(sendTo);
-                this.subjectTextField.setText("Re:" + this.selectedMessage.getMessageSubject());
+                if (this.selectedMessage.getMessageSubject().contains("Re: "))
+                    this.subjectTextField.setText(this.selectedMessage.getMessageSubject());
+                else
+                    this.subjectTextField.setText("Re: " + this.selectedMessage.getMessageSubject());
             }
         }
     }
