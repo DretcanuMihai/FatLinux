@@ -134,7 +134,6 @@ public class SearchFriendsController extends AbstractController {
             addFriendButton.setStyle(IDLE_BUTTON_STYLE);
             addFriendButton.setOnMouseEntered(event -> addFriendButton.setStyle(HOVERED_BUTTON_STYLE));
             addFriendButton.setOnMouseExited(event -> addFriendButton.setStyle(IDLE_BUTTON_STYLE));
-            addFriendButton.setText("Add friend");
 
             root.getChildren().addAll(addFriendButton);
         }
@@ -147,21 +146,20 @@ public class SearchFriendsController extends AbstractController {
                 setGraphic(null);
             } else {
                 label.setText(user.getFirstName() + " " + user.getLastName());
+                addFriendButton.setText("Add friend");
                 addFriendButton.setDisable(loggedUser.getEmail().equals(user.getEmail()));
                 if (friendEmails.contains(user.getEmail())) {
-
                     addFriendButton.setText("✔ Friends");
                     addFriendButton.setDisable(true);
                 } else if (friendRequestedEmails.contains(user.getEmail())) {
-
                     addFriendButton.setText("Cancel friend request");
                     addFriendButton.setDisable(false);
                 }
-
                 addFriendButton.setOnAction(event -> {
                     if (addFriendButton.getText().equals("Add friend")) {
                         try {
                             service.sendFriendRequest(loggedUser.getEmail(), user.getEmail());
+                            friendRequestedEmails.add(user.getEmail());
                             addFriendButton.setText("Cancel friend request");
                         } catch (ValidationException | AdministrationException ex) {
                             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -172,6 +170,7 @@ public class SearchFriendsController extends AbstractController {
                         }
                     } else if (addFriendButton.getText().equals("Cancel friend request")) {
                         service.retractFriendRequest(loggedUser.getEmail(), user.getEmail());
+                        friendRequestedEmails.remove(user.getEmail()) ;
                         addFriendButton.setText("Add friend");
                     }
                 });

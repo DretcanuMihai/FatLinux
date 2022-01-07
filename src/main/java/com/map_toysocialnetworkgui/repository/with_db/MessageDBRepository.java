@@ -198,7 +198,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
                 FROM messages m INNER JOIN message_deliveries md
                 ON m.message_id = md.message_id
                 WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
-                ORDER BY send_time
+                ORDER BY send_time DESC
                 """;
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -227,7 +227,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
                 FROM messages m INNER JOIN message_deliveries md
                 ON m.message_id = md.message_id
                 WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
-                ORDER BY send_time
+                ORDER BY send_time DESC
                 OFFSET (?) LIMIT (?)
                 """;
 

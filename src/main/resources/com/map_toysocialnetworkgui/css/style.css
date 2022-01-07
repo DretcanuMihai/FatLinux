@@ -213,3 +213,7 @@
 .button#closeComposeMessageWindowButton:hover {
     -fx-background-color: #424043;
 }
+
+.text-area#highlightedMessageTextArea .content {
+    -fx-background-color: #1e1e1e;
+}
