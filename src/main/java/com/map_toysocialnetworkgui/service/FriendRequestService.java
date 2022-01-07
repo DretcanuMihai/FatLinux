@@ -1,24 +1,22 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
-import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
-import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
-import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.time.LocalDateTime;
 
 /**
  * class that incorporates a service that works with friend request administration
  */
-public class FriendRequestService extends AbstractObservable<EntityModificationEvent<Pair<String, String>>> {
+public class FriendRequestService extends AbstractObservable<EntityModificationObsEvent<Pair<String, String>>> {
     /**
      * associated friend request repo
      */
@@ -58,7 +56,7 @@ public class FriendRequestService extends AbstractObservable<EntityModificationE
         FriendRequest result = friendRequestRepository.save(friendRequest);
         if (result != null)
             throw new AdministrationException("Error: A friend request has already been sent!;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, friendRequest.getId()));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.ADD, friendRequest.getId()));
     }
 
     /**
@@ -75,7 +73,7 @@ public class FriendRequestService extends AbstractObservable<EntityModificationE
         FriendRequest result = friendRequestRepository.delete(new Pair<>(senderEmail, receiverEmail));
         if (result == null)
             throw new AdministrationException("No friend request from sender to receiver exists;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, result.getId()));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.ADD, result.getId()));
     }
 
     /**

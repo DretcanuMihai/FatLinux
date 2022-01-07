@@ -7,7 +7,7 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
-import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * class that incorporates a service that works with user administration
  */
-public class UserService extends AbstractObservable<EntityModificationEvent<String>> {
+public class UserService extends AbstractObservable<EntityModificationObsEvent<String>> {
     /**
      * associated users repo
      */
@@ -63,7 +63,7 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
         User result = usersRepo.save(user);
         if (result != null)
             throw new AdministrationException("Error: email already in use;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, email));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.ADD, email));
     }
 
     /**
@@ -107,7 +107,7 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
         actualUser.setLastName(lastName);
         actualUser.setPasswordHash(passwordHash);
         usersRepo.update(user);
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.UPDATE, email));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.UPDATE, email));
     }
 
     /**
@@ -122,7 +122,7 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
         User result = usersRepo.delete(email);
         if (result == null)
             throw new AdministrationException("Error: no user with given email;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.DELETE, email));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.DELETE, email));
     }
 
     /**

@@ -1,11 +1,11 @@
 package com.map_toysocialnetworkgui.utils.observer;
 
-import com.map_toysocialnetworkgui.utils.events.Event;
+import com.map_toysocialnetworkgui.utils.events.ObsEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class AbstractObservable<E extends Event> implements Observable<E> {
+public class AbstractObservable<E extends ObsEvent> implements Observable<E> {
     Collection<Observer<E>> observerList;
 
     /**

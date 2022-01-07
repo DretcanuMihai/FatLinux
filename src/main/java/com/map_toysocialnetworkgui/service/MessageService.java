@@ -7,7 +7,7 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
-import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * class that incorporates a service that works with message administration
  */
-public class MessageService extends AbstractObservable<EntityModificationEvent<Integer>> {
+public class MessageService extends AbstractObservable<EntityModificationObsEvent<Integer>> {
     /**
      * associated message repo
      */
@@ -70,7 +70,7 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
         Message message = new Message(null, fromEmail, toEmails, messageText, messageSubject, LocalDateTime.now(), null);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, message.getId()));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.ADD, message.getId()));
     }
 
     /**
@@ -92,7 +92,7 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
                 messageSubject, LocalDateTime.now(), parentID);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, message.getId()));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.ADD, message.getId()));
     }
 
     /**
@@ -117,7 +117,7 @@ public class MessageService extends AbstractObservable<EntityModificationEvent<I
                 parentID);
         messageValidator.validateDefault(message);
         messageRepo.save(message);
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, message.getId()));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.ADD, message.getId()));
     }
 
     /**

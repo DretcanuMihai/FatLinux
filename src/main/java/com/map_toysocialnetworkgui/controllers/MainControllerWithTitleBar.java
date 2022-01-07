@@ -1,6 +1,6 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,7 +19,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     /**
      * currently logged-in user
      */
-    UserUIDTO loggedUser;
+    UserDTO loggedUser;
 
     /**
      * controllers for child views
@@ -87,7 +87,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      *
      * @param user - said user
      */
-    public void init(UserUIDTO user) {
+    public void init(UserDTO user) {
         loggedUser = user;
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
         initSearchFriendsController();

@@ -1,7 +1,7 @@
 package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.fxml.FXML;
@@ -22,7 +22,7 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
     /**
      * currently logged-in user
      */
-    UserUIDTO loggedUser;
+    UserDTO loggedUser;
 
     /**
      * primary function of the window
@@ -73,7 +73,7 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
      *
      * @param loggedUser - said user
      */
-    public void setLoggedUser(UserUIDTO loggedUser) {
+    public void setLoggedUser(UserDTO loggedUser) {
         this.loggedUser = loggedUser;
     }
 

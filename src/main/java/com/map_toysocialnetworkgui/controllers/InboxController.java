@@ -1,9 +1,9 @@
 package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
-import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
 import com.map_toysocialnetworkgui.utils.structures.ConversationCustomVBox;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
@@ -41,11 +41,11 @@ import java.util.stream.StreamSupport;
 /**
  * controller for inbox view
  */
-public class InboxController extends AbstractController implements Observer<EntityModificationEvent<Integer>> {
+public class InboxController extends AbstractController implements Observer<EntityModificationObsEvent<Integer>> {
     /**
      * currently logged-in user
      */
-    UserUIDTO loggedUser;
+    UserDTO loggedUser;
 
     /**
      * observable lists for sent and received messages
@@ -193,7 +193,7 @@ public class InboxController extends AbstractController implements Observer<Enti
      *
      * @param loggedUser - said user
      */
-    public void setLoggedUser(UserUIDTO loggedUser) {
+    public void setLoggedUser(UserDTO loggedUser) {
         this.loggedUser = loggedUser;
     }
 
@@ -394,7 +394,7 @@ public class InboxController extends AbstractController implements Observer<Enti
     }
 
     @Override
-    public void update(EntityModificationEvent<Integer> event) {
+    public void update(EntityModificationObsEvent<Integer> event) {
         ChangeEventType type = event.getType();
         if (type == ChangeEventType.DELETE)
             updateForDelete(event.getModifiedEntityID());

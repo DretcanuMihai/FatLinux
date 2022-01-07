@@ -2,7 +2,7 @@ package com.map_toysocialnetworkgui;
 
 import com.map_toysocialnetworkgui.controllers.AbstractControllerWithTitleBar;
 import com.map_toysocialnetworkgui.controllers.MainControllerWithTitleBar;
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.MessageValidator;
@@ -150,7 +150,7 @@ public class MainApplication extends Application {
      *
      * @param user - currently logged-in user
      */
-    public void changeToMain(UserUIDTO user) {
+    public void changeToMain(UserDTO user) {
         mainController.init(user);
         primaryStage.setScene(mainScene);
         primaryStage.centerOnScreen();

@@ -7,12 +7,12 @@ import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
-import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
@@ -119,10 +119,10 @@ public class SuperService {
      *
      * @return said collection
      */
-    public Collection<UserUIDTO> getAllUserDTOs() {
-        Collection<UserUIDTO> userUIDTOS = new ArrayList<>();
-        userService.getAllUsers().forEach(user -> userUIDTOS.add(new UserUIDTO(user)));
-        return userUIDTOS;
+    public Collection<UserDTO> getAllUserDTOs() {
+        Collection<UserDTO> userDTOS = new ArrayList<>();
+        userService.getAllUsers().forEach(user -> userDTOS.add(new UserDTO(user)));
+        return userDTOS;
     }
 
     /**
@@ -132,10 +132,10 @@ public class SuperService {
      * @return said page
      * @throws ValidationException if pageable is not valid
      */
-    public Page<UserUIDTO> getAllUserDTOs(Pageable pageable) throws ValidationException {
+    public Page<UserDTO> getAllUserDTOs(Pageable pageable) throws ValidationException {
         validatePageable(pageable);
         Page<User> page = userService.getAllUsers(pageable);
-        Stream<UserUIDTO> stream = page.getContent().map(UserUIDTO::new);
+        Stream<UserDTO> stream = page.getContent().map(UserDTO::new);
         return new PageImplementation<>(page.getPageable(), stream);
     }
 
@@ -557,9 +557,9 @@ public class SuperService {
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public UserUIDTO login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
+    public UserDTO login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
         User user = userService.login(userEmail, userPassword);
-        return new UserUIDTO(user);
+        return new UserDTO(user);
     }
 
     /**
@@ -580,7 +580,7 @@ public class SuperService {
      *
      * @param observer - said observer
      */
-    public void addUserObserver(Observer<EntityModificationEvent<String>> observer) {
+    public void addUserObserver(Observer<EntityModificationObsEvent<String>> observer) {
         userService.addObserver(observer);
     }
 
@@ -589,7 +589,7 @@ public class SuperService {
      *
      * @param observer - said observer
      */
-    public void addFriendshipObserver(Observer<EntityModificationEvent<UnorderedPair<String>>> observer) {
+    public void addFriendshipObserver(Observer<EntityModificationObsEvent<UnorderedPair<String>>> observer) {
         friendshipService.addObserver(observer);
     }
 
@@ -598,7 +598,7 @@ public class SuperService {
      *
      * @param observer - said observer
      */
-    public void addFriendRequestObserver(Observer<EntityModificationEvent<Pair<String, String>>> observer) {
+    public void addFriendRequestObserver(Observer<EntityModificationObsEvent<Pair<String, String>>> observer) {
         friendRequestService.addObserver(observer);
     }
 
@@ -607,7 +607,7 @@ public class SuperService {
      *
      * @param observer - said observer
      */
-    public void addMessageObserver(Observer<EntityModificationEvent<Integer>> observer) {
+    public void addMessageObserver(Observer<EntityModificationObsEvent<Integer>> observer) {
         messageService.addObserver(observer);
     }
 
@@ -616,7 +616,7 @@ public class SuperService {
      *
      * @param observer - said observer
      */
-    public void removeMessageObserver(Observer<EntityModificationEvent<Integer>> observer) {
+    public void removeMessageObserver(Observer<EntityModificationObsEvent<Integer>> observer) {
         messageService.removeObserver(observer);
     }
 
@@ -627,12 +627,12 @@ public class SuperService {
      * @return said iterable
      * @throws ValidationException - if string is null
      */
-    public Iterable<UserUIDTO> filterUsers(String string) throws ValidationException {
-        List<UserUIDTO> userUIDTOS = new ArrayList<>();
+    public Iterable<UserDTO> filterUsers(String string) throws ValidationException {
+        List<UserDTO> userDTOS = new ArrayList<>();
         userService.filterUsers(string).forEach(user -> {
-            userUIDTOS.add(new UserUIDTO(user));
+            userDTOS.add(new UserDTO(user));
         });
-        return userUIDTOS;
+        return userDTOS;
     }
 
     /**
@@ -643,10 +643,10 @@ public class SuperService {
      * @return said page
      * @throws ValidationException - if string is null
      */
-    public Page<UserUIDTO> filterUsers(String string, Pageable pageable) throws ValidationException {
+    public Page<UserDTO> filterUsers(String string, Pageable pageable) throws ValidationException {
         validatePageable(pageable);
         Page<User> page = userService.filterUsers(string, pageable);
-        Stream<UserUIDTO> stream = page.getContent().map(UserUIDTO::new);
+        Stream<UserDTO> stream = page.getContent().map(UserDTO::new);
         return new PageImplementation<>(page.getPageable(), stream);
     }
 

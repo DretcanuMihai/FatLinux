@@ -1,6 +1,6 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
 import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
@@ -26,12 +26,12 @@ public class SearchFriendsController extends AbstractController {
     /**
      * currently logged-in user
      */
-    UserUIDTO loggedUser;
+    UserDTO loggedUser;
 
     /**
      * observable lists for search
      */
-    ObservableList<UserUIDTO> modelSearch = FXCollections.observableArrayList();
+    ObservableList<UserDTO> modelSearch = FXCollections.observableArrayList();
     Collection<String> friendEmails;
     Collection<String> friendRequestedEmails;
 
@@ -39,7 +39,7 @@ public class SearchFriendsController extends AbstractController {
      * FXML data
      */
     @FXML
-    ListView<UserUIDTO> searchFriendsList;
+    ListView<UserDTO> searchFriendsList;
     @FXML
     Label searchFailedLabel;
 
@@ -55,7 +55,7 @@ public class SearchFriendsController extends AbstractController {
      *
      * @param loggedUser - said user
      */
-    public void setLoggedUser(UserUIDTO loggedUser) {
+    public void setLoggedUser(UserDTO loggedUser) {
         this.loggedUser = loggedUser;
     }
 
@@ -68,7 +68,7 @@ public class SearchFriendsController extends AbstractController {
             searchFailedLabel.setVisible(true);
         } else {
             try {
-                Collection<UserUIDTO> foundUsers = StreamSupport.stream(service.filterUsers(searchText).spliterator(), false)
+                Collection<UserDTO> foundUsers = StreamSupport.stream(service.filterUsers(searchText).spliterator(), false)
                         .collect(Collectors.toList());
                 if (foundUsers.isEmpty()) {
                     searchFriendsList.setVisible(false);
@@ -109,7 +109,7 @@ public class SearchFriendsController extends AbstractController {
     /**
      * protected class that describes a user list cell for the users list
      */
-    protected class UserCell extends ListCell<UserUIDTO> {
+    protected class UserCell extends ListCell<UserDTO> {
         private static final String IDLE_BUTTON_STYLE = "-fx-focus-traversable: false; -fx-background-radius: 10px; -fx-background-color: #ff7700;";
         private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
         HBox root = new HBox(10);
@@ -139,7 +139,7 @@ public class SearchFriendsController extends AbstractController {
         }
 
         @Override
-        protected void updateItem(UserUIDTO user, boolean empty) {
+        protected void updateItem(UserDTO user, boolean empty) {
             super.updateItem(user, empty);
             if (user == null || empty) {
                 setText(null);

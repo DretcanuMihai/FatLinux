@@ -1,6 +1,6 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.fxml.FXML;
@@ -29,9 +29,9 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
         try {
             String email = emailTextField.getText();
             String password = passwordTextField.getText();
-            UserUIDTO userUIDTO = service.login(email, password);
+            UserDTO userDTO = service.login(email, password);
             errorLabel.setText("");
-            application.changeToMain(userUIDTO);
+            application.changeToMain(userDTO);
             reset();
         } catch (ValidationException | AdministrationException ex) {
             errorLabel.setText(ex.getMessage());

@@ -2,7 +2,7 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import javafx.collections.FXCollections;
@@ -28,7 +28,7 @@ public class FriendsViewController extends AbstractController {
     /**
      * currently logged-in user
      */
-    UserUIDTO loggedUser;
+    UserDTO loggedUser;
 
     /**
      * observable lists for friends and friend requests
@@ -71,7 +71,7 @@ public class FriendsViewController extends AbstractController {
      *
      * @param loggedUser - said user
      */
-    public void setLoggedUser(UserUIDTO loggedUser) {
+    public void setLoggedUser(UserDTO loggedUser) {
         this.loggedUser = loggedUser;
     }
 

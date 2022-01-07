@@ -7,7 +7,7 @@ import java.time.LocalDate;
 /**
  * DTO class for User entity
  */
-public class UserUIDTO {
+public class UserDTO {
     /**
      * email info
      */
@@ -34,7 +34,7 @@ public class UserUIDTO {
      *
      * @param user - said user
      */
-    public UserUIDTO(User user) {
+    public UserDTO(User user) {
         email = user.getEmail();
         firstName = user.getFirstName();
         joinDate = user.getJoinDate();
