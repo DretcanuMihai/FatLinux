@@ -3,8 +3,7 @@ package com.map_toysocialnetworkgui.model.entities;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Event {
-    Integer id;
+public class Event extends Entity<Integer>{
     String title;
     String description;
     String hostEmail;
@@ -21,20 +20,12 @@ public class Event {
      * @param date - event date
      */
     public Event(Integer id, String title, String description, String hostEmail, List<String> attendees, LocalDateTime date) {
-        this.id = id;
+        super(id);
         this.title = title;
         this.description = description;
         this.hostEmail = hostEmail;
         this.attendees = attendees;
         this.date = date;
-    }
-
-    /**
-     * gets event id;
-     * @return said id
-     */
-    public Integer getId() {
-        return id;
     }
 
     /**
