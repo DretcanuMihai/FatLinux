@@ -1,7 +1,5 @@
 package com.map_toysocialnetworkgui.model.entities;
 
-import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
