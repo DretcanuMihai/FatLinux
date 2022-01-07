@@ -4,19 +4,19 @@ import com.map_toysocialnetworkgui.model.entities.FriendRequest;
 import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.entities.Message;
 import com.map_toysocialnetworkgui.model.entities.User;
-import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.*;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
+import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -712,5 +712,39 @@ public class SuperService {
         Page<Message> page = messageService.getMessagesSentByUser(email, pageable);
         Stream<MessageDTO> stream = page.getContent().map(MessageDTO::new);
         return new PageImplementation<>(page.getPageable(), stream);
+    }
+
+    public Page<EventDTO> getUserNotificationEvents(String userEmail, Pageable pageable){
+        UserDTO userDTO=new UserDTO(new User("user@yahoo.com",null,"Notif","Didu", LocalDate.now()));
+        Stream<EventDTO> stream=List.of(new EventDTO(1,"event","hei",userDTO,
+                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now())).stream();
+        return new PageImplementation<>(new PageableImplementation(1,7), stream);
+    }
+
+    public Page<EventDTO> getUserEventsChronoDesc(String userEmail, Pageable pageable){
+        UserDTO userDTO=new UserDTO(new User("chrono@yahoo.com",null,"Chrono","Didu", LocalDate.now()));
+        Stream<EventDTO> stream=List.of(new EventDTO(1,"event","hei",userDTO,
+                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now())).stream();
+        return new PageImplementation<>(new PageableImplementation(1,7), stream);
+    }
+
+    public Page<EventDTO> getEventsFiltered(String string, Pageable pageable){
+        UserDTO userDTO=new UserDTO(new User("chrono@yahoo.com",null,"Filter","Didu", LocalDate.now()));
+        Stream<EventDTO> stream=List.of(new EventDTO(1,"event","hei",userDTO,
+                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now())).stream();
+        return new PageImplementation<>(new PageableImplementation(1,7), stream);
+    }
+
+    public void createEvent(String title, String description,String hostmail, LocalDateTime dateTime){
+
+    }
+    public void deleteEvent(Integer id){
+
+    }
+    public void subscribeToEvent(Integer id, String userEmail){
+
+    }
+    public void unsubscribeFromEvent(Integer id,String userEmail){
+
     }
 }
