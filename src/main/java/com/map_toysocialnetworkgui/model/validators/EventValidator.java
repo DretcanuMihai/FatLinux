@@ -19,9 +19,15 @@ public class EventValidator implements Validator<Event>{
         if (description == null || description.equals("") || description.length() > maxVarcharSize)
             message += "Invalid event description! Must be non null and not have more than " + maxVarcharSize + " characters;\n";
         if(date==null || date.compareTo(LocalDateTime.now())>0)
-            message += "Invalid event date! Must be non null and not have passed";
+            message += "Invalid event date! Must be non null and not have passed\n";
         if (message.length() != 0) {
+            message = "Error:\n" + message;
             throw new ValidationException(message);
+        }
+    }
+    public void validateId(Integer id) throws ValidationException{
+        if (id==null) {
+            throw new ValidationException("Error:\nInvalid message id! Must be non null;\n");
         }
     }
 }
