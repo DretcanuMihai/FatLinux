@@ -8,8 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
-
 /**
  * controller for register view
  */
@@ -32,7 +30,7 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
     @FXML
     Label registerPasswordMatchErrorLabel;
     @FXML
-    Label passwordTooShortErrorLabel;
+    Label passwordLengthErrorLabel;
 
     /**
      * clears all text fields and text areas
@@ -54,18 +52,18 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
             String firstName = firstNameTextField.getText();
             String lastName = lastNameTextField.getText();
             String email = emailTextField.getText();
-            int passwordHash = passwordTextField.getText().hashCode();
-            int confirmPasswordHash = confirmPasswordTextField.getText().hashCode();
+            String password = passwordTextField.getText();
+            String confirmPassword = confirmPasswordTextField.getText();
             registerSuccessMessageLabel.setText("");
             registerPasswordMatchErrorLabel.setText("");
-            passwordTooShortErrorLabel.setText("");
+            passwordLengthErrorLabel.setText("");
 
-            if (passwordTextField.getText().length() < 4)
-                passwordTooShortErrorLabel.setText("Password has to be at least 4 characters long!");
-            else if (passwordHash != confirmPasswordHash)
+            if (password.length() < 8)
+                passwordLengthErrorLabel.setText("Password has to be at least 8 characters long!");
+            else if (!password.equals(confirmPassword))
                 registerPasswordMatchErrorLabel.setText("Passwords do not match!");
             else {
-                service.createUserAccount(email, passwordHash, firstName, lastName);
+                service.createUserAccount(email, password, firstName, lastName);
                 registerSuccessMessageLabel.setText("Account created successfully!");
                 clearAllFields();
             }
@@ -80,10 +78,8 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
 
     /**
      * changes the register window to log in window
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void back() throws IOException {
+    public void back() {
         application.changeToLogin();
         reset();
     }
@@ -91,5 +87,8 @@ public class RegisterControllerWithTitleBar extends AbstractControllerWithTitleB
     @Override
     public void reset() {
         clearAllFields();
+        registerSuccessMessageLabel.setText("");
+        registerPasswordMatchErrorLabel.setText("");
+        passwordLengthErrorLabel.setText("");
     }
 }

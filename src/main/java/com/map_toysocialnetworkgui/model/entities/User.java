@@ -11,29 +11,32 @@ public class User extends Entity<String> {
      * associated join date
      */
     private final LocalDate joinDate;
+
     /**
      * associated first name
      */
     private String firstName;
+
     /**
      * associated last name
      */
     private String lastName;
+
     /**
      * associated passwordHash
      */
-    private int passwordHash;
+    private String passwordHash;
 
     /**
      * creates a user based on the given information
      *
      * @param email        - user's email
-     * @param passwordHash - user's password's hashcode
+     * @param passwordHash - user's password hash
      * @param firstName    - user's first name
      * @param lastName     - user's last name
      * @param joinDate     - the date the user joined
      */
-    public User(String email, int passwordHash, String firstName, String lastName, LocalDate joinDate) {
+    public User(String email, String passwordHash, String firstName, String lastName, LocalDate joinDate) {
         super(email);
         this.firstName = firstName;
         this.lastName = lastName;
@@ -91,7 +94,7 @@ public class User extends Entity<String> {
      *
      * @return said hash
      */
-    public int getPasswordHash() {
+    public String getPasswordHash() {
         return passwordHash;
     }
 
@@ -100,7 +103,7 @@ public class User extends Entity<String> {
      *
      * @param passwordHash - new password hash
      */
-    public void setPasswordHash(int passwordHash) {
+    public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 

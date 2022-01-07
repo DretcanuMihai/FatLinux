@@ -8,8 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
-
 /**
  * controller for login view
  */
@@ -26,15 +24,14 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
 
     /**
      * logs in a user
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void login() throws IOException {
+    public void login() {
         try {
             String email = emailTextField.getText();
-            UserUIDTO user = service.login(email, passwordTextField.getText().hashCode());
+            String password = passwordTextField.getText();
+            UserUIDTO userUIDTO = service.login(email, password);
             errorLabel.setText("");
-            application.changeToMain(user);
+            application.changeToMain(userUIDTO);
             reset();
         } catch (ValidationException | AdministrationException ex) {
             errorLabel.setText(ex.getMessage());
@@ -43,10 +40,8 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
 
     /**
      * changes main window to register window
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void register() throws IOException {
+    public void register() {
         application.changeToRegister();
         reset();
     }

@@ -1,8 +1,5 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.model.entities.FriendRequest;
-import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
-import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
@@ -92,13 +89,21 @@ public class SearchFriendsController extends AbstractController {
      * search given the search text
      */
     public void search(String text) {
-        friendEmails=service.getAllFriendshipDTOsOfUser(loggedUser.getEmail()).stream()
+        friendEmails = service.getAllFriendshipDTOsOfUser(loggedUser.getEmail()).stream()
                 .map(friendshipDTO -> friendshipDTO.getUser2().getEmail())
                 .collect(Collectors.toSet());
-        friendRequestedEmails=service.getFriendRequestsSentByUser(loggedUser.getEmail()).stream()
+        friendRequestedEmails = service.getFriendRequestsSentByUser(loggedUser.getEmail()).stream()
                 .map(friendRequestDTO -> friendRequestDTO.getReceiver().getEmail())
                 .collect(Collectors.toSet());
         updateModelUsers(text);
+    }
+
+    @Override
+    public void reset() {
+        loggedUser = null;
+        modelSearch.setAll();
+        friendEmails = null;
+        friendRequestedEmails = null;
     }
 
     /**
@@ -129,7 +134,6 @@ public class SearchFriendsController extends AbstractController {
             addFriendButton.setStyle(IDLE_BUTTON_STYLE);
             addFriendButton.setOnMouseEntered(event -> addFriendButton.setStyle(HOVERED_BUTTON_STYLE));
             addFriendButton.setOnMouseExited(event -> addFriendButton.setStyle(IDLE_BUTTON_STYLE));
-            addFriendButton.setText("Add friend");
 
             root.getChildren().addAll(addFriendButton);
         }
@@ -142,22 +146,20 @@ public class SearchFriendsController extends AbstractController {
                 setGraphic(null);
             } else {
                 label.setText(user.getFirstName() + " " + user.getLastName());
+                addFriendButton.setText("Add friend");
                 addFriendButton.setDisable(loggedUser.getEmail().equals(user.getEmail()));
-                if(friendEmails.contains(user.getEmail())) {
-
+                if (friendEmails.contains(user.getEmail())) {
                     addFriendButton.setText("✔ Friends");
                     addFriendButton.setDisable(true);
-                }
-                else if(friendRequestedEmails.contains(user.getEmail())){
-
+                } else if (friendRequestedEmails.contains(user.getEmail())) {
                     addFriendButton.setText("Cancel friend request");
                     addFriendButton.setDisable(false);
                 }
-
                 addFriendButton.setOnAction(event -> {
                     if (addFriendButton.getText().equals("Add friend")) {
                         try {
                             service.sendFriendRequest(loggedUser.getEmail(), user.getEmail());
+                            friendRequestedEmails.add(user.getEmail());
                             addFriendButton.setText("Cancel friend request");
                         } catch (ValidationException | AdministrationException ex) {
                             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -168,6 +170,7 @@ public class SearchFriendsController extends AbstractController {
                         }
                     } else if (addFriendButton.getText().equals("Cancel friend request")) {
                         service.retractFriendRequest(loggedUser.getEmail(), user.getEmail());
+                        friendRequestedEmails.remove(user.getEmail()) ;
                         addFriendButton.setText("Add friend");
                     }
                 });
@@ -177,13 +180,5 @@ public class SearchFriendsController extends AbstractController {
                 setGraphic(root);
             }
         }
-    }
-
-    @Override
-    public void reset() {
-        loggedUser=null;
-        modelSearch.setAll();
-        friendEmails=null;
-        friendRequestedEmails=null;
     }
 }

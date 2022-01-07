@@ -40,10 +40,6 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
     @FXML
     Button sendMessageButton;
     @FXML
-    Button sendReplyMessageButton;
-    @FXML
-    Button sendReplyAllMessageButton;
-    @FXML
     Button closeComposeMessageWindowButton;
     @FXML
     TextField fromTextField;
@@ -99,49 +95,62 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
         this.selectedMessage = selectedMessage;
     }
 
+    @Override
+    public void reset() {
+        super.reset();
+        this.sendMessageButton.setText("");
+        this.fromTextField.setPromptText("");
+        this.toTextField.clear();
+        this.toTextField.setPromptText("");
+        this.subjectTextField.clear();
+        this.subjectTextField.setPromptText("");
+        this.messageTextArea.clear();
+    }
+
     /**
-     * sets the sender as the currently logged-in user
+     * initiates compose message window based on its main functionality
      */
     public void init() {
         switch (this.primaryFunction) {
-            case "composeNew" -> {
-                this.sendMessageButton.setVisible(true);
-                this.sendReplyMessageButton.setVisible(false);
-                this.sendReplyAllMessageButton.setVisible(false);
-                fromTextField.setEditable(false);
-                toTextField.setEditable(true);
-                subjectTextField.setEditable(true);
-                fromTextField.setPromptText(loggedUser.getEmail());
+            case "Compose New" -> {
+                reset();
+                this.sendMessageButton.setText("Send new message");
+                this.fromTextField.setEditable(false);
+                this.toTextField.setEditable(true);
+                this.subjectTextField.setEditable(true);
+                this.fromTextField.setPromptText(this.loggedUser.getEmail() + " (me)");
             }
-            case "reply" -> {
-                this.sendMessageButton.setVisible(false);
-                this.sendReplyMessageButton.setVisible(true);
-                this.sendReplyAllMessageButton.setVisible(false);
-                fromTextField.setEditable(false);
-                toTextField.setEditable(false);
-                subjectTextField.setEditable(true);
-                fromTextField.setPromptText(loggedUser.getEmail());
-                toTextField.setPromptText(selectedMessage.getFromEmail());
-                subjectTextField.setText("Re:" + selectedMessage.getMessageSubject());
+            case "Reply" -> {
+                reset();
+                this.sendMessageButton.setText("Send reply");
+                this.fromTextField.setEditable(false);
+                this.toTextField.setEditable(false);
+                this.subjectTextField.setEditable(false);
+                this.fromTextField.setPromptText(this.loggedUser.getEmail() + " (me)");
+                this.toTextField.setPromptText(this.selectedMessage.getFromEmail());
+                if (this.selectedMessage.getMessageSubject().contains("Re: "))
+                    this.subjectTextField.setPromptText(this.selectedMessage.getMessageSubject());
+                else
+                    this.subjectTextField.setPromptText("Re: " + this.selectedMessage.getMessageSubject());
             }
-            case "replyAll" -> {
-                this.sendMessageButton.setVisible(false);
-                this.sendReplyMessageButton.setVisible(false);
-                this.sendReplyAllMessageButton.setVisible(true);
-                fromTextField.setEditable(false);
-                toTextField.setEditable(false);
-                subjectTextField.setEditable(true);
-                fromTextField.setPromptText(loggedUser.getEmail());
+            case "Reply All" -> {
+                reset();
+                this.sendMessageButton.setText("Send reply to all");
+                this.fromTextField.setEditable(false);
+                this.toTextField.setEditable(false);
+                this.subjectTextField.setEditable(false);
+                this.fromTextField.setPromptText(this.loggedUser.getEmail() + " (me)");
 
-                List<String> receivers = selectedMessage.getToEmails();
-                receivers.add(selectedMessage.getFromEmail());
-                receivers.remove(loggedUser.getEmail());
-
-                String sendTo = receivers.toString().replaceAll("\\[", "");
-                sendTo = sendTo.replaceAll("]", ", ");
-                sendTo = sendTo.substring(0, sendTo.length() - 2);
-                toTextField.setPromptText(sendTo);
-                subjectTextField.setText("Re:" + selectedMessage.getMessageSubject());
+                List<String> receivers = this.selectedMessage.getToEmails();
+                String sendToString = receivers.toString().replaceAll("\\[", "");
+                sendToString = sendToString.replaceAll("]", ", ");
+                sendToString = sendToString.substring(0, sendToString.length() - 2);
+                String sendTo = sendToString.replace(this.loggedUser.getEmail(), this.selectedMessage.getFromEmail());
+                this.toTextField.setPromptText(sendTo);
+                if (this.selectedMessage.getMessageSubject().contains("Re: "))
+                    this.subjectTextField.setPromptText(this.selectedMessage.getMessageSubject());
+                else
+                    this.subjectTextField.setPromptText("Re: " + this.selectedMessage.getMessageSubject());
             }
         }
     }
@@ -150,23 +159,34 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
      * closes the window
      */
     public void close() {
-        ((Stage) closeComposeMessageWindowButton.getScene().getWindow()).close();
+        ((Stage) this.closeComposeMessageWindowButton.getScene().getWindow()).close();
     }
 
     /**
-     * sends a new message
+     * sends a new message, a reply message to an existing message
+     * or a reply message to all the receivers of the message (including the sender)
      * raises a warning window if there are any exceptions
      * raises an information window if the message has been successfully sent
      */
-    public void sendNewMessage() {
+    public void sendMessage() {
         try {
-            String fromEmail = fromTextField.getPromptText();
+            String fromEmail = fromTextField.getPromptText().replace(" (me)", "");
             List<String> toEmails = Arrays.stream(toTextField.getText().split(", ")).toList();
             String messageSubject = subjectTextField.getText();
+            String messageSubjectForReply = subjectTextField.getPromptText();
             String messageText = messageTextArea.getText();
 
-            this.service.sendRootMessage(fromEmail, toEmails, messageText, messageSubject);
-            this.close();
+            if (sendMessageButton.getText().equals("Send new message")) {
+                this.service.sendRootMessage(fromEmail, toEmails, messageText, messageSubject);
+                this.close();
+            } else if (sendMessageButton.getText().equals("Send reply")) {
+                this.service.sendReplyMessage(fromEmail, messageText, messageSubjectForReply, selectedMessage.getId());
+                this.close();
+            } else if (sendMessageButton.getText().equals("Send reply to all")) {
+                this.service.sendReplyAllMessage(fromEmail, messageText, messageSubjectForReply, selectedMessage.getId());
+                this.close();
+            }
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success!");
             alert.setHeaderText("Message sent!");
@@ -175,56 +195,7 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
         } catch (ValidationException | AdministrationException ex) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning!");
-            alert.setHeaderText("Compose new message warning!");
-            alert.setContentText(ex.getMessage());
-            alert.showAndWait();
-        }
-    }
-
-    /**
-     * sends a reply message to an existing message
-     * raises a warning window if there are any exceptions
-     * raises an information window if the message has been successfully sent
-     */
-    public void sendReplyMessage() {
-        try {
-            String fromEmail = fromTextField.getPromptText();
-            String messageSubject = subjectTextField.getText();
-            String messageText = messageTextArea.getText();
-
-            this.service.sendReplyMessage(fromEmail, messageText, messageSubject, selectedMessage.getId());
-            this.close();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success!");
-            alert.setHeaderText("Message sent!");
-            alert.setContentText("Your message has been successfully sent!");
-            alert.showAndWait();
-        } catch (ValidationException | AdministrationException ex) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning!");
-            alert.setHeaderText("Compose reply message warning!");
-            alert.setContentText(ex.getMessage());
-            alert.showAndWait();
-        }
-    }
-
-    public void sendReplyAllMessage() {
-        try {
-            String fromEmail = fromTextField.getPromptText();
-            String messageSubject = subjectTextField.getText();
-            String messageText = messageTextArea.getText();
-
-            this.service.sendReplyAllMessage(fromEmail, messageText, messageSubject, selectedMessage.getId());
-            this.close();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success!");
-            alert.setHeaderText("Message sent!");
-            alert.setContentText("Your message has been successfully sent!");
-            alert.showAndWait();
-        } catch (ValidationException | AdministrationException ex) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning!");
-            alert.setHeaderText("Compose reply message warning!");
+            alert.setHeaderText("Compose message warning!");
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
         }

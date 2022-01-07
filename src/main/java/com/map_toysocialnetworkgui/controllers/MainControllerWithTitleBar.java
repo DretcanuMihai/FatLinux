@@ -86,9 +86,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows the main page view
      *
      * @param user - said user
-     * @throws IOException if an IO error occurs
      */
-    public void init(UserUIDTO user) throws IOException {
+    public void init(UserUIDTO user) {
         loggedUser = user;
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
         initSearchFriendsController();
@@ -97,17 +96,28 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         showMainPage();
     }
 
-    private void initSearchFriendsController(){
+    /**
+     * initiates friends controller
+     */
+    private void initSearchFriendsController() {
         searchFriendsController.setLoggedUser(this.loggedUser);
         searchFriendsController.setService(this.service);
     }
-    private void initInboxController(){
+
+    /**
+     * initiates inbox controller
+     */
+    private void initInboxController() {
         inboxController.setLoggedUser(loggedUser);
         inboxController.setService(this.service);
         this.service.addMessageObserver(inboxController);
         inboxController.initModels();
     }
-    private void initFriendsController(){
+
+    /**
+     * initiates friends controller
+     */
+    private void initFriendsController() {
         friendsViewController.setLoggedUser(loggedUser);
         friendsViewController.setService(this.service);
     }
@@ -130,7 +140,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     /**
      * shows the inbox view
      */
-    public void showInbox() {
+    public void showInbox() throws IOException {
         inboxController.init();
         mainBorderPane.setCenter(inboxRoot);
     }
@@ -145,10 +155,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
 
     /**
      * logs out the currently logged-in user
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void logout() throws IOException {
+    public void logout() {
         application.changeToLogin();
         reset();
     }
@@ -161,7 +169,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         this.service.removeMessageObserver(inboxController);
 
 
-        loggedUser=null;
+        loggedUser = null;
         userNameLabel.setText("");
         searchBar.setText("");
     }

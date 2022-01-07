@@ -51,4 +51,33 @@ public class ButtonColoring {
                 -fx-background-color: #000000;
                 """));
     }
+
+    /**
+     * colors a button in orange with square black border and adds hover effect
+     *
+     * @param button - said button
+     */
+    public void setButtonOrangeSquareBorder(Button button) {
+        button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 0px;
+                -fx-background-color: #ff7700;
+                -fx-border-color: black;
+                -fx-background-insets: 0 0 0 0;
+                """);
+        button.setOnMouseEntered(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 0px;
+                -fx-background-color: #F04A00;
+                -fx-border-color: black;
+                -fx-background-insets: 0 0 0 0;
+                """));
+        button.setOnMouseExited(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 0px;
+                -fx-background-color: #ff7700;
+                -fx-border-color: black;
+                -fx-background-insets: 0 0 0 0;
+                """));
+    }
 }

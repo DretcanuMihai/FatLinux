@@ -26,7 +26,7 @@
     -fx-text-fill: red;
 }
 
-.label#passwordTooShortErrorLabel {
+.label#passwordLengthErrorLabel {
     -fx-text-fill: red;
 }
 
@@ -212,4 +212,8 @@
 
 .button#closeComposeMessageWindowButton:hover {
     -fx-background-color: #424043;
+}
+
+.text-area#highlightedMessageTextArea .content {
+    -fx-background-color: #1e1e1e;
 }

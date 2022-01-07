@@ -137,6 +137,13 @@ public class FriendsViewController extends AbstractController {
         viewAllFriends();
     }
 
+    @Override
+    public void reset() {
+        super.reset();
+        modelFriends.setAll();
+        modelRequests.setAll();
+    }
+
     /**
      * protected class that describes a friend list cell for the friends list
      */
@@ -254,12 +261,5 @@ public class FriendsViewController extends AbstractController {
                 setGraphic(root);
             }
         }
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
-        modelFriends.setAll();
-        modelRequests.setAll();
     }
 }
