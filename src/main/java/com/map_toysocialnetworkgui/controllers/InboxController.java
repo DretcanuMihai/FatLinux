@@ -1,5 +1,6 @@
 package com.map_toysocialnetworkgui.controllers;
 
+import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
@@ -13,10 +14,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -97,24 +104,37 @@ public class InboxController extends AbstractController implements Observer<Enti
     TextColoring textColoring;
 
     /**
-     * modifies a list view's cell height and font
-     *
-     * @param list - said list
+     * protected class that describes a message cell for the message list
      */
-    public void setCustomCell(ListView<MessageDTO> list) {
-        list.setCellFactory(lst -> new ListCell<>() {
-            @Override
-            protected void updateItem(MessageDTO messageDTO, boolean empty) {
-                super.updateItem(messageDTO, empty);
-                if (empty) {
-                    setText(null);
-                } else {
-                    setPrefHeight(45.0);
-                    setFont(new Font(15));
-                    setText(messageDTO.getMessageSubject());
-                }
+    protected class MessageCell extends ListCell<MessageDTO> {
+        HBox root = new HBox(10);
+        Label label = new Label("Null");
+        ImageView imageView = new ImageView("com/map_toysocialnetworkgui/images/messageListIcon.png");
+
+        /**
+         * message cell that has an icon and a label with said message's subject
+         */
+        public MessageCell() {
+            super();
+            label.setFont(new Font(15));
+            root.setAlignment(Pos.CENTER_LEFT);
+            root.setPadding(new Insets(5, 10, 5, 5));
+            root.getChildren().addAll(imageView, label);
+        }
+
+        @Override
+        protected void updateItem(MessageDTO messageDTO, boolean empty) {
+            super.updateItem(messageDTO, empty);
+            if (messageDTO == null || empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                label.setText(messageDTO.getMessageSubject());
+                setPrefHeight(55);
+                setText(null);
+                setGraphic(root);
             }
-        });
+        }
     }
 
     /**
@@ -138,8 +158,8 @@ public class InboxController extends AbstractController implements Observer<Enti
      */
     public void initInboxElements() {
         this.buttonColoring = new ButtonColoring();
-        setCustomCell(this.receivedMessagesList);
-        setCustomCell(this.sentMessagesList);
+        this.receivedMessagesList.setCellFactory(param -> new MessageCell());
+        this.sentMessagesList.setCellFactory(param -> new MessageCell());
         this.receivedMessagesList.setItems(this.modelReceivedMessages);
         this.sentMessagesList.setItems(this.modelSentMessages);
 
