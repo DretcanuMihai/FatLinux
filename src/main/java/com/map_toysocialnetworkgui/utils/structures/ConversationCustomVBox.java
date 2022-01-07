@@ -8,18 +8,22 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+/**
+ * class that describes a custom VBox for showing messages in a conversation
+ */
 public class ConversationCustomVBox extends VBox {
-    TextFlow fromFlow;
-    TextFlow sentFlow;
-    TextFlow toFlow;
-    TextFlow subjectFlow;
-    TextFlow parentMessageIdFlow;
-    TextArea messageTextArea;
+    private final TextFlow fromFlow;
+    private final TextFlow sentFlow;
+    private final TextFlow toFlow;
+    private final TextFlow subjectFlow;
+    private final TextFlow parentMessageIdFlow;
+    private final TextArea messageTextArea;
 
-    public void changeTextAreaId(String id) {
-        this.messageTextArea.setId(id);
-    }
-
+    /**
+     * creates a custom VBox having with a spacing
+     *
+     * @param spacing - spacing of the VBox
+     */
     public ConversationCustomVBox(double spacing) {
         this.setSpacing(spacing);
         this.setPrefHeight(201);
@@ -55,5 +59,77 @@ public class ConversationCustomVBox extends VBox {
         messageTextArea.setEditable(false);
 
         this.getChildren().addAll(parentMessageIdFlow, fromFlow, sentFlow, toFlow, subjectFlow, messageTextArea);
+    }
+
+    /**
+     * adds text to fromFlow
+     *
+     * @param text - said text
+     */
+    public void setFromFlow(Text text) {
+        this.fromFlow.getChildren().add(text);
+    }
+
+    /**
+     * adds text to sentFlow
+     *
+     * @param text - said text
+     */
+    public void setSentFlow(Text text) {
+        this.sentFlow.getChildren().add(text);
+    }
+
+    /**
+     * adds text to toFlow
+     *
+     * @param text - said text
+     */
+    public void setToFlow(Text text) {
+        this.toFlow.getChildren().add(text);
+    }
+
+    /**
+     * adds text to subjectFlow
+     *
+     * @param text - said text
+     */
+    public void setSubjectFlow(Text text) {
+        this.subjectFlow.getChildren().add(text);
+    }
+
+    /**
+     * returns the parentMessageIdFlow
+     *
+     * @return - said text flow
+     */
+    public TextFlow getParentMessageIdFlow() {
+        return this.parentMessageIdFlow;
+    }
+
+    /**
+     * adds text to parentMessageIdFlow
+     *
+     * @param text - said text
+     */
+    public void setParentMessageIdFlow(Text text) {
+        this.parentMessageIdFlow.getChildren().add(text);
+    }
+
+    /**
+     * adds text to messageTextArea
+     *
+     * @param text - said text
+     */
+    public void setMessageTextArea(String text) {
+        this.messageTextArea.setText(text);
+    }
+
+    /**
+     * sets the id of the text area for specific styling
+     *
+     * @param id - said id
+     */
+    public void changeTextAreaId(String id) {
+        this.messageTextArea.setId(id);
     }
 }

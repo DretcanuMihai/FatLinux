@@ -129,9 +129,9 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
                 this.fromTextField.setPromptText(this.loggedUser.getEmail() + " (me)");
                 this.toTextField.setPromptText(this.selectedMessage.getFromEmail());
                 if (this.selectedMessage.getMessageSubject().contains("Re: "))
-                    this.subjectTextField.setText(this.selectedMessage.getMessageSubject());
+                    this.subjectTextField.setPromptText(this.selectedMessage.getMessageSubject());
                 else
-                    this.subjectTextField.setText("Re: " + this.selectedMessage.getMessageSubject());
+                    this.subjectTextField.setPromptText("Re: " + this.selectedMessage.getMessageSubject());
             }
             case "Reply All" -> {
                 reset();
@@ -148,9 +148,9 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
                 String sendTo = sendToString.replace(this.loggedUser.getEmail(), this.selectedMessage.getFromEmail());
                 this.toTextField.setPromptText(sendTo);
                 if (this.selectedMessage.getMessageSubject().contains("Re: "))
-                    this.subjectTextField.setText(this.selectedMessage.getMessageSubject());
+                    this.subjectTextField.setPromptText(this.selectedMessage.getMessageSubject());
                 else
-                    this.subjectTextField.setText("Re: " + this.selectedMessage.getMessageSubject());
+                    this.subjectTextField.setPromptText("Re: " + this.selectedMessage.getMessageSubject());
             }
         }
     }
@@ -173,16 +173,17 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
             String fromEmail = fromTextField.getPromptText().replace(" (me)", "");
             List<String> toEmails = Arrays.stream(toTextField.getText().split(", ")).toList();
             String messageSubject = subjectTextField.getText();
+            String messageSubjectForReply = subjectTextField.getPromptText();
             String messageText = messageTextArea.getText();
 
             if (sendMessageButton.getText().equals("Send new message")) {
                 this.service.sendRootMessage(fromEmail, toEmails, messageText, messageSubject);
                 this.close();
             } else if (sendMessageButton.getText().equals("Send reply")) {
-                this.service.sendReplyMessage(fromEmail, messageText, messageSubject, selectedMessage.getId());
+                this.service.sendReplyMessage(fromEmail, messageText, messageSubjectForReply, selectedMessage.getId());
                 this.close();
             } else if (sendMessageButton.getText().equals("Send reply to all")) {
-                this.service.sendReplyAllMessage(fromEmail, messageText, messageSubject, selectedMessage.getId());
+                this.service.sendReplyAllMessage(fromEmail, messageText, messageSubjectForReply, selectedMessage.getId());
                 this.close();
             }
 
