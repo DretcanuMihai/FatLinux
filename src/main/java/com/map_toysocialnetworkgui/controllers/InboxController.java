@@ -142,7 +142,10 @@ public class InboxController extends AbstractController implements Observer<Enti
         });
         this.replyAllButton.setOnAction(event -> {
             this.composeMessageWindowController.setPrimaryFunction(this.replyAllButton.getText());
-            this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+            if (this.receivedMessagesList.isVisible())
+                this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
+            else
+                this.composeMessageWindowController.setSelectedMessage(sentMessagesList.getSelectionModel().getSelectedItem());
             this.composeMessageWindowController.init();
             openComposeMessageWindow();
         });
@@ -233,7 +236,7 @@ public class InboxController extends AbstractController implements Observer<Enti
         conversationCustomVBox.setButtonsActions(replyEvent, replyAllEvent);
 
         if (message.getFromEmail().equals(loggedUser.getEmail()))
-            conversationCustomVBox.disableButtons();
+            conversationCustomVBox.disableReplyButton();
 
         return conversationCustomVBox;
     }
@@ -290,7 +293,7 @@ public class InboxController extends AbstractController implements Observer<Enti
             if (sentMessagesList.getSelectionModel().getSelectedItem() != null) {
                 fillDataForMessage(sentMessagesList.getSelectionModel().getSelectedItem());
                 replyButton.setVisible(false);
-                replyAllButton.setVisible(false);
+                replyAllButton.setVisible(true);
             }
         });
         modelSentMessages.setAll(sentMessages);
@@ -307,6 +310,20 @@ public class InboxController extends AbstractController implements Observer<Enti
     }
 
     /**
+     * shows the no messages label and hides everything else
+     */
+    public void showNoMessagesLabel() {
+        this.receivedMessagesList.setVisible(false);
+        this.sentMessagesList.setVisible(false);
+        this.conversationVBox.getChildren().clear();
+        this.conversationVBox.setVisible(false);
+        this.conversationScrollPane.setVisible(false);
+        this.replyButton.setVisible(false);
+        this.replyAllButton.setVisible(false);
+        this.noMessagesLabel.setVisible(true);
+    }
+
+    /**
      * hides the sent messages list and shows the received messages list
      */
     public void viewReceivedMessages() {
@@ -315,14 +332,7 @@ public class InboxController extends AbstractController implements Observer<Enti
         this.sentMessagesList.getSelectionModel().clearSelection();
         this.receivedMessagesList.getSelectionModel().clearSelection();
         if (receivedMessagesList.getItems().isEmpty()) {
-            this.receivedMessagesList.setVisible(false);
-            this.sentMessagesList.setVisible(false);
-            this.conversationVBox.getChildren().clear();
-            this.conversationVBox.setVisible(false);
-            this.conversationScrollPane.setVisible(false);
-            replyButton.setVisible(false);
-            this.replyAllButton.setVisible(false);
-            this.noMessagesLabel.setVisible(true);
+            showNoMessagesLabel();
         } else {
             this.receivedMessagesList.setVisible(true);
             this.conversationVBox.getChildren().clear();
@@ -344,14 +354,7 @@ public class InboxController extends AbstractController implements Observer<Enti
         this.sentMessagesList.getSelectionModel().clearSelection();
         this.receivedMessagesList.getSelectionModel().clearSelection();
         if (sentMessagesList.getItems().isEmpty()) {
-            this.receivedMessagesList.setVisible(false);
-            this.sentMessagesList.setVisible(false);
-            this.conversationVBox.getChildren().clear();
-            this.conversationVBox.setVisible(false);
-            this.conversationScrollPane.setVisible(false);
-            this.replyButton.setVisible(false);
-            this.replyAllButton.setVisible(false);
-            this.noMessagesLabel.setVisible(true);
+            showNoMessagesLabel();
         } else {
             this.receivedMessagesList.setVisible(false);
             this.sentMessagesList.setVisible(true);

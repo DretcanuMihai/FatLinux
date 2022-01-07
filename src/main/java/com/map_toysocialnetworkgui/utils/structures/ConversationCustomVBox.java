@@ -176,11 +176,10 @@ public class ConversationCustomVBox extends VBox {
     }
 
     /**
-     * disables reply and reply all buttons
+     * disables reply button
      */
-    public void disableButtons() {
+    public void disableReplyButton() {
         replyButton.setDisable(true);
-        replyAllButton.setDisable(true);
     }
 
     /**
