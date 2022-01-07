@@ -1,7 +1,12 @@
 package com.map_toysocialnetworkgui.utils.structures;
 
+import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -12,6 +17,8 @@ import javafx.scene.text.TextFlow;
  * class that describes a custom VBox for showing messages in a conversation
  */
 public class ConversationCustomVBox extends VBox {
+    private final Button replyButton;
+    private final Button replyAllButton;
     private final TextFlow fromFlow;
     private final TextFlow sentFlow;
     private final TextFlow toFlow;
@@ -32,6 +39,13 @@ public class ConversationCustomVBox extends VBox {
                 BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
                 CornerRadii.EMPTY, new BorderWidths(1), Insets.EMPTY)));
 
+        ButtonColoring buttonColoring = new ButtonColoring();
+        HBox hBox = new HBox();
+        Region region = new Region();
+        replyButton = new Button("Reply");
+        replyAllButton = new Button("Reply All");
+        ImageView replyIcon = new ImageView("com/map_toysocialnetworkgui/images/replyIcon1.png");
+        ImageView replyAllIcon = new ImageView("com/map_toysocialnetworkgui/images/replyAllIcon1.png");
         fromFlow = new TextFlow();
         sentFlow = new TextFlow();
         toFlow = new TextFlow();
@@ -49,6 +63,16 @@ public class ConversationCustomVBox extends VBox {
         Text subjectText = new Text("Subject: ");
         subjectText.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-fill: white");
 
+        replyButton.setFont(new Font(0));
+        replyAllButton.setFont(new Font(0));
+        buttonColoring.setButtonOrangeSquareBorder(replyButton);
+        buttonColoring.setButtonOrangeSquareBorder(replyAllButton);
+        replyButton.setGraphic(replyIcon);
+        replyAllButton.setGraphic(replyAllIcon);
+        hBox.getChildren().add(fromFlow);
+        HBox.setHgrow(region, Priority.ALWAYS);
+        hBox.getChildren().add(region);
+        hBox.getChildren().addAll(replyButton, replyAllButton);
         fromFlow.getChildren().add(fromText);
         sentFlow.getChildren().add(sentText);
         toFlow.getChildren().add(toText);
@@ -58,7 +82,7 @@ public class ConversationCustomVBox extends VBox {
         messageTextArea.setFont(new Font(16));
         messageTextArea.setEditable(false);
 
-        this.getChildren().addAll(parentMessageIdFlow, fromFlow, sentFlow, toFlow, subjectFlow, messageTextArea);
+        this.getChildren().addAll(parentMessageIdFlow, hBox, sentFlow, toFlow, subjectFlow, messageTextArea);
     }
 
     /**
@@ -131,5 +155,42 @@ public class ConversationCustomVBox extends VBox {
      */
     public void changeTextAreaId(String id) {
         this.messageTextArea.setId(id);
+    }
+
+    /**
+     * returns the reply button
+     *
+     * @return - said button
+     */
+    public Button getReplyButton() {
+        return replyButton;
+    }
+
+    /**
+     * returns the reply all button
+     *
+     * @return - said button
+     */
+    public Button getReplyAllButton() {
+        return replyAllButton;
+    }
+
+    /**
+     * disables reply and reply all buttons
+     */
+    public void disableButtons() {
+        replyButton.setDisable(true);
+        replyAllButton.setDisable(true);
+    }
+
+    /**
+     * sets the button's primary functions
+     *
+     * @param replyEvent    - reply function for reply button
+     * @param replyAllEvent - reply all function for reply all
+     */
+    public void setButtonsActions(EventHandler<ActionEvent> replyEvent, EventHandler<ActionEvent> replyAllEvent) {
+        this.replyButton.setOnAction(replyEvent);
+        this.replyAllButton.setOnAction(replyAllEvent);
     }
 }

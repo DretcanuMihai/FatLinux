@@ -1,6 +1,5 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
@@ -12,6 +11,8 @@ import com.map_toysocialnetworkgui.utils.styling.TextColoring;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -22,8 +23,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -102,40 +101,6 @@ public class InboxController extends AbstractController implements Observer<Enti
      * text coloring class
      */
     TextColoring textColoring;
-
-    /**
-     * protected class that describes a message cell for the message list
-     */
-    protected class MessageCell extends ListCell<MessageDTO> {
-        HBox root = new HBox(10);
-        Label label = new Label("Null");
-        ImageView imageView = new ImageView("com/map_toysocialnetworkgui/images/messageListIcon.png");
-
-        /**
-         * message cell that has an icon and a label with said message's subject
-         */
-        public MessageCell() {
-            super();
-            label.setFont(new Font(15));
-            root.setAlignment(Pos.CENTER_LEFT);
-            root.setPadding(new Insets(5, 10, 5, 5));
-            root.getChildren().addAll(imageView, label);
-        }
-
-        @Override
-        protected void updateItem(MessageDTO messageDTO, boolean empty) {
-            super.updateItem(messageDTO, empty);
-            if (messageDTO == null || empty) {
-                setText(null);
-                setGraphic(null);
-            } else {
-                label.setText(messageDTO.getMessageSubject());
-                setPrefHeight(55);
-                setText(null);
-                setGraphic(root);
-            }
-        }
-    }
 
     /**
      * creates a string from a text flow's text
@@ -252,6 +217,23 @@ public class InboxController extends AbstractController implements Observer<Enti
         conversationCustomVBox.setToFlow(toText);
         conversationCustomVBox.setSubjectFlow(subjectText);
         conversationCustomVBox.setMessageTextArea(message.getMessageText());
+
+        EventHandler<ActionEvent> replyEvent = event -> {
+            composeMessageWindowController.setPrimaryFunction(conversationCustomVBox.getReplyButton().getText());
+            composeMessageWindowController.setSelectedMessage(message);
+            composeMessageWindowController.init();
+            openComposeMessageWindow();
+        };
+        EventHandler<ActionEvent> replyAllEvent = event -> {
+            composeMessageWindowController.setPrimaryFunction(conversationCustomVBox.getReplyAllButton().getText());
+            composeMessageWindowController.setSelectedMessage(message);
+            composeMessageWindowController.init();
+            openComposeMessageWindow();
+        };
+        conversationCustomVBox.setButtonsActions(replyEvent, replyAllEvent);
+
+        if (message.getFromEmail().equals(loggedUser.getEmail()))
+            conversationCustomVBox.disableButtons();
 
         return conversationCustomVBox;
     }
@@ -456,5 +438,39 @@ public class InboxController extends AbstractController implements Observer<Enti
         modelReceivedMessages.setAll();
         modelSentMessages.setAll();
         conversationVBox.getChildren().clear();
+    }
+
+    /**
+     * protected class that describes a message cell for the message list
+     */
+    protected class MessageCell extends ListCell<MessageDTO> {
+        HBox root = new HBox(10);
+        Label label = new Label("Null");
+        ImageView imageView = new ImageView("com/map_toysocialnetworkgui/images/messageListIcon.png");
+
+        /**
+         * message cell that has an icon and a label with said message's subject
+         */
+        public MessageCell() {
+            super();
+            label.setFont(new Font(15));
+            root.setAlignment(Pos.CENTER_LEFT);
+            root.setPadding(new Insets(5, 10, 5, 5));
+            root.getChildren().addAll(imageView, label);
+        }
+
+        @Override
+        protected void updateItem(MessageDTO messageDTO, boolean empty) {
+            super.updateItem(messageDTO, empty);
+            if (messageDTO == null || empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                label.setText(messageDTO.getMessageSubject());
+                setPrefHeight(55);
+                setText(null);
+                setGraphic(root);
+            }
+        }
     }
 }
