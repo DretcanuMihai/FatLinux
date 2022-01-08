@@ -80,4 +80,68 @@ public class ButtonColoring {
                 -fx-background-insets: 0 0 0 0;
                 """));
     }
+
+    /**
+     * colors search button in black and assigns a corresponding image to it
+     *
+     * @param button - said button
+     */
+    public void setButtonForSearchEvent(Button button) {
+        button.setStyle("""
+                -fx-background-radius: 0 20 20 0;
+                -fx-background-color: black;
+                -fx-background-image: url("/com/map_toysocialnetworkgui/images/searchIcon.png");
+                -fx-background-size: 20;
+                -fx-background-repeat: no-repeat;
+                -fx-background-position: center;
+                """);
+        button.setOnMouseEntered(event -> button.setStyle("""
+                -fx-background-radius: 0 20 20 0;
+                -fx-background-color: #1e1e1e;
+                -fx-background-image: url("/com/map_toysocialnetworkgui/images/searchIcon.png");
+                -fx-background-size: 20;
+                -fx-background-repeat: no-repeat;
+                -fx-background-position: center;
+                """));
+        button.setOnMouseExited(event -> button.setStyle("""
+                -fx-background-radius: 0 20 20 0;
+                -fx-background-color: black;
+                -fx-background-image: url("/com/map_toysocialnetworkgui/images/searchIcon.png");
+                -fx-background-size: 20;
+                -fx-background-repeat: no-repeat;
+                -fx-background-position: center;
+                """));
+    }
+
+    /**
+     * colors cancel search button in black and assigns a corresponding image to it
+     *
+     * @param button - said button
+     */
+    public void setButtonForCancelSearchEvent(Button button) {
+        button.setStyle("""
+                -fx-background-radius: 0 20 20 0;
+                -fx-background-color: black;
+                -fx-background-image: url("/com/map_toysocialnetworkgui/images/cancelSearchIcon.png");
+                -fx-background-size: 20;
+                -fx-background-repeat: no-repeat;
+                -fx-background-position: center;
+                """);
+        button.setOnMouseEntered(event -> button.setStyle("""
+                -fx-background-radius: 0 20 20 0;
+                -fx-background-color: #1e1e1e;
+                -fx-background-image: url("/com/map_toysocialnetworkgui/images/cancelSearchIcon.png");
+                -fx-background-size: 20;
+                -fx-background-repeat: no-repeat;
+                -fx-background-position: center;
+                """));
+        button.setOnMouseExited(event -> button.setStyle("""
+                -fx-background-radius: 0 20 20 0;
+                -fx-background-color: black;
+                -fx-background-image: url("/com/map_toysocialnetworkgui/images/cancelSearchIcon.png");
+                -fx-background-size: 20;
+                -fx-background-repeat: no-repeat;
+                -fx-background-position: center;
+                """));
+    }
 }

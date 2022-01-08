@@ -111,6 +111,7 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
      * initiates compose message window based on its main functionality
      */
     public void init() {
+        messageTextArea.setWrapText(true);
         switch (this.primaryFunction) {
             case "Compose New" -> {
                 reset();

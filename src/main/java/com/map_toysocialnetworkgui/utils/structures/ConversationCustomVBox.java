@@ -62,6 +62,7 @@ public class ConversationCustomVBox extends VBox {
         toText.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-fill: white");
         Text subjectText = new Text("Subject: ");
         subjectText.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-fill: white");
+        messageTextArea.setWrapText(true);
 
         replyButton.setFont(new Font(0));
         replyAllButton.setFont(new Font(0));

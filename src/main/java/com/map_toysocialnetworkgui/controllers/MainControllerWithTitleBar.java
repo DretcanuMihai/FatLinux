@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * controllers for child views
      */
     SearchFriendsController searchFriendsController;
+    EventsController eventsController;
     InboxController inboxController;
     FriendsViewController friendsViewController;
 
@@ -33,12 +35,15 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     Parent mainPageRoot;
     Parent searchForFriendRoot;
+    Parent eventsRoot;
     Parent inboxRoot;
     Parent showFriendsRoot;
 
     /**
      * FXML data
      */
+    @FXML
+    AnchorPane mainWindowTopAnchorPane;
     @FXML
     Label userNameLabel;
     @FXML
@@ -63,21 +68,25 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     private void initLoadersAndControllers() throws IOException {
         URL mainPageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/mainPage-view.fxml");
         URL searchForFriendURL = getClass().getResource("/com/map_toysocialnetworkgui/views/searchFriend-view.fxml");
+        URL eventsURL = getClass().getResource("/com/map_toysocialnetworkgui/views/events-view.fxml");
         URL inboxURL = getClass().getResource("/com/map_toysocialnetworkgui/views/inbox-view.fxml");
         URL showFriendsURL = getClass().getResource("/com/map_toysocialnetworkgui/views/friends-view.fxml");
 
         FXMLLoader mainPageLoader = new FXMLLoader(mainPageURL);
         FXMLLoader searchForFriendLoader = new FXMLLoader(searchForFriendURL);
+        FXMLLoader eventsLoader = new FXMLLoader(eventsURL);
         FXMLLoader inboxLoader = new FXMLLoader(inboxURL);
         FXMLLoader showFriendsLoader = new FXMLLoader(showFriendsURL);
 
         this.mainPageRoot = mainPageLoader.load();
         this.searchForFriendRoot = searchForFriendLoader.load();
+        this.eventsRoot = eventsLoader.load();
         this.inboxRoot = inboxLoader.load();
         this.showFriendsRoot = showFriendsLoader.load();
 
         this.searchFriendsController = searchForFriendLoader.getController();
         this.inboxController = inboxLoader.getController();
+        this.eventsController = eventsLoader.getController();
         this.friendsViewController = showFriendsLoader.getController();
     }
 
@@ -89,7 +98,9 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     public void init(UserDTO user) {
         loggedUser = user;
+        mainWindowTopAnchorPane.setStyle("-fx-border-color: black; -fx-border-width: 0px 0px 1px 0px");
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
+        initEventsController();
         initSearchFriendsController();
         initInboxController();
         initFriendsController();
@@ -102,6 +113,14 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     private void initSearchFriendsController() {
         searchFriendsController.setLoggedUser(this.loggedUser);
         searchFriendsController.setService(this.service);
+    }
+
+    /**
+     * initiates events controller
+     */
+    private void initEventsController() {
+        eventsController.setLoggedUser(this.loggedUser);
+        eventsController.setService(this.service);
     }
 
     /**
@@ -138,9 +157,17 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     }
 
     /**
+     * shows the events view
+     */
+    public void showEvents() {
+        eventsController.init();
+        mainBorderPane.setCenter(eventsRoot);
+    }
+
+    /**
      * shows the inbox view
      */
-    public void showInbox() throws IOException {
+    public void showInbox() {
         inboxController.init();
         mainBorderPane.setCenter(inboxRoot);
     }
@@ -167,8 +194,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         inboxController.reset();
         friendsViewController.reset();
         this.service.removeMessageObserver(inboxController);
-
-
         loggedUser = null;
         userNameLabel.setText("");
         searchBar.setText("");

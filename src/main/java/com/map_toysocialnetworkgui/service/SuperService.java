@@ -714,37 +714,45 @@ public class SuperService {
         return new PageImplementation<>(page.getPageable(), stream);
     }
 
-    public Page<EventDTO> getUserNotificationEvents(String userEmail, Pageable pageable){
-        UserDTO userDTO=new UserDTO(new User("user@yahoo.com",null,"Notif","Didu", LocalDate.now()));
-        Stream<EventDTO> stream=List.of(new EventDTO(1,"event","hei",userDTO,
-                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now())).stream();
-        return new PageImplementation<>(new PageableImplementation(1,7), stream);
+    public Page<EventDTO> getUserNotificationEvents(String userEmail, Pageable pageable) {
+        UserDTO userDTO = new UserDTO(new User("user@yahoo.com", null, "Notif", "Didu", LocalDate.now()));
+        Stream<EventDTO> stream = List.of(new EventDTO(1, "event", "hei", userDTO,
+                List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now())).stream();
+        return new PageImplementation<>(pageable, stream);
     }
 
-    public Page<EventDTO> getUserEventsChronoDesc(String userEmail, Pageable pageable){
-        UserDTO userDTO=new UserDTO(new User("chrono@yahoo.com",null,"Chrono","Didu", LocalDate.now()));
-        Stream<EventDTO> stream=List.of(new EventDTO(1,"event","hei",userDTO,
-                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now())).stream();
-        return new PageImplementation<>(new PageableImplementation(1,7), stream);
+    public Page<EventDTO> getUserEventsChronoDesc(String userEmail, Pageable pageable) {
+        UserDTO userDTO = new UserDTO(new User("chrono@yahoo.com", null, "Chrono", "Didu", LocalDate.now()));
+        Stream<EventDTO> stream = List.of(
+                new EventDTO(1, "event", "hei", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()),
+                new EventDTO(2, "other event", "very cool 2nd event", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()),
+                new EventDTO(3, "last event", "very cool 3nd event", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()))
+                .stream();
+        return new PageImplementation<>(pageable, stream);
     }
 
-    public Page<EventDTO> getEventsFiltered(String string, Pageable pageable){
-        UserDTO userDTO=new UserDTO(new User("chrono@yahoo.com",null,"Filter","Didu", LocalDate.now()));
-        Stream<EventDTO> stream=List.of(new EventDTO(1,"event","hei",userDTO,
-                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now())).stream();
-        return new PageImplementation<>(new PageableImplementation(1,7), stream);
+    public Page<EventDTO> getEventsFiltered(String string, Pageable pageable) {
+        UserDTO userDTO = new UserDTO(new User("chrono@yahoo.com", null, "Filter", "Didu", LocalDate.now()));
+        Stream<EventDTO> stream = List.of(new EventDTO(1, "searchMe", "found me!!", userDTO,
+                List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now())).stream();
+        if (string.equals(""))
+            return new PageImplementation<>(pageable, null);
+        return new PageImplementation<>(pageable, stream);
     }
 
-    public void createEvent(String title, String description,String hostmail, LocalDateTime dateTime){
+    public void createEvent(String title, String description, String hostEmail, LocalDateTime dateTime) {
 
     }
-    public void deleteEvent(Integer id){
+
+    public void deleteEvent(Integer id) {
 
     }
-    public void subscribeToEvent(Integer id, String userEmail){
+
+    public void subscribeToEvent(Integer id, String userEmail) {
 
     }
-    public void unsubscribeFromEvent(Integer id,String userEmail){
+
+    public void unsubscribeFromEvent(Integer id, String userEmail) {
 
     }
 }
