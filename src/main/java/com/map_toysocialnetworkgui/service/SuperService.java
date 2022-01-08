@@ -716,8 +716,10 @@ public class SuperService {
 
     public Page<EventDTO> getUserNotificationEvents(String userEmail, Pageable pageable) {
         UserDTO userDTO = new UserDTO(new User("user@yahoo.com", null, "Notif", "Didu", LocalDate.now()));
-        Stream<EventDTO> stream = List.of(new EventDTO(1, "event", "hei", userDTO,
-                List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now())).stream();
+        Stream<EventDTO> stream = List.of(
+                new EventDTO(1, "event", "hei", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()),
+                new EventDTO(2, "other", "hei", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.of(2022, 1, 20, 13, 20)))
+                .stream();
         return new PageImplementation<>(pageable, stream);
     }
 

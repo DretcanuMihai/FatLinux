@@ -251,11 +251,7 @@ public class EventsController extends AbstractController {
             if (this.events.size() > 1)
                 this.nextEventButton.setVisible(true);
             fillEventDetails();
-            this.deleteEventButton.setVisible(this.events.get(counter).getHostUser().getEmail().equals(this.loggedUser.getEmail()));
-            if (this.events.get(counter).getAttendees().contains(this.loggedUser.getEmail()))
-                this.subscriptionToEventButton.setText("✘ Unsubscribe");
-            else
-                this.subscriptionToEventButton.setText("✔ Subscribe");
+            this.subscriptionToEventButton.setText("✘ Unsubscribe");
 
         } else
             showNoEventsLabel();
