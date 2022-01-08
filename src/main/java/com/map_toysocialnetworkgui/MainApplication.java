@@ -25,6 +25,7 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 
 public class MainApplication extends Application {
     /**
@@ -86,6 +87,7 @@ public class MainApplication extends Application {
         FriendRequestService friendRequestService = new FriendRequestService(friendRequestRepository, friendRequestValidator);
         MessageService messageService = new MessageService(messageDBRepository, messageValidator);
         this.service = new SuperService(userService, friendshipService, friendRequestService, messageService);
+        service.reportActivities("c_cezaro@yahoo.com", LocalDate.MIN,LocalDate.MAX);
     }
 
     /**

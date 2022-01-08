@@ -10,11 +10,17 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
+import com.map_toysocialnetworkgui.utils.Constants;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -746,5 +752,43 @@ public class SuperService {
     }
     public void unsubscribeFromEvent(Integer id,String userEmail){
 
+    }
+
+    /**
+     * generates a pdf with a user's activities in a specified date interval
+     * @param userEmail - said user's email
+     * @param beginDate - the beginning of the interval
+     * @param endDate the end of the interval
+     * @throws ValidationException - if data is invalid
+     * @throws AdministrationException - if user doesn't exist
+     */
+    public void reportActivities(String userEmail,LocalDate beginDate,LocalDate endDate)throws ValidationException,AdministrationException{
+        userService.getUserInfo(userEmail);
+        if(beginDate==null || endDate==null){
+            throw new ValidationException("Error: begin and end date shouldn't be null");
+        }
+        String line;
+        try (PDDocument pdDocument = new PDDocument()) {
+
+            PDPage firstPage = new PDPage();
+            pdDocument.addPage(firstPage);
+
+            try (PDPageContentStream cont = new PDPageContentStream(pdDocument, firstPage)) {
+
+                cont.beginText();
+
+                cont.setFont(PDType1Font.COURIER_BOLD, 20);
+                cont.setLeading(14.5f);
+
+                cont.newLineAtOffset(25, 700);
+                line = "Activities Report:"+ Constants.DATE_TIME_FORMATTER.format(beginDate)+" - "+Constants.DATE_TIME_FORMATTER.format(endDate);
+                cont.showText(line);
+
+                cont.endText();
+            }
+            pdDocument.save("test.pdf");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
