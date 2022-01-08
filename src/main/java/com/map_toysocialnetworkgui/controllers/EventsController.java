@@ -5,9 +5,13 @@ import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import com.map_toysocialnetworkgui.utils.styling.TextColoring;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -16,7 +20,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import java.io.IOException;
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.stream.Stream;
@@ -62,6 +70,21 @@ public class EventsController extends AbstractController {
     TextArea eventDescriptionTextArea;
 
     /**
+     * create event view controller
+     */
+    CreateEventController createEventWindowController;
+
+    /**
+     * create event scene
+     */
+    Scene createEventScene;
+
+    /**
+     * create event stage
+     */
+    Stage createEventStage;
+
+    /**
      * button coloring class
      */
     ButtonColoring buttonColoring;
@@ -82,6 +105,40 @@ public class EventsController extends AbstractController {
     Integer counter = 0;
 
     /**
+     * initiates the scene for event creation
+     *
+     * @throws IOException - if an IO error occurs
+     */
+    public void initCreateEventScene() throws IOException {
+        URL createEventURL = getClass().getResource("/com/map_toysocialnetworkgui/views/createEvent-view.fxml");
+        FXMLLoader createEventWindowLoader = new FXMLLoader(createEventURL);
+        Parent createEventWindowRoot = createEventWindowLoader.load();
+        this.createEventWindowController = createEventWindowLoader.getController();
+        this.createEventScene = new Scene(createEventWindowRoot);
+    }
+
+    /**
+     * initializes create event window's elements
+     */
+    public void initCreateEventWindow() {
+        this.createEventStage = new Stage();
+        this.createEventWindowController.setService(this.service);
+        this.createEventWindowController.setLoggedUser(this.loggedUser);
+        this.createEventStage.setScene(this.createEventScene);
+        this.createEventStage.initStyle(StageStyle.UNDECORATED);
+        this.createEventStage.centerOnScreen();
+    }
+
+    public void openCreateEventWindow() {
+        this.createEventStage.show();
+    }
+
+    @FXML
+    public void initialize() throws IOException {
+        initCreateEventScene();
+    }
+
+    /**
      * sets the currently logged-in user
      *
      * @param loggedUser - said user
@@ -91,6 +148,7 @@ public class EventsController extends AbstractController {
     }
 
     private void initComponents() {
+        initCreateEventWindow();
         buttonColoring = new ButtonColoring();
         buttonColoring.setButtonForSearchEvent(this.searchForEventsButton);
         this.searchForEventsButton.setOnAction(event -> searchForEvents());
