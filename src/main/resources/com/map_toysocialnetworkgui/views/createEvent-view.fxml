@@ -34,7 +34,7 @@
                         <Image url="@../images/minNormal.png" />
                      </image>
                   </ImageView>
-                  <Label layoutX="42.0" layoutY="11.0" text="FATLinux Compose Message">
+                  <Label layoutX="42.0" layoutY="11.0" text="FATLinux Create Event">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -72,18 +72,18 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <TextField editable="false" layoutX="87.0" layoutY="28.0" prefHeight="30.0" prefWidth="426.0">
+            <TextField fx:id="hostTextField" editable="false" layoutX="87.0" layoutY="28.0" prefHeight="30.0" prefWidth="426.0">
                <font>
                   <Font size="13.0" />
                </font>
             </TextField>
-            <TextField layoutX="87.0" layoutY="70.0" prefHeight="30.0" prefWidth="426.0" promptText="Event title">
+            <TextField fx:id="titleTextField" layoutX="87.0" layoutY="70.0" prefHeight="30.0" prefWidth="426.0" promptText="Event title">
                <font>
                   <Font size="13.0" />
                </font>
             </TextField>
-            <DatePicker layoutX="87.0" layoutY="112.0" prefHeight="30.0" prefWidth="426.0" promptText="Date of event" />
-            <TextArea layoutY="180.0" prefHeight="130.0" prefWidth="600.0" promptText="Description of event" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="44.0">
+            <DatePicker fx:id="dateDatePicker" layoutX="87.0" layoutY="112.0" prefHeight="30.0" prefWidth="426.0" promptText="Date of event" />
+            <TextArea fx:id="descriptionTextArea" layoutY="180.0" prefHeight="130.0" prefWidth="600.0" promptText="Description of event" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="44.0">
                <font>
                   <Font size="13.0" />
                </font>
@@ -96,12 +96,12 @@
          <children>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="125.0">
                <children>
-                  <Button fx:id="createEventWindowButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="130.0" text="Create event">
+                  <Button fx:id="createEventWindowButton" mnemonicParsing="false" onAction="#createNewEvent" prefHeight="30.0" prefWidth="130.0" text="Create event">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="closeCreateEventWindowButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="130.0" text="Close">
+                  <Button fx:id="closeCreateEventWindowButton" mnemonicParsing="false" onAction="#close" prefHeight="30.0" prefWidth="130.0" text="Close">
                      <font>
                         <Font size="13.0" />
                      </font>

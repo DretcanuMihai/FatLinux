@@ -8,6 +8,7 @@ import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -20,6 +21,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
 
 import java.io.IOException;
 import java.net.URL;
@@ -42,6 +45,10 @@ public class EventsController extends AbstractController {
     Button nextEventButton;
     @FXML
     Button searchForEventsButton;
+    @FXML
+    Button deleteEventButton;
+    @FXML
+    Button subscriptionToEventButton;
     @FXML
     TextField eventsSearchBar;
     @FXML
@@ -122,6 +129,7 @@ public class EventsController extends AbstractController {
         this.createEventStage = new Stage();
         this.createEventWindowController.setService(this.service);
         this.createEventWindowController.setLoggedUser(this.loggedUser);
+        this.createEventWindowController.init();
         this.createEventStage.setScene(this.createEventScene);
         this.createEventStage.initStyle(StageStyle.UNDECORATED);
         this.createEventStage.centerOnScreen();
@@ -152,9 +160,16 @@ public class EventsController extends AbstractController {
      * initializes components for events view
      */
     private void initComponents() {
+        ImageView deleteEventIcon = new ImageView("com/map_toysocialnetworkgui/images/deleteEventIcon.png");
+
         initCreateEventWindow();
         buttonColoring = new ButtonColoring();
         buttonColoring.setButtonForSearchEvent(this.searchForEventsButton);
+        buttonColoring.setButtonBlackWithLighterHover(this.deleteEventButton);
+        this.deleteEventButton.setGraphic(deleteEventIcon);
+        buttonColoring.setButtonOrange(this.subscriptionToEventButton);
+        this.subscriptionToEventButton.setVisible(true);
+        this.deleteEventButton.setVisible(false);
         this.searchForEventsButton.setOnAction(event -> searchForEvents());
         ImageView nextDoubleArrow = new ImageView("com/map_toysocialnetworkgui/images/nextDoubleArrow.png");
         ImageView previousDoubleArrow = new ImageView("com/map_toysocialnetworkgui/images/previousDoubleArrow.png");
@@ -236,6 +251,12 @@ public class EventsController extends AbstractController {
             if (this.events.size() > 1)
                 this.nextEventButton.setVisible(true);
             fillEventDetails();
+            this.deleteEventButton.setVisible(this.events.get(counter).getHostUser().getEmail().equals(this.loggedUser.getEmail()));
+            if (this.events.get(counter).getAttendees().contains(this.loggedUser.getEmail()))
+                this.subscriptionToEventButton.setText("✘ Unsubscribe");
+            else
+                this.subscriptionToEventButton.setText("✔ Subscribe");
+
         } else
             showNoEventsLabel();
     }
@@ -248,6 +269,11 @@ public class EventsController extends AbstractController {
         this.nextEventButton.setVisible(true);
         this.previousEventButton.setVisible(true);
         fillEventDetails();
+        if (this.events.get(counter).getAttendees().contains(this.loggedUser.getEmail()))
+            this.subscriptionToEventButton.setText("✘ Unsubscribe");
+        else
+            this.subscriptionToEventButton.setText("✔ Subscribe");
+        this.deleteEventButton.setVisible(this.events.get(counter).getHostUser().getEmail().equals(this.loggedUser.getEmail()));
         if (counter == 0) {
             this.nextEventButton.setVisible(true);
             this.previousEventButton.setVisible(false);
@@ -260,6 +286,11 @@ public class EventsController extends AbstractController {
     public void showNextEvent() {
         this.counter++;
         fillEventDetails();
+        if (this.events.get(counter).getAttendees().contains(this.loggedUser.getEmail()))
+            this.subscriptionToEventButton.setText("✘ Unsubscribe");
+        else
+            this.subscriptionToEventButton.setText("✔ Subscribe");
+        this.deleteEventButton.setVisible(this.events.get(counter).getHostUser().getEmail().equals(this.loggedUser.getEmail()));
         this.nextEventButton.setVisible(true);
         this.previousEventButton.setVisible(true);
         if (counter == events.size() - 1) {
@@ -273,6 +304,40 @@ public class EventsController extends AbstractController {
      */
     public void createNewEvent() {
         openCreateEventWindow();
+    }
+
+    /**
+     * deletes the currently viewed event
+     */
+    public void deleteEvent() {
+        service.deleteEvent(this.events.get(counter).getId());
+    }
+
+    /**
+     * subscribes/unsubscribes the currently logged user to the currently viewed event
+     */
+    public void setEventSubscription() {
+        if (this.subscriptionToEventButton.getText().equals("✔ Subscribe")) {
+            this.service.subscribeToEvent(this.events.get(counter).getId(), this.loggedUser.getEmail());
+            this.subscriptionToEventButton.setText("✘ Unsubscribe");
+            Notifications.create()
+                    .title("Subscribed!")
+                    .text("You are now subscribed to the following event: " + this.events.get(counter).getTitle())
+                    .graphic(null)
+                    .hideAfter(Duration.seconds(5))
+                    .position(Pos.BOTTOM_RIGHT)
+                    .showInformation();
+        } else if (this.subscriptionToEventButton.getText().equals("✘ Unsubscribe")) {
+            this.service.unsubscribeFromEvent(this.events.get(counter).getId(), this.loggedUser.getEmail());
+            this.subscriptionToEventButton.setText("✔ Subscribe");
+            Notifications.create()
+                    .title("Unsubscribed!")
+                    .text("You are now unsubscribed to the following event: " + this.events.get(counter).getTitle())
+                    .graphic(null)
+                    .hideAfter(Duration.seconds(5))
+                    .position(Pos.BOTTOM_RIGHT)
+                    .showWarning();
+        }
     }
 
     /**
@@ -292,6 +357,10 @@ public class EventsController extends AbstractController {
             if (this.events.size() > 1)
                 this.nextEventButton.setVisible(true);
             fillEventDetails();
+            if (this.events.get(counter).getAttendees().contains(this.loggedUser.getEmail()))
+                this.subscriptionToEventButton.setText("✘ Unsubscribe");
+            else
+                this.subscriptionToEventButton.setText("✔ Subscribe");
         }
     }
 
@@ -301,6 +370,7 @@ public class EventsController extends AbstractController {
     public void searchForEvents() {
         buttonColoring.setButtonForCancelSearchEvent(this.searchForEventsButton);
         loadSearchedEvents();
+        this.deleteEventButton.setVisible(this.events.get(counter).getHostUser().getEmail().equals(this.loggedUser.getEmail()));
 
         ChangeListener<String> textChangedListener = (observable, oldValue, newValue) -> loadSearchedEvents();
         eventsSearchBar.textProperty().addListener(textChangedListener);

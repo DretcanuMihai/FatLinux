@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="668.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.map_toysocialnetworkgui.controllers.EventsController">
    <bottom>
       <AnchorPane fx:id="eventsViewBottomAnchorPane" prefHeight="50.0" prefWidth="641.0" BorderPane.alignment="CENTER">
@@ -45,7 +44,7 @@
          <children>
             <Pane fx:id="eventDetailsPane" layoutX="307.0" layoutY="28.0" prefHeight="325.0" prefWidth="328.0" style="-fx-background-color: #424043;">
                <children>
-                  <Label fx:id="eventTitleLabel" alignment="CENTER" layoutX="7.0" layoutY="29.0" prefHeight="39.0" prefWidth="315.0">
+                  <Label fx:id="eventTitleLabel" alignment="CENTER" layoutX="7.0" layoutY="44.0" prefHeight="39.0" prefWidth="315.0">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -100,6 +99,12 @@
                         <Font size="13.0" />
                      </font>
                   </Label>
+                  <Button fx:id="deleteEventButton" layoutX="11.0" layoutY="12.0" mnemonicParsing="false" onAction="#deleteEvent" />
+                  <Button fx:id="subscriptionToEventButton" layoutX="209.0" layoutY="12.0" mnemonicParsing="false" onAction="#setEventSubscription" text="✔ Subscribe">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
                </children>
             </Pane>
             <ImageView fx:id="eventImageView" fitHeight="325.0" fitWidth="264.0" layoutX="43.0" layoutY="27.0" pickOnBounds="true" preserveRatio="true">

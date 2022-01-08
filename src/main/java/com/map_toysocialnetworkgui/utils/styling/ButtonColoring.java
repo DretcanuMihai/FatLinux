@@ -53,6 +53,29 @@ public class ButtonColoring {
     }
 
     /**
+     * colors a button in black and adds hover effect with a lighter black
+     *
+     * @param button - said button
+     */
+    public void setButtonBlackWithLighterHover(Button button) {
+        button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 10px;
+                -fx-background-color: #000000;
+                """);
+        button.setOnMouseEntered(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 10px;
+                -fx-background-color: #1e1e1e;
+                """));
+        button.setOnMouseExited(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 10px;
+                -fx-background-color: #000000;
+                """));
+    }
+
+    /**
      * colors a button in orange with square black border and adds hover effect
      *
      * @param button - said button

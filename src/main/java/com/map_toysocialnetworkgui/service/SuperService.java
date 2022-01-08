@@ -724,8 +724,8 @@ public class SuperService {
     public Page<EventDTO> getUserEventsChronoDesc(String userEmail, Pageable pageable) {
         UserDTO userDTO = new UserDTO(new User("chrono@yahoo.com", null, "Chrono", "Didu", LocalDate.now()));
         Stream<EventDTO> stream = List.of(
-                new EventDTO(1, "event", "hei", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()),
-                new EventDTO(2, "other event", "very cool 2nd event", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()),
+                new EventDTO(1, "eventThatHasAReallyLongTitle", "hei", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()),
+                new EventDTO(2, "other event", "very cool 2nd event", new UserDTO(new User("linux@unix.com", null, "Chrono", "Didu", LocalDate.now())), List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()),
                 new EventDTO(3, "last event", "very cool 3nd event", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()))
                 .stream();
         return new PageImplementation<>(pageable, stream);
@@ -733,8 +733,9 @@ public class SuperService {
 
     public Page<EventDTO> getEventsFiltered(String string, Pageable pageable) {
         UserDTO userDTO = new UserDTO(new User("chrono@yahoo.com", null, "Filter", "Didu", LocalDate.now()));
-        Stream<EventDTO> stream = List.of(new EventDTO(1, "searchMe", "found me!!", userDTO,
-                List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now())).stream();
+        Stream<EventDTO> stream = List.of(
+                new EventDTO(1, "searchMe", "found me!!", userDTO, List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now()),
+                new EventDTO(2, "ooooh", "found me again!!", new UserDTO(new User("linux@unix.com", null, "Filter", "Didu", LocalDate.now())), List.of("t1@yahoo.com", "t2@outlok.com"), LocalDateTime.now())).stream();
         if (string.equals(""))
             return new PageImplementation<>(pageable, null);
         return new PageImplementation<>(pageable, stream);
