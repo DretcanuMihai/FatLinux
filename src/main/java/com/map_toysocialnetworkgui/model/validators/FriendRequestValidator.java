@@ -15,12 +15,14 @@ public class FriendRequestValidator implements Validator<FriendRequest> {
         String email2 = entity.getReceiver();
         if (Objects.equals(email1, email2))
             message += "A friendship request between an user and himself can't exist!\n";
-        if (!message.equals(""))
+        if (!message.equals("")) {
+            message = "Error:\n" + message;
             throw new ValidationException(message);
+        }
     }
 
     public void validateEmails(String email1, String email2) throws ValidationException {
         if (Objects.equals(email1, email2))
-            throw new ValidationException("A friendship request between an user and himself can't exist!\n");
+            throw new ValidationException("Error:\nA friendship request between an user and himself can't exist!\n");
     }
 }

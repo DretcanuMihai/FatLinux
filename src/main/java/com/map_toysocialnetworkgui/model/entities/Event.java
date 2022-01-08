@@ -1,15 +1,12 @@
-package com.map_toysocialnetworkgui.model.entities_dto;
-
-import com.map_toysocialnetworkgui.model.entities.Event;
+package com.map_toysocialnetworkgui.model.entities;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class EventDTO {
-    Integer id;
+public class Event extends Entity<Integer>{
     String title;
     String description;
-    UserDTO hostUser;
+    String hostEmail;
     List<String> attendees;
     LocalDateTime date;
 
@@ -18,29 +15,17 @@ public class EventDTO {
      * @param id - event id
      * @param title - event title
      * @param description - event description
-     * @param hostUser - event host
+     * @param hostEmail - event host
      * @param attendees - event attendees
      * @param date - event date
      */
-    public EventDTO(Integer id, String title, String description, UserDTO hostUser, List<String> attendees, LocalDateTime date) {
-        this.id = id;
+    public Event(Integer id, String title, String description, String hostEmail, List<String> attendees, LocalDateTime date) {
+        super(id);
         this.title = title;
         this.description = description;
-        this.hostUser = hostUser;
+        this.hostEmail = hostEmail;
         this.attendees = attendees;
         this.date = date;
-    }
-
-    public EventDTO(Event event,UserDTO userDTO){
-        this(event.getId(),event.getTitle(),event.getDescription(),userDTO,event.getAttendees(),event.getDate());
-    }
-
-    /**
-     * gets event id;
-     * @return said id
-     */
-    public Integer getId() {
-        return id;
     }
 
     /**
@@ -60,11 +45,11 @@ public class EventDTO {
     }
 
     /**
-     * gets host user dto
-     * @return said dto
+     * gets host user email
+     * @return said email
      */
-    public UserDTO getHostUser() {
-        return hostUser;
+    public String getHostEmail() {
+        return hostEmail;
     }
 
     /**
