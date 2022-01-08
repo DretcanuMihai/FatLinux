@@ -5,9 +5,7 @@ import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
-import com.map_toysocialnetworkgui.utils.styling.TextColoring;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -129,6 +127,9 @@ public class EventsController extends AbstractController {
         this.createEventStage.centerOnScreen();
     }
 
+    /**
+     * opens the create event window
+     */
     public void openCreateEventWindow() {
         this.createEventStage.show();
     }
@@ -147,6 +148,9 @@ public class EventsController extends AbstractController {
         this.loggedUser = loggedUser;
     }
 
+    /**
+     * initializes components for events view
+     */
     private void initComponents() {
         initCreateEventWindow();
         buttonColoring = new ButtonColoring();
@@ -168,6 +172,12 @@ public class EventsController extends AbstractController {
         this.previousEventButton.setVisible(false);
     }
 
+    /**
+     * loads events
+     *
+     * @return - true if events were loaded
+     * - false otherwise
+     */
     private boolean eventsLoaded() {
         this.eventDTOPage = this.service.getUserEventsChronoDesc(this.loggedUser.getEmail(), new PageableImplementation(1, 7));
         if (eventDTOPage.getContent() == null) {
@@ -180,6 +190,9 @@ public class EventsController extends AbstractController {
         }
     }
 
+    /**
+     * shows the no events label
+     */
     private void showNoEventsLabel() {
         this.eventDetailsPane.setVisible(false);
         this.eventImageStackPane.setVisible(false);
@@ -189,6 +202,9 @@ public class EventsController extends AbstractController {
         this.noEventsLabel.setVisible(true);
     }
 
+    /**
+     * shows the event details components
+     */
     private void showEvents() {
         this.eventDetailsPane.setVisible(true);
         this.eventImageStackPane.setVisible(true);
@@ -198,6 +214,9 @@ public class EventsController extends AbstractController {
         this.noEventsLabel.setVisible(false);
     }
 
+    /**
+     * fills the details for events
+     */
     private void fillEventDetails() {
         this.eventTitleLabel.setText(events.get(counter).getTitle());
         this.eventHostedByLabel.setText(events.get(counter).getHostUser().getFirstName() + " " + events.get(counter).getHostUser().getLastName());
@@ -211,7 +230,7 @@ public class EventsController extends AbstractController {
      */
     public void init() {
         initComponents();
-        if(eventsLoaded()) {
+        if (eventsLoaded()) {
             showEvents();
             this.previousEventButton.setVisible(false);
             if (this.events.size() > 1)
@@ -221,6 +240,9 @@ public class EventsController extends AbstractController {
             showNoEventsLabel();
     }
 
+    /**
+     * shows the previous event from the list
+     */
     public void showPreviousEvent() {
         this.counter--;
         this.nextEventButton.setVisible(true);
@@ -232,6 +254,9 @@ public class EventsController extends AbstractController {
         }
     }
 
+    /**
+     * shows the next event from the list
+     */
     public void showNextEvent() {
         this.counter++;
         fillEventDetails();
@@ -243,10 +268,16 @@ public class EventsController extends AbstractController {
         }
     }
 
+    /**
+     * opens the window for creating a new event
+     */
     public void createNewEvent() {
-
+        openCreateEventWindow();
     }
 
+    /**
+     * loads found events from searching
+     */
     public void loadSearchedEvents() {
         eventDTOPage = this.service.getEventsFiltered(this.eventsSearchBar.getText(), new PageableImplementation(1, 7));
         if (eventDTOPage.getContent() == null) {
@@ -264,6 +295,9 @@ public class EventsController extends AbstractController {
         }
     }
 
+    /**
+     * enables searching with text changed from search bar
+     */
     public void searchForEvents() {
         buttonColoring.setButtonForCancelSearchEvent(this.searchForEventsButton);
         loadSearchedEvents();

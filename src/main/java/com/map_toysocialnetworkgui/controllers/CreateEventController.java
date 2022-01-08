@@ -9,6 +9,14 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
     UserDTO loggedUser;
 
     /**
+     * makes the exit button able to only close the associated window
+     */
+    @Override
+    public void initAppExitButton() {
+        this.setAppExitButtonToOnlyCloseWindow();
+    }
+
+    /**
      * sets the currently logged-in user
      *
      * @param loggedUser - said user

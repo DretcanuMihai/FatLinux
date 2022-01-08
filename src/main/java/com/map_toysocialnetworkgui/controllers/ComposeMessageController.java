@@ -9,7 +9,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.Arrays;
@@ -55,17 +54,7 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
      */
     @Override
     public void initAppExitButton() {
-        Image exitButtonImage = appExitButton.getImage();
-        appExitButton.setOnMouseClicked(event -> {
-            Stage stage = (Stage) appExitButton.getScene().getWindow();
-            stage.close();
-        });
-        appExitButton.setOnMouseEntered(event -> {
-            appExitButton.setImage(appExitHoveredButton);
-        });
-        appExitButton.setOnMouseExited(event -> {
-            appExitButton.setImage(exitButtonImage);
-        });
+        this.setAppExitButtonToOnlyCloseWindow();
     }
 
     /**
