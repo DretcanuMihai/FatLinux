@@ -1,5 +1,7 @@
 package com.map_toysocialnetworkgui.model.entities_dto;
 
+import com.map_toysocialnetworkgui.model.entities.Event;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,6 +29,10 @@ public class EventDTO {
         this.hostUser = hostUser;
         this.attendees = attendees;
         this.date = date;
+    }
+
+    public EventDTO(Event event,UserDTO userDTO){
+        this(event.getId(),event.getTitle(),event.getDescription(),userDTO,event.getAttendees(),event.getDate());
     }
 
     /**

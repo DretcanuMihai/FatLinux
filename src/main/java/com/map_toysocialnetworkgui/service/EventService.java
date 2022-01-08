@@ -26,7 +26,14 @@ public class EventService {
         this.repo = repo;
     }
 
-    public Event findOne(Integer id) throws IllegalArgumentException {
+    /**
+     * returns an event identified by an id
+     * @param id - said id
+     * @return - said event
+     * @throws ValidationException if id is null
+     * @throws AdministrationException if no event exists with given id
+     */
+    public Event findOne(Integer id) throws ValidationException,AdministrationException {
         validator.validateId(id);
         Event event=repo.findOne(id);
         if(event==null)
@@ -34,26 +41,61 @@ public class EventService {
         return event;
     }
 
-    public void save(String title, String description, String hostEmail, LocalDateTime date) {
+    /**
+     * saves an event with no participants
+     *
+     * @param title - said event's title
+     * @param description - said event's description
+     * @param hostEmail - said event's host's email
+     * @param date - said event's date
+     * @throws ValidationException is data is invalid
+     */
+    public void save(String title, String description, String hostEmail, LocalDateTime date)throws ValidationException {
         Event event=new Event(null,title,description,hostEmail,new ArrayList<>(),date);
         repo.save(event);
     }
 
-    public void delete(Integer integer) {
-        validator.validateId(integer);
-        Event returnValue=repo.delete(integer);
+    /**
+     * deletes event identified by an id
+     * @param id - said id
+     *
+     * @throws ValidationException if id is null
+     * @throws AdministrationException if no event exists with given id
+     */
+    public void delete(Integer id) throws ValidationException,AdministrationException{
+        validator.validateId(id);
+        Event returnValue=repo.delete(id);
         if(returnValue==null)
             throw new AdministrationException("Error: No event with given id;\n");
     }
 
+    /**
+     * gets a page of all user notification events
+     * @param email - said user's email
+     * @param pageable - paging info
+     * @return - said page
+     */
     public Page<Event> getUserNotificationEvents(String email, Pageable pageable) {
         return repo.getUserNotificationEvents(email, pageable);
     }
 
+    /**
+     * gets a page of all user events
+     * @param email - said user's email
+     * @param pageable - paging info
+     * @return - said page
+     */
     public Page<Event> getUsersEventsDesc(String email, Pageable pageable) {
         return repo.getUsersEventsDesc(email, pageable);
     }
 
+    /**
+     * gets a page of all events described by a string
+     * @param string - said string
+     * @param pageable - paging info
+     * @return - said page
+     * @throws ValidationException - if string is null or empty
+     */
     public Page<Event> getEventsFilter(String string, Pageable pageable) {
         if(string==null || string.equals(""))
             throw new ValidationException("Error:String must be not null and not empty");
