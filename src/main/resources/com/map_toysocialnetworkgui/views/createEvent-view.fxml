@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-
-
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.text.Font?>
+
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.map_toysocialnetworkgui.controllers.CreateEventController">
    <top>
       <AnchorPane prefHeight="40.0" prefWidth="600.0" BorderPane.alignment="CENTER">
@@ -45,4 +49,66 @@
          </children>
       </AnchorPane>
    </top>
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="43.0" layoutY="76.0" text="Title:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="43.0" layoutY="34.0" text="Host:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="42.0" layoutY="118.0" text="Date:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="43.0" layoutY="155.0" text="Description:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <TextField editable="false" layoutX="87.0" layoutY="28.0" prefHeight="30.0" prefWidth="426.0">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </TextField>
+            <TextField layoutX="87.0" layoutY="70.0" prefHeight="30.0" prefWidth="426.0" promptText="Event title">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </TextField>
+            <DatePicker layoutX="87.0" layoutY="112.0" prefHeight="30.0" prefWidth="426.0" promptText="Date of event" />
+            <TextArea layoutY="180.0" prefHeight="130.0" prefWidth="600.0" promptText="Description of event" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="44.0">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </TextArea>
+         </children>
+      </AnchorPane>
+   </center>
+   <bottom>
+      <Pane prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="125.0">
+               <children>
+                  <Button fx:id="createEventWindowButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="130.0" text="Create event">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="closeCreateEventWindowButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="130.0" text="Close">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </Pane>
+   </bottom>
 </BorderPane>
