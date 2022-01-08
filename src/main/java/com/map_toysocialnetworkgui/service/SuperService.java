@@ -805,10 +805,26 @@ public class SuperService {
     public void deleteEvent(Integer id){
         eventService.delete(id);
     }
+    /**
+     * subscribes an user to an event
+     * @param id - said event's id
+     * @param userEmail - said user's emails
+     * @throws ValidationException - if data is invalid
+     * @throws AdministrationException - if the user/event doesn't exist or it's already subscribed
+     */
     public void subscribeToEvent(Integer id, String userEmail){
-
+        userService.getUserInfo(userEmail);
+        eventService.subscribeToEvent(id,userEmail);
     }
+    /**
+     * unsubscribes an user to an event
+     * @param id - said event's id
+     * @param userEmail - said user's emails
+     * @throws ValidationException - if data is invalid
+     * @throws AdministrationException - if the user/event doesn't exist or if it's not subscribed
+     */
     public void unsubscribeFromEvent(Integer id,String userEmail){
-
+        userService.getUserInfo(userEmail);
+        eventService.unsubscribeFromEvent(id,userEmail);
     }
 }

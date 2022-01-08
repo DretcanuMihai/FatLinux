@@ -70,6 +70,36 @@ public class EventService {
     }
 
     /**
+     * subscribes an user to an event
+     * @param id - said event's id
+     * @param userEmail - said user's emails
+     * @throws ValidationException - if data is invalid
+     * @throws AdministrationException - if the event doesn't exist or it's already subscribed
+     */
+    public void subscribeToEvent(Integer id, String userEmail)throws ValidationException,AdministrationException{
+        Event event=findOne(id);
+        if(event.getAttendees().contains(userEmail))
+            throw new AdministrationException("Error: User already subscribed to event;\n");
+        event.getAttendees().add(userEmail);
+        repo.update(event);
+    }
+
+    /**
+     * unsubscribes an user to an event
+     * @param id - said event's id
+     * @param userEmail - said user's emails
+     * @throws ValidationException - if data is invalid
+     * @throws AdministrationException - if the event doesn't exist or it's not subscribed
+     */
+    public void unsubscribeFromEvent(Integer id,String userEmail){
+        Event event=findOne(id);
+        if(!event.getAttendees().contains(userEmail))
+            throw new AdministrationException("Error: User not subscribed to event;\n");
+        event.getAttendees().remove(userEmail);
+        repo.update(event);
+    }
+
+    /**
      * gets a page of all user notification events
      * @param email - said user's email
      * @param pageable - paging info
