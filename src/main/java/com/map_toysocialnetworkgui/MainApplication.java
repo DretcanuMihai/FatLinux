@@ -16,6 +16,7 @@ import com.map_toysocialnetworkgui.repository.with_db.FriendshipDBRepository;
 import com.map_toysocialnetworkgui.repository.with_db.MessageDBRepository;
 import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
 import com.map_toysocialnetworkgui.service.*;
+import com.map_toysocialnetworkgui.utils.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -87,7 +88,7 @@ public class MainApplication extends Application {
         FriendRequestService friendRequestService = new FriendRequestService(friendRequestRepository, friendRequestValidator);
         MessageService messageService = new MessageService(messageDBRepository, messageValidator);
         this.service = new SuperService(userService, friendshipService, friendRequestService, messageService);
-        service.reportActivities("c_cezaro@yahoo.com", LocalDate.MIN,LocalDate.MAX);
+        service.reportActivities("c_cezaro@yahoo.com", LocalDate.of(2020,1,1),LocalDate.now());
     }
 
     /**

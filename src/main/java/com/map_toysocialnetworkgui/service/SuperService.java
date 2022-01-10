@@ -755,6 +755,67 @@ public class SuperService {
     }
 
     /**
+     * preapres a page with normal format
+     * @param cont - said page's content stream
+     * @throws IOException - if any problem arrises
+     */
+    public void preparePage(PDPageContentStream cont) throws IOException {
+        cont.setFont(PDType1Font.COURIER_BOLD, 9);
+        cont.setLeading(10.5f);
+
+    }
+
+    /**
+     * writes a line on the page
+     * @param cont - said page's current content stream
+     * @param line - said line
+     * @throws IOException - if any problem arrises
+     */
+    public void writePageLine(PDPageContentStream cont,String line) throws IOException {
+        cont.showText(line);
+        cont.newLine();
+        cont.newLineAtOffset(25, 700);
+    }
+
+    /**
+     * creates a new page and adds it to the end of the document
+     * @param document - said document
+     * @return - said page
+     */
+    public PDPage nextPage(PDDocument document){
+        PDPage page = new PDPage();
+        document.addPage(page);
+        return page;
+    }
+
+    /**
+     * adds first page to activities for a user in an interval document
+     * @param document - said document
+     * @param beginDate -beginning date of interval
+     * @param endDate - end date of interval
+     * @param user - said user
+     */
+    public void firstPageActivities(PDDocument document,LocalDate beginDate,LocalDate endDate,User user) throws IOException {
+        PDPage firstPage = nextPage(document);
+        String line="";
+
+        try(PDPageContentStream cont = new PDPageContentStream(document, firstPage)) {
+
+            cont.beginText();
+
+            preparePage(cont);
+
+            line = "Activities Report:" + Constants.DATE_TIME_FORMATTER.format(beginDate) + " - " + Constants.DATE_TIME_FORMATTER.format(endDate);
+            writePageLine(cont,line);
+
+            line = "User: " + user.getFirstName() + " " + user.getLastName();
+            writePageLine(cont,line);
+
+            cont.endText();
+        }
+    }
+
+    /**
      * generates a pdf with a user's activities in a specified date interval
      * @param userEmail - said user's email
      * @param beginDate - the beginning of the interval
@@ -763,29 +824,13 @@ public class SuperService {
      * @throws AdministrationException - if user doesn't exist
      */
     public void reportActivities(String userEmail,LocalDate beginDate,LocalDate endDate)throws ValidationException,AdministrationException{
-        userService.getUserInfo(userEmail);
+        User user=userService.getUserInfo(userEmail);
         if(beginDate==null || endDate==null){
             throw new ValidationException("Error: begin and end date shouldn't be null");
         }
-        String line;
         try (PDDocument pdDocument = new PDDocument()) {
 
-            PDPage firstPage = new PDPage();
-            pdDocument.addPage(firstPage);
-
-            try (PDPageContentStream cont = new PDPageContentStream(pdDocument, firstPage)) {
-
-                cont.beginText();
-
-                cont.setFont(PDType1Font.COURIER_BOLD, 20);
-                cont.setLeading(14.5f);
-
-                cont.newLineAtOffset(25, 700);
-                line = "Activities Report:"+ Constants.DATE_TIME_FORMATTER.format(beginDate)+" - "+Constants.DATE_TIME_FORMATTER.format(endDate);
-                cont.showText(line);
-
-                cont.endText();
-            }
+            firstPageActivities(pdDocument,beginDate,endDate,user);
             pdDocument.save("test.pdf");
         } catch (IOException e) {
             e.printStackTrace();
