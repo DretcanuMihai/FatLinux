@@ -729,15 +729,15 @@ public class SuperService {
 
     public Page<EventDTO> getUserEventsChronoDesc(String userEmail, Pageable pageable){
         UserDTO userDTO=new UserDTO(new User("chrono@yahoo.com",null,"Chrono","Didu", LocalDate.now()));
-        Stream<EventDTO> stream=List.of(new EventDTO(1,"event","hei",userDTO,
-                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now())).stream();
+        Stream<EventDTO> stream= Stream.of(new EventDTO(1,"event","hei",userDTO,
+                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now()));
         return new PageImplementation<>(new PageableImplementation(1,7), stream);
     }
 
     public Page<EventDTO> getEventsFiltered(String string, Pageable pageable){
         UserDTO userDTO=new UserDTO(new User("chrono@yahoo.com",null,"Filter","Didu", LocalDate.now()));
-        Stream<EventDTO> stream=List.of(new EventDTO(1,"event","hei",userDTO,
-                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now())).stream();
+        Stream<EventDTO> stream= Stream.of(new EventDTO(1,"event","hei",userDTO,
+                List.of("t1@yahoo.com","t2@outlok.com"), LocalDateTime.now()));
         return new PageImplementation<>(new PageableImplementation(1,7), stream);
     }
 
@@ -797,7 +797,7 @@ public class SuperService {
      */
     public void mainPageActivities(PDDocument document, LocalDate beginDate, LocalDate endDate, User user) throws IOException {
         PDPage firstPage = nextPage(document);
-        String line="";
+        String line;
 
         try(PDPageContentStream cont = new PDPageContentStream(document, firstPage)) {
 
@@ -821,7 +821,7 @@ public class SuperService {
      */
     public void mainFriendsPageActivities(PDDocument document) throws IOException {
         PDPage page = nextPage(document);
-        String line="";
+        String line;
 
         try(PDPageContentStream cont = new PDPageContentStream(document, page)) {
 
@@ -829,12 +829,100 @@ public class SuperService {
 
             preparePage(cont);
 
-            line="New Friends:";
+            line="New Friends;";
             writePageString(cont,line);
 
             cont.endText();
         }
     }
+
+    /**
+     * writes a friendship on a pdf page
+     * @param cont - said page content stream
+     * @param dto - the friendship to write
+     */
+    public void writeOneFriendshipToPage(PDPageContentStream cont,FriendshipDTO dto) throws IOException {
+        writePageString(cont,"User:");
+        writePageString(cont,dto.getUser2().getFirstName()+" "+dto.getUser2().getLastName());
+        writePageString(cont,dto.getUser2().getEmail());
+        writePageString(cont,"The Friendship begun on:"+dto.getBeginDate()
+                .format(Constants.DATE_TIME_FORMATTER));
+        writePageString(cont,"");
+    }
+
+    /**
+     * adds first page to activities for a user in an interval document
+     * @param document - said document
+     */
+    public void oneFriendsPageActivities(PDDocument document,User user,List<Friendship> friendships) throws IOException {
+        PDPage page = nextPage(document);
+        try(PDPageContentStream cont = new PDPageContentStream(document, page)) {
+
+            cont.beginText();
+            preparePage(cont);
+
+            friendships.stream().map(friendship -> {
+                String email=friendship.getEmails().getFirst();
+                if(email.equals(user.getEmail()))
+                    email=friendship.getEmails().getSecond();
+                return new FriendshipDTO(friendship,user,userService.getUserInfo(email));
+            }).forEach(dto-> {
+                try {
+                    writeOneFriendshipToPage(cont,dto);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            cont.endText();
+        }
+    }
+
+    /**
+     * adds all the pages of new friends made by user in interval to document
+     * @param document - said document
+     * @param user  -said user
+     * @param beginDate - the beginning of the interval
+     * @param endDate - the end of the interval
+     */
+    public void friendsPagesActivities(PDDocument document, User user, LocalDate beginDate, LocalDate endDate) throws IOException {
+
+
+        Pageable pageable=new PageableImplementation(1,10);
+        while(true) {
+            Page<Friendship> friendshipPage = friendshipService.getUserFriendshipsFromInterval(user.getEmail(),
+                    beginDate, endDate, pageable);
+            List<Friendship> friendships=friendshipPage.getContent().toList();
+            if(friendships.size()==0){
+                break;
+            }
+            oneFriendsPageActivities(document,user,friendships);
+            pageable=friendshipPage.nextPageable();
+        }
+    }
+
+    /**
+     * adds all the pages of messages received in interval to document
+     * @param document - said document
+     * @param user  -said user
+     * @param beginDate - the beginning of the interval
+     * @param endDate - the end of the interval
+     */
+    public void messagesPagesActivities(PDDocument document, User user, LocalDate beginDate, LocalDate endDate) throws IOException {
+
+
+        Pageable pageable=new PageableImplementation(1,10);
+        while(true) {
+            Page<Friendship> friendshipPage = friendshipService.getUserFriendshipsFromInterval(user.getEmail(),
+                    beginDate, endDate, pageable);
+            List<Friendship> friendships=friendshipPage.getContent().toList();
+            if(friendships.size()==0){
+                break;
+            }
+            oneFriendsPageActivities(document,user,friendships);
+            pageable=friendshipPage.nextPageable();
+        }
+    }
+
 
     /**
      * generates a pdf with a user's activities in a specified date interval
@@ -844,18 +932,23 @@ public class SuperService {
      * @throws ValidationException - if data is invalid
      * @throws AdministrationException - if user doesn't exist
      */
-    public void reportActivities(String userEmail,LocalDate beginDate,LocalDate endDate)throws ValidationException,AdministrationException{
+    public PDDocument reportActivities(String userEmail,LocalDate beginDate,LocalDate endDate)throws ValidationException,AdministrationException{
         User user=userService.getUserInfo(userEmail);
         if(beginDate==null || endDate==null){
             throw new ValidationException("Error: begin and end date shouldn't be null");
         }
+        PDDocument toReturn=null;
         try (PDDocument pdDocument = new PDDocument()) {
 
             mainPageActivities(pdDocument,beginDate,endDate,user);
             mainFriendsPageActivities(pdDocument);
+            friendsPagesActivities(pdDocument,user,beginDate,endDate);
+            messagesPagesActivities(pdDocument,user,beginDate,endDate);
             pdDocument.save("test.pdf");
+            toReturn=pdDocument;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return toReturn;
     }
 }

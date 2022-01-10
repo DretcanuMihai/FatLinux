@@ -10,6 +10,7 @@ import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -189,5 +190,18 @@ public class MessageService extends AbstractObservable<EntityModificationObsEven
      */
     public Page<Message> getMessagesSentByUser(String email, Pageable pageable) {
         return messageRepo.getMessagesSentByUserChronologically(email, pageable);
+    }
+
+    /**
+     * gets a page of all the messages received by user in a given interval
+     *
+     * @param userEmail - said user's email
+     * @param begin - begin of said interval
+     * @param end - end of said interval
+     * @param pageable  - for paging
+     * @return said page
+     */
+    public Page<Message> getMessagesToUserInInterval(String userEmail, LocalDate begin, LocalDate end, Pageable pageable) {
+        return messageRepo.getMessagesToUserInInterval(userEmail, begin, end, pageable);
     }
 }

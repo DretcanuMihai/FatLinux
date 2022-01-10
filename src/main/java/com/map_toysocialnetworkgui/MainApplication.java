@@ -88,7 +88,7 @@ public class MainApplication extends Application {
         FriendRequestService friendRequestService = new FriendRequestService(friendRequestRepository, friendRequestValidator);
         MessageService messageService = new MessageService(messageDBRepository, messageValidator);
         this.service = new SuperService(userService, friendshipService, friendRequestService, messageService);
-        service.reportActivities("c_cezaro@yahoo.com", LocalDate.of(2020,1,1),LocalDate.now());
+        service.reportActivities("c_cezaro@yahoo.com", LocalDate.of(2020,1,1),LocalDate.of(2023,1,1));
     }
 
     /**
