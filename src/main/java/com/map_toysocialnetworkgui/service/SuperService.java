@@ -762,6 +762,7 @@ public class SuperService {
     public void preparePage(PDPageContentStream cont) throws IOException {
         cont.setFont(PDType1Font.COURIER_BOLD, 9);
         cont.setLeading(10.5f);
+        cont.newLineAtOffset(25, 700);
 
     }
 
@@ -771,10 +772,9 @@ public class SuperService {
      * @param line - said line
      * @throws IOException - if any problem arrises
      */
-    public void writePageLine(PDPageContentStream cont,String line) throws IOException {
+    public void writePageString(PDPageContentStream cont, String line) throws IOException {
         cont.showText(line);
         cont.newLine();
-        cont.newLineAtOffset(25, 700);
     }
 
     /**
@@ -795,7 +795,7 @@ public class SuperService {
      * @param endDate - end date of interval
      * @param user - said user
      */
-    public void firstPageActivities(PDDocument document,LocalDate beginDate,LocalDate endDate,User user) throws IOException {
+    public void mainPageActivities(PDDocument document, LocalDate beginDate, LocalDate endDate, User user) throws IOException {
         PDPage firstPage = nextPage(document);
         String line="";
 
@@ -806,10 +806,31 @@ public class SuperService {
             preparePage(cont);
 
             line = "Activities Report:" + Constants.DATE_TIME_FORMATTER.format(beginDate) + " - " + Constants.DATE_TIME_FORMATTER.format(endDate);
-            writePageLine(cont,line);
+            writePageString(cont,line);
 
             line = "User: " + user.getFirstName() + " " + user.getLastName();
-            writePageLine(cont,line);
+            writePageString(cont,line);
+
+            cont.endText();
+        }
+    }
+
+    /**
+     * adds first page to activities for a user in an interval document
+     * @param document - said document
+     */
+    public void mainFriendsPageActivities(PDDocument document) throws IOException {
+        PDPage page = nextPage(document);
+        String line="";
+
+        try(PDPageContentStream cont = new PDPageContentStream(document, page)) {
+
+            cont.beginText();
+
+            preparePage(cont);
+
+            line="New Friends:";
+            writePageString(cont,line);
 
             cont.endText();
         }
@@ -830,7 +851,8 @@ public class SuperService {
         }
         try (PDDocument pdDocument = new PDDocument()) {
 
-            firstPageActivities(pdDocument,beginDate,endDate,user);
+            mainPageActivities(pdDocument,beginDate,endDate,user);
+            mainFriendsPageActivities(pdDocument);
             pdDocument.save("test.pdf");
         } catch (IOException e) {
             e.printStackTrace();
