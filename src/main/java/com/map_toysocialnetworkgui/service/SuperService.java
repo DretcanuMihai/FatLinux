@@ -6,13 +6,11 @@ import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
-import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,12 +56,12 @@ public class SuperService {
      * @param eventService         - the event service
      */
     public SuperService(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService,
-                        MessageService messageService,EventService eventService) {
+                        MessageService messageService, EventService eventService) {
         this.userService = userService;
         this.friendshipService = friendshipService;
         this.friendRequestService = friendRequestService;
         this.messageService = messageService;
-        this.eventService=eventService;
+        this.eventService = eventService;
     }
 
     /**
@@ -721,110 +719,117 @@ public class SuperService {
 
     /**
      * gets a page of all user notification events
+     *
      * @param userEmail - said user's email
-     * @param pageable - paging info
+     * @param pageable  - paging info
      * @return - said page
-     * @throws ValidationException - if data is invalid
+     * @throws ValidationException     - if data is invalid
      * @throws AdministrationException - if user doesn't exist
      */
-    public Page<EventDTO> getUserNotificationEvents(String userEmail, Pageable pageable)throws
-            ValidationException,AdministrationException{
+    public Page<EventDTO> getUserNotificationEvents(String userEmail, Pageable pageable)
+            throws ValidationException, AdministrationException {
 
         validatePageable(pageable);
         userService.getUserInfo(userEmail);
-        Page<Event> page=eventService.getUserNotificationEvents(userEmail,pageable);
-        Stream<EventDTO> stream=page.getContent().map(event-> {
-            UserDTO userDTO=new UserDTO(userService.getUserInfo(event.getHostEmail()));
+        Page<Event> page = eventService.getUserNotificationEvents(userEmail, pageable);
+        Stream<EventDTO> stream = page.getContent().map(event -> {
+            UserDTO userDTO = new UserDTO(userService.getUserInfo(event.getHostEmail()));
             return new EventDTO(event, userDTO);
         });
-        return new PageImplementation<>(page.getPageable(),stream);
+        return new PageImplementation<>(page.getPageable(), stream);
     }
 
     /**
      * gets a page of all user events
+     *
      * @param userEmail - said user's email
-     * @param pageable - paging info
+     * @param pageable  - paging info
      * @return - said page
-     * @throws ValidationException - if data is invalid
+     * @throws ValidationException     - if data is invalid
      * @throws AdministrationException - if user doesn't exist
      */
     public Page<EventDTO> getUserEventsChronoDesc(String userEmail, Pageable pageable) throws
-            ValidationException,AdministrationException{
+            ValidationException, AdministrationException {
         validatePageable(pageable);
         userService.getUserInfo(userEmail);
-        Page<Event> page=eventService.getUsersEventsDesc(userEmail,pageable);
-        Stream<EventDTO> stream=page.getContent().map(event-> {
-            UserDTO userDTO=new UserDTO(userService.getUserInfo(event.getHostEmail()));
+        Page<Event> page = eventService.getUsersEventsDesc(userEmail, pageable);
+        Stream<EventDTO> stream = page.getContent().map(event -> {
+            UserDTO userDTO = new UserDTO(userService.getUserInfo(event.getHostEmail()));
             return new EventDTO(event, userDTO);
         });
-        return new PageImplementation<>(page.getPageable(),stream);
+        return new PageImplementation<>(page.getPageable(), stream);
     }
 
     /**
      * gets a page of all events described by a string
-     * @param string - said string
+     *
+     * @param string   - said string
      * @param pageable - paging info
      * @return - said page
      * @throws ValidationException - if data is invalid
      */
     public Page<EventDTO> getEventsFiltered(String string, Pageable pageable)
-            throws ValidationException{
+            throws ValidationException {
 
         validatePageable(pageable);
-        Page<Event> page=eventService.getEventsFilter(string,pageable);
-        Stream<EventDTO> stream=page.getContent().map(event-> {
-            UserDTO userDTO=new UserDTO(userService.getUserInfo(event.getHostEmail()));
+        Page<Event> page = eventService.getEventsFilter(string, pageable);
+        Stream<EventDTO> stream = page.getContent().map(event -> {
+            UserDTO userDTO = new UserDTO(userService.getUserInfo(event.getHostEmail()));
             return new EventDTO(event, userDTO);
         });
-        return new PageImplementation<>(page.getPageable(),stream);
+        return new PageImplementation<>(page.getPageable(), stream);
     }
 
     /**
      * saves an event with no participants
      *
-     * @param title - said event's title
+     * @param title       - said event's title
      * @param description - said event's description
-     * @param hostEmail - said event's host's email
-     * @param dateTime - said event's date
-     * @throws ValidationException if data is invalid
+     * @param hostEmail   - said event's host's email
+     * @param dateTime    - said event's date
+     * @throws ValidationException     if data is invalid
      * @throws AdministrationException if no user with given email exists
      */
-    public void createEvent(String title, String description,String hostEmail, LocalDateTime dateTime)
-        throws ValidationException,AdministrationException{
+    public void createEvent(String title, String description, String hostEmail, LocalDateTime dateTime)
+            throws ValidationException, AdministrationException {
         userService.getUserInfo(hostEmail);
-        eventService.save(title,description,hostEmail,dateTime);
+        eventService.save(title, description, hostEmail, dateTime);
     }
 
     /**
      * deletes event identified by an id
-     * @param id - said id
      *
-     * @throws ValidationException if id is null
+     * @param id - said id
+     * @throws ValidationException     if id is null
      * @throws AdministrationException if no event exists with given id
      */
-    public void deleteEvent(Integer id){
+    public void deleteEvent(Integer id) {
         eventService.delete(id);
     }
+
     /**
      * subscribes an user to an event
-     * @param id - said event's id
+     *
+     * @param id        - said event's id
      * @param userEmail - said user's emails
-     * @throws ValidationException - if data is invalid
+     * @throws ValidationException     - if data is invalid
      * @throws AdministrationException - if the user/event doesn't exist or it's already subscribed
      */
-    public void subscribeToEvent(Integer id, String userEmail){
+    public void subscribeToEvent(Integer id, String userEmail) {
         userService.getUserInfo(userEmail);
-        eventService.subscribeToEvent(id,userEmail);
+        eventService.subscribeToEvent(id, userEmail);
     }
+
     /**
      * unsubscribes an user to an event
-     * @param id - said event's id
+     *
+     * @param id        - said event's id
      * @param userEmail - said user's emails
-     * @throws ValidationException - if data is invalid
+     * @throws ValidationException     - if data is invalid
      * @throws AdministrationException - if the user/event doesn't exist or if it's not subscribed
      */
-    public void unsubscribeFromEvent(Integer id,String userEmail){
+    public void unsubscribeFromEvent(Integer id, String userEmail) {
         userService.getUserInfo(userEmail);
-        eventService.unsubscribeFromEvent(id,userEmail);
+        eventService.unsubscribeFromEvent(id, userEmail);
     }
 }

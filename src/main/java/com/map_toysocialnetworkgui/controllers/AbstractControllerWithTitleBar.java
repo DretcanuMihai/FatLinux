@@ -90,6 +90,23 @@ public class AbstractControllerWithTitleBar extends AbstractController {
         });
     }
 
+    /**
+     * sets the exit button to only close the current scene
+     */
+    public void setAppExitButtonToOnlyCloseWindow() {
+        Image exitButtonImage = appExitButton.getImage();
+        appExitButton.setOnMouseClicked(event -> {
+            Stage stage = (Stage) appExitButton.getScene().getWindow();
+            stage.close();
+        });
+        appExitButton.setOnMouseEntered(event -> {
+            appExitButton.setImage(appExitHoveredButton);
+        });
+        appExitButton.setOnMouseExited(event -> {
+            appExitButton.setImage(exitButtonImage);
+        });
+    }
+
     @FXML
     public void initialize() throws IOException {
         setTitleBarOnMousePressedDragWindow();

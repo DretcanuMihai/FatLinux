@@ -379,6 +379,9 @@ public class InboxController extends AbstractController implements Observer<Enti
         this.composeMessageStage.centerOnScreen();
     }
 
+    /**
+     * opens the message composition window
+     */
     public void openComposeMessageWindow() {
         this.composeMessageStage.show();
     }

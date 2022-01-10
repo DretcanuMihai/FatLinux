@@ -126,7 +126,7 @@
 .sideBarItem:hover {
     -fx-background-color: black;
     -fx-border-color: #ff7700;
-    -fx-border-width: 0px 0px 0px 3px;
+    -fx-border-width: 0px 0px 0px 5px;
 }
 
 .text-field#searchBar {
@@ -174,13 +174,13 @@
     -fx-background-color: #ff7700;
 }
 
-.inboxViewControlButtons, .inboxMessagingButtons {
+.inboxViewControlButtons, .inboxMessagingButtons, .eventsButtons {
     -fx-focus-traversable: false;
     -fx-background-radius: 10px;
     -fx-background-color: #ff7700;
 }
 
-.inboxViewControlButtons:hover, .inboxMessagingButtons:hover {
+.inboxViewControlButtons:hover, .inboxMessagingButtons:hover, .eventsButtons:hover {
     -fx-background-color: #F04A00;
 }
 
@@ -216,4 +216,57 @@
 
 .text-area#highlightedMessageTextArea .content {
     -fx-background-color: #1e1e1e;
+}
+
+.text-field#eventsSearchBar {
+    -fx-background-radius: 20 0 0 20;
+    -fx-background-color: #424043;
+}
+
+.text-field#eventsSearchBar:focused {
+    -fx-border-color: #ff7700;
+    -fx-border-radius: 20 0 0 20;
+}
+
+.button#searchForEventsButton {
+    -fx-background-radius: 0 20 20 0;
+    -fx-background-color: black;
+    -fx-background-image: url("../images/searchIcon.png");
+    -fx-background-size: 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+.button#searchForEventsButton:hover {
+    -fx-background-color: #1e1e1e;
+}
+
+.button#createNewEventButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+}
+
+.button#createNewEventButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.button#createEventWindowButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+}
+
+.button#createEventWindowButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.button#closeCreateEventWindowButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #000000;
+}
+
+.button#closeCreateEventWindowButton:hover {
+    -fx-background-color: #424043;
 }
