@@ -36,37 +36,42 @@
    <center>
       <AnchorPane prefHeight="350.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="messageTextArea" layoutX="200.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
+            <TextArea fx:id="messageTextArea" layoutX="200.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="44.0" AnchorPane.topAnchor="180.0">
                <font>
                   <Font size="14.0" />
                </font></TextArea>
-            <Label layoutX="15.0" layoutY="23.0" text="From:">
+            <Label layoutX="45.0" layoutY="28.0" text="From:">
                <font>
-                  <Font size="13.0" />
+                  <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <Label layoutX="14.0" layoutY="63.0" text="To:">
+            <Label layoutX="44.0" layoutY="68.0" text="To:">
                <font>
-                  <Font size="13.0" />
+                  <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <Label layoutX="15.0" layoutY="103.0" text="Subject:">
+            <Label layoutX="45.0" layoutY="108.0" text="Subject:">
                <font>
-                  <Font size="13.0" />
+                  <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <TextField fx:id="fromTextField" editable="false" layoutX="74.0" layoutY="19.0" prefHeight="22.0" prefWidth="450.0">
+            <TextField fx:id="fromTextField" editable="false" layoutX="104.0" layoutY="24.0" prefHeight="22.0" prefWidth="450.0">
                <font>
                   <Font size="13.0" />
                </font></TextField>
-            <TextField fx:id="toTextField" layoutX="75.0" layoutY="59.0" prefHeight="22.0" prefWidth="450.0">
+            <TextField fx:id="toTextField" layoutX="105.0" layoutY="64.0" prefHeight="22.0" prefWidth="450.0">
                <font>
                   <Font size="13.0" />
                </font></TextField>
-            <TextField fx:id="subjectTextField" layoutX="75.0" layoutY="99.0" prefHeight="22.0" prefWidth="450.0">
+            <TextField fx:id="subjectTextField" layoutX="105.0" layoutY="104.0" prefHeight="22.0" prefWidth="450.0">
                <font>
                   <Font size="13.0" />
                </font></TextField>
+            <Label layoutX="44.0" layoutY="147.0" text="Message:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </center>

@@ -141,7 +141,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     public Message update(Message message) {
         Message toReturn = message;
         String sqlUpdateMessage = """
-                UPDATE messages SET sender_email = (?), message_text = (?), message_subject = (?), send_time = (?), parent_message_id = (?) 
+                UPDATE messages SET sender_email = (?), message_text = (?), message_subject = (?), send_time = (?), parent_message_id = (?)
                 WHERE message_id = (?)
                 """;
 

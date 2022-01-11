@@ -3,18 +3,9 @@ package com.map_toysocialnetworkgui;
 import com.map_toysocialnetworkgui.controllers.AbstractControllerWithTitleBar;
 import com.map_toysocialnetworkgui.controllers.MainControllerWithTitleBar;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
-import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
-import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
-import com.map_toysocialnetworkgui.model.validators.MessageValidator;
-import com.map_toysocialnetworkgui.model.validators.UserValidator;
-import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
-import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendshipRepositoryInterface;
-import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
-import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
-import com.map_toysocialnetworkgui.repository.with_db.FriendRequestDBRepository;
-import com.map_toysocialnetworkgui.repository.with_db.FriendshipDBRepository;
-import com.map_toysocialnetworkgui.repository.with_db.MessageDBRepository;
-import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
+import com.map_toysocialnetworkgui.model.validators.*;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.*;
+import com.map_toysocialnetworkgui.repository.with_db.*;
 import com.map_toysocialnetworkgui.service.*;
 import com.map_toysocialnetworkgui.utils.Constants;
 import javafx.application.Application;
@@ -75,21 +66,23 @@ public class MainApplication extends Application {
                 "postgres", "postgres");
         FriendRequestRepositoryInterface friendRequestRepository = new FriendRequestDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres", "postgres");
+        EventRepositoryInterface eventRepository = new EventDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
+                "postgres", "postgres");
 
         // Validators
         UserValidator userValidator = new UserValidator();
         FriendshipValidator friendshipValidator = new FriendshipValidator();
         MessageValidator messageValidator = new MessageValidator();
         FriendRequestValidator friendRequestValidator = new FriendRequestValidator();
+        EventValidator eventValidator=new EventValidator();
 
         // Services
         UserService userService = new UserService(userRepo, userValidator);
         FriendshipService friendshipService = new FriendshipService(friendshipRepo, friendshipValidator);
         FriendRequestService friendRequestService = new FriendRequestService(friendRequestRepository, friendRequestValidator);
         MessageService messageService = new MessageService(messageDBRepository, messageValidator);
-        this.service = new SuperService(userService, friendshipService, friendRequestService, messageService);
-        service.reportConversation("c_cezaro@yahoo.com","elsteffe@gmail.com",
-                LocalDate.of(2020,1,1),LocalDate.of(2023,1,1));
+        EventService eventService=new EventService(eventRepository,eventValidator);
+        this.service = new SuperService(userService, friendshipService, friendRequestService, messageService,eventService);
     }
 
     /**
