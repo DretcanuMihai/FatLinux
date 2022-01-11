@@ -18,4 +18,6 @@ module com.map_toysocialnetworkgui {
 
     exports com.map_toysocialnetworkgui.model.entities_dto;
     opens com.map_toysocialnetworkgui.model.entities_dto to javafx.fxml;
+
+    requires org.apache.pdfbox;
 }

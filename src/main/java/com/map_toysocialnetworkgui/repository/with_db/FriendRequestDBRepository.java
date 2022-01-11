@@ -9,7 +9,9 @@ import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -144,7 +146,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
 
     @Override
     public Iterable<FriendRequest> getFriendRequestsSentToUser(String userEmail) {
-        Set<FriendRequest> friendRequests = new HashSet<>();
+        List<FriendRequest> friendRequests = new ArrayList<>();
         String sql = "SELECT * FROM friend_requests WHERE receiver_email = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -165,7 +167,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
 
     @Override
     public Page<FriendRequest> findAll(Pageable pageable) {
-        Set<FriendRequest> friendRequests = new HashSet<>();
+        List<FriendRequest> friendRequests = new ArrayList<>();
         String sql = "SELECT * FROM friend_requests OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -189,7 +191,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
 
     @Override
     public Page<FriendRequest> getFriendRequestsSentToUser(String userEmail, Pageable pageable) {
-        Set<FriendRequest> friendRequests = new HashSet<>();
+        List<FriendRequest> friendRequests = new ArrayList<>();
         String sql = "SELECT * FROM friend_requests WHERE receiver_email = (?) OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -214,7 +216,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
 
     @Override
     public Iterable<FriendRequest> getFriendRequestsSentByUser(String userEmail) {
-        Set<FriendRequest> friendRequests = new HashSet<>();
+        List<FriendRequest> friendRequests = new ArrayList<>();
         String sql = "SELECT * FROM friend_requests WHERE sender_email = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -235,7 +237,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
 
     @Override
     public Page<FriendRequest> getFriendRequestsSentByUser(String userEmail, Pageable pageable) {
-        Set<FriendRequest> friendRequests = new HashSet<>();
+        List<FriendRequest> friendRequests = new ArrayList<>();
         String sql = "SELECT * FROM friend_requests WHERE sender_email = (?) OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
