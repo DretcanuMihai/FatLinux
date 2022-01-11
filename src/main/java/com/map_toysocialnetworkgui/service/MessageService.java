@@ -204,4 +204,18 @@ public class MessageService extends AbstractObservable<EntityModificationObsEven
     public Page<Message> getMessagesToUserInInterval(String userEmail, LocalDate begin, LocalDate end, Pageable pageable) {
         return messageRepo.getMessagesToUserInInterval(userEmail, begin, end, pageable);
     }
+
+    /**
+     * gets a page of all the messages received by user in a given interval from another user
+     *
+     * @param userEmail - said user's email
+     * @param friendEmail - said friend's email
+     * @param begin - begin of said interval
+     * @param end - end of said interval
+     * @param pageable  - for paging
+     * @return said page
+     */
+    public Page<Message> getMessagesToUserFromFriendInInterval(String userEmail,String friendEmail, LocalDate begin, LocalDate end, Pageable pageable) {
+        return messageRepo.getMessagesToUserFromFriendInInterval(userEmail,friendEmail, begin, end, pageable);
+    }
 }

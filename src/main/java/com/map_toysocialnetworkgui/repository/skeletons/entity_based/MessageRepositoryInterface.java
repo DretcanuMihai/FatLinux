@@ -74,4 +74,16 @@ public interface MessageRepositoryInterface extends PagingRepository<Integer, Me
      * @return said page
      */
     Page<Message> getMessagesToUserInInterval(String userEmail, LocalDate begin, LocalDate end, Pageable pageable);
+
+    /**
+     * gets a page of all the messages received by user from a friend in a given interval
+     *
+     * @param userEmail - said user's email
+     * @param friendEmail - said friend's email
+     * @param begin - begin of said interval
+     * @param end - end of said interval
+     * @param pageable  - for paging
+     * @return said page
+     */
+    Page<Message> getMessagesToUserFromFriendInInterval(String userEmail,String friendEmail, LocalDate begin, LocalDate end, Pageable pageable);
 }
