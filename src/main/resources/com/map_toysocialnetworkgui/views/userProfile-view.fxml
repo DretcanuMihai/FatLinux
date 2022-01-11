@@ -60,62 +60,56 @@
                   <Font size="13.0" />
                </font>
             </TextField>
-            <Label layoutX="75.0" layoutY="196.0" text="Generate report for new friends and new messages received:">
+            <Label layoutX="73.0" layoutY="208.0" text="Time interval for report:">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
-            <DatePicker fx:id="startDatePickerGeneral" layoutX="154.0" layoutY="224.0" />
-            <Label layoutX="74.0" layoutY="223.0" text="Between">
+            <DatePicker fx:id="startDatePicker" layoutX="153.0" layoutY="246.0" />
+            <Label layoutX="73.0" layoutY="245.0" text="Between">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
-            <Label layoutX="341.0" layoutY="223.0" text="and">
+            <Label layoutX="340.0" layoutY="245.0" text="and">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
-            <DatePicker fx:id="endDatePickerGeneral" layoutX="386.0" layoutY="224.0" />
-            <Button fx:id="generareReportGeneralButton" layoutX="282.0" layoutY="270.0" mnemonicParsing="false" styleClass="reportButtons" text="Generate">
+            <DatePicker fx:id="endDatePicker" layoutX="385.0" layoutY="246.0" />
+            <Button fx:id="generareReportGeneralButton" layoutX="525.0" layoutY="317.0" mnemonicParsing="false" onAction="#generateGeneralReport" styleClass="reportButtons" text="Generate">
                <font>
                   <Font size="13.0" />
                </font>
             </Button>
-            <Label layoutX="72.0" layoutY="320.0" text="Generate report for messages received by a friend:">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-            <DatePicker fx:id="startDatePickerFriend" layoutX="153.0" layoutY="348.0" />
-            <Label layoutX="73.0" layoutY="347.0" text="Between">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-            <Label layoutX="340.0" layoutY="347.0" text="and">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-            <DatePicker fx:id="endDatePickerFriend" layoutX="385.0" layoutY="348.0" />
-            <Button fx:id="generareReportFriendButton" layoutX="282.0" layoutY="424.0" mnemonicParsing="false" styleClass="reportButtons" text="Generate">
+            <Button fx:id="generareReportFriendButton" layoutX="525.0" layoutY="422.0" mnemonicParsing="false" onAction="#generateFriendReport" styleClass="reportButtons" text="Generate">
                <font>
                   <Font size="13.0" />
                </font>
             </Button>
-            <Label layoutX="147.0" layoutY="381.0" text="Friend's e-mail: ">
+            <Label layoutX="73.0" layoutY="385.0" text="Friend's e-mail: ">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
-            <TextField layoutX="283.0" layoutY="381.0" prefHeight="28.0" prefWidth="206.0">
+            <TextField fx:id="friendEmailTextField" layoutX="209.0" layoutY="385.0" prefHeight="28.0" prefWidth="206.0">
                <font>
                   <Font size="13.0" />
                </font>
             </TextField>
             <Line endX="348.0928955078125" endY="-1.52587890625E-5" layoutX="320.0" layoutY="196.0" startX="-319.0" startY="-1.52587890625E-5" />
-            <Line endX="348.0928955078125" endY="-1.52587890625E-5" layoutX="320.0" layoutY="313.0" startX="-319.0" startY="-1.52587890625E-5" />
+            <Line endX="348.0928955078125" endY="-1.52587890625E-5" layoutX="320.0" layoutY="297.0" startX="-319.0" startY="-1.52587890625E-5" />
+            <Label layoutX="73.0" layoutY="317.0" text="Generate report for new friends and received messages:  ">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="73.0" layoutY="422.0" text="Generate report for messages received by friend: ">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Line endX="348.0928955078125" endY="-1.52587890625E-5" layoutX="320.0" layoutY="368.0" startX="-319.0" startY="-1.52587890625E-5" />
          </children>
       </AnchorPane>
    </bottom>

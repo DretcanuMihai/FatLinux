@@ -3,11 +3,15 @@ package com.map_toysocialnetworkgui.controllers;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * controller for create event view
+ */
 public class CreateEventController extends AbstractControllerWithTitleBar {
     /**
      * currently logged-in user
@@ -29,6 +33,8 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
     DatePicker dateDatePicker;
     @FXML
     TextArea descriptionTextArea;
+    @FXML
+    BorderPane createEventBorderPane;
 
     /**
      * makes the exit button able to only close the associated window
@@ -51,6 +57,7 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
      * initializes create event window elements
      */
     public void init() {
+        createEventBorderPane.setStyle("-fx-border-color: black; -fx-border-width: 1px");
         this.hostTextField.setPromptText(this.loggedUser.getFirstName() + " " + this.loggedUser.getLastName());
     }
 

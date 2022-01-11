@@ -4,7 +4,9 @@ out/
 build/
 gradle/
 .gradle/
+data/
 build.gradle
 gradlew
 gradlew.bat
 settings.gradle
+*.pdf

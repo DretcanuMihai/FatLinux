@@ -27,6 +27,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+/**
+ * controller for events view
+ */
 public class EventsController extends AbstractController {
     /**
      * currently logged-in user
