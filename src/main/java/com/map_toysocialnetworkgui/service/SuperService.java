@@ -573,32 +573,22 @@ public class SuperService {
         return new UserDTO(user);
     }
 
-
     /**
-     * returns a User's info and some page's for app startup
-     * @param userEmail - said user's email
-     * @param notificationPageable - page of notifications
-     * @param eventsPageable - page of events
-     * @param sentPageable - page of snet messages
-     * @param receivedPageable - page of received messages
-     * @param friendPageable - page of friends
-     * @param requestPageable - page of friend requests
-     * @return - said page
-     * @throws ValidationException - if any data is invalid
-     * @throws AdministrationException - if user doesn't exist
+     * logs in a user
+     *
+     * @param userEmail    - said user's email
+     * @param userPassword - said user's password
+     * @return said user's info
+     * @throws ValidationException     - if said user's email is invalid
+     * @throws AdministrationException - if credentials are invalid
      */
-    public UserPage getUserPage(String userEmail,Pageable notificationPageable, Pageable eventsPageable,
-                                Pageable sentPageable,Pageable receivedPageable,
-                                Pageable friendPageable,Pageable requestPageable) throws ValidationException, AdministrationException {
-        UserDTO userDTO=new UserDTO(userService.getUserInfo(userEmail));
-        Page<EventDTO> currentNotification=getUserNotificationEvents(userEmail,notificationPageable);
-        Page<EventDTO> currentEvents=getUserEventsChronoDesc(userEmail,eventsPageable);
-        Page<MessageDTO> currentSent=getMessagesSentByUser(userEmail,sentPageable);
-        Page<MessageDTO> currentReceived=getMessagesReceivedByUser(userEmail,receivedPageable);
-        Page<FriendshipDTO> currentFriend=getAllFriendshipDTOsOfUser(userEmail,friendPageable);
-        Page<FriendRequestDTO> currentRequest=getFriendRequestsSentToUser(userEmail,requestPageable);
-        return new UserPage(userDTO,currentNotification,currentEvents,currentSent,
-                currentReceived,currentFriend,currentRequest);
+    public UserPage login2(String userEmail, String userPassword) throws ValidationException, AdministrationException {
+        User user = userService.login(userEmail, userPassword);
+        int nrOfNotifications= eventService.getNumberOfNotification(user);
+        int nrOfNewFriends=0;
+        int nrOfNewRequests=0;
+        int nrOfNewMessages=0;
+        return new UserPage(new UserDTO(user),nrOfNotifications,nrOfNewFriends,nrOfNewRequests,nrOfNewMessages);
     }
 
     /**

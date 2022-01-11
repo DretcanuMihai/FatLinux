@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.skeletons.entity_based;
 
 import com.map_toysocialnetworkgui.model.entities.Event;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PagingRepository;
@@ -53,4 +54,11 @@ public interface EventRepositoryInterface extends PagingRepository<Integer, Even
      * @return a page of said events
      */
     Page<Event> getEventsFilter(String string, Pageable pageable);
+
+    /**
+     * gets the number of notifications of a user
+     * @param user - said user
+     * @return said number
+     */
+    int getNumberOfNotification(User user);
 }

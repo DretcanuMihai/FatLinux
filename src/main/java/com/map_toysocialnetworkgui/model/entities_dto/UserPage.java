@@ -4,33 +4,25 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 
 public class UserPage {
     UserDTO userInfo;
-    Page<EventDTO> currentNotification;
-    Page<EventDTO> currentEvents;
-    Page<MessageDTO> currentSent;
-    Page<MessageDTO> currentReceived;
-    Page<FriendshipDTO> currentFriend;
-    Page<FriendRequestDTO> currentRequest;
+    int nrOfNotifications;
+    int nrOfNewFriends;
+    int nrOfNewRequests;
+    int nrOfNewMessages;
 
     /**
-     * creates a page dto for a user's account
-     * @param userInfo - dto with user's info
-     * @param currentNotification - first notification page
-     * @param currentEvents - first events page
-     * @param currentSent - first sent message page
-     * @param currentReceived - first received message page
-     * @param currentFriend - first friend page
-     * @param currentRequest - first request page
+     * creates the info shown on the user page on login
+     * @param userInfo - said user's info
+     * @param nrOfNotifications - said user's number of notifications
+     * @param nrOfNewFriends - said user's number of new friends
+     * @param nrOfNewRequests - said user's number of new requests
+     * @param nrOfNewMessages - said user's number of new messages
      */
-    public UserPage(UserDTO userInfo, Page<EventDTO> currentNotification, Page<EventDTO> currentEvents,
-                    Page<MessageDTO> currentSent,Page<MessageDTO> currentReceived, Page<FriendshipDTO> currentFriend,
-                    Page<FriendRequestDTO> currentRequest) {
+    public UserPage(UserDTO userInfo, int nrOfNotifications, int nrOfNewFriends, int nrOfNewRequests, int nrOfNewMessages) {
         this.userInfo = userInfo;
-        this.currentNotification = currentNotification;
-        this.currentEvents = currentEvents;
-        this.currentSent = currentSent;
-        this.currentReceived = currentReceived;
-        this.currentFriend = currentFriend;
-        this.currentRequest = currentRequest;
+        this.nrOfNotifications = nrOfNotifications;
+        this.nrOfNewFriends = nrOfNewFriends;
+        this.nrOfNewRequests = nrOfNewRequests;
+        this.nrOfNewMessages = nrOfNewMessages;
     }
 
     /**
@@ -42,106 +34,34 @@ public class UserPage {
     }
 
     /**
-     * gets current notifications page
-     * @return - said page
+     * gets number of notifications
+     * @return - said number
      */
-    public Page<EventDTO> getCurrentNotification() {
-        return currentNotification;
+    public int getNrOfNotifications() {
+        return nrOfNotifications;
     }
 
     /**
-     * gets current events page
-     * @return - said page
+     * gets number of new friends
+     * @return - said number
      */
-    public Page<EventDTO> getCurrentEvents() {
-        return currentEvents;
+    public int getNrOfNewFriends() {
+        return nrOfNewFriends;
     }
 
     /**
-     * gets current sent messages page
-     * @return - said page
+     * gets number of new requests
+     * @return - said number
      */
-    public Page<MessageDTO> getCurrentSent() {
-        return currentSent;
+    public int getNrOfNewRequests() {
+        return nrOfNewRequests;
     }
 
     /**
-     * gets current received messages page
-     * @return - said page
+     * gets number of new messages
+     * @return - said number
      */
-    public Page<MessageDTO> getCurrentReceived() {
-        return currentReceived;
-    }
-
-    /**
-     * gets current friend page
-     * @return - said page
-     */
-    public Page<FriendshipDTO> getCurrentFriend() {
-        return currentFriend;
-    }
-
-    /**
-     * gets current requests page
-     * @return - said page
-     */
-    public Page<FriendRequestDTO> getCurrentRequest() {
-        return currentRequest;
-    }
-
-    /**
-     * sets user's info
-     * @param userInfo - new info
-     */
-    public void setUserInfo(UserDTO userInfo) {
-        this.userInfo = userInfo;
-    }
-
-    /**
-     * sets current notification page
-     * @param currentNotification - new page
-     */
-    public void setCurrentNotification(Page<EventDTO> currentNotification) {
-        this.currentNotification = currentNotification;
-    }
-
-    /**
-     * sets current events page
-     * @param currentEvents - new page
-     */
-    public void setCurrentEvents(Page<EventDTO> currentEvents) {
-        this.currentEvents = currentEvents;
-    }
-
-    /**
-     * sets current sent message page
-     * @param currentSent - new page
-     */
-    public void setCurrentSent(Page<MessageDTO> currentSent) {
-        this.currentSent = currentSent;
-    }
-
-    /**
-     * sets current received page
-     * @param currentReceived - new page
-     */
-    public void setCurrentReceived(Page<MessageDTO> currentReceived) {
-        this.currentReceived = currentReceived;
-    }
-
-    /**
-     * sets current friend page
-     * @param currentFriend - new page
-     */
-    public void setCurrentFriend(Page<FriendshipDTO> currentFriend) {
-        this.currentFriend = currentFriend;
-    }
-
-    /**
-     * sets current request page
-     * @param currentRequest - new page
-     */
-    public void setCurrentRequest(Page<FriendRequestDTO> currentRequest) {
-        this.currentRequest = currentRequest;
+    public int getNrOfNewMessages() {
+        return nrOfNewMessages;
     }
 }

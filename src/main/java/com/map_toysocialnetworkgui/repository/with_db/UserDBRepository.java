@@ -84,7 +84,7 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public User save(User user) {
         User toReturn = user;
-        String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date) VALUES (?, ?, ?, ?, ?)";
+        String sqlSave = "INSERT INTO users(email, password_hash, first_name, last_name, join_date, last_login_time) VALUES (?, ?, ?, ?, ?,?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementSave = connection.prepareStatement(sqlSave)) {
@@ -94,6 +94,7 @@ public class UserDBRepository implements UserRepositoryInterface {
             statementSave.setString(3, user.getFirstName());
             statementSave.setString(4, user.getLastName());
             statementSave.setDate(5, Date.valueOf(user.getJoinDate()));
+            statementSave.setTimestamp(6,Timestamp.valueOf(user.getLastLoginTime()));
             statementSave.execute();
             toReturn = null;
         } catch (SQLException e) {
@@ -125,7 +126,7 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public User update(User user) {
         User toReturn = user;
-        String sqlUpdate = "UPDATE users SET password_hash = (?), first_name = (?), last_name = (?), join_date = (?) WHERE email = (?)";
+        String sqlUpdate = "UPDATE users SET password_hash = (?), first_name = (?), last_name = (?), join_date = (?),last_login_time=(?) WHERE email = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -135,6 +136,7 @@ public class UserDBRepository implements UserRepositoryInterface {
             statementUpdate.setString(3, user.getLastName());
             statementUpdate.setDate(4, Date.valueOf(user.getJoinDate()));
             statementUpdate.setString(5, user.getEmail());
+            statementUpdate.setTimestamp(6,Timestamp.valueOf(user.getLastLoginTime()));
             int affectedRows = statementUpdate.executeUpdate();
             if (affectedRows != 0)
                 toReturn = null;

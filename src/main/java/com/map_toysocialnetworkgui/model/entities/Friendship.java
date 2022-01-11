@@ -2,7 +2,7 @@ package com.map_toysocialnetworkgui.model.entities;
 
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -12,7 +12,7 @@ public class Friendship extends Entity<UnorderedPair<String>> {
     /**
      * entity begin date
      */
-    private final LocalDate beginDate;
+    private final LocalDateTime beginDate;
 
     /**
      * creates a friendship for two users identified by email
@@ -22,7 +22,7 @@ public class Friendship extends Entity<UnorderedPair<String>> {
      * @param email2    - second user's email
      * @param beginDate - the date the friendship begun
      */
-    public Friendship(String email1, String email2, LocalDate beginDate) {
+    public Friendship(String email1, String email2, LocalDateTime beginDate) {
         super(new UnorderedPair<>(email1, email2));
         this.beginDate = beginDate;
     }
@@ -32,7 +32,7 @@ public class Friendship extends Entity<UnorderedPair<String>> {
      *
      * @return said date
      */
-    public LocalDate getBeginDate() {
+    public LocalDateTime getBeginDate() {
         return beginDate;
     }
 

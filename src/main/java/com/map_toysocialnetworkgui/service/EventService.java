@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.Event;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.EventValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
@@ -130,5 +131,9 @@ public class EventService {
         if(string==null || string.equals(""))
             throw new ValidationException("Error:String must be not null and not empty");
         return repo.getEventsFilter(string, pageable);
+    }
+
+    public int getNumberOfNotification(User user) {
+        return repo.getNumberOfNotification(user);
     }
 }
