@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
@@ -304,6 +305,32 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
             e.printStackTrace();
         }
         return new PageImplementation<>(pageable, friendships.stream());
+    }
+
+    @Override
+    public int getUserNewFriendshipsCount(User user) {
+
+        int toReturn=0;
+        String sql = """
+                SELECT count(*) FROM friendships WHERE (first_user_email = (?) OR second_user_email = (?))
+                AND (?) <= begin_date
+                """;
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            String userEmail=user.getEmail();
+            statement.setString(1, userEmail);
+            statement.setString(2, userEmail);
+            statement.setTimestamp(3, Timestamp.valueOf(user.getLastLoginTime()));
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            Long l=resultSet.getLong(1);
+            toReturn=l.intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
     }
 
     /**

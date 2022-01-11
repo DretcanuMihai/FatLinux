@@ -352,7 +352,7 @@ public class EventDBRepository implements EventRepositoryInterface {
     public int getNumberOfNotification(User user) {
         int toReturn=0;
         String sqlEvents = """
-                SELECT count()
+                SELECT count(*)
                 FROM events e inner join attendances a on e.event_id = a.event_id
                 WHERE a.user_email = (?) and e.date >= now() and e.date >= (?)
                 """;
@@ -363,6 +363,7 @@ public class EventDBRepository implements EventRepositoryInterface {
             statementEvents.setString(1,user.getEmail());
             statementEvents.setDate(2, Date.valueOf(user.getLastLoginTime().toLocalDate()));
             ResultSet resultSet = statementEvents.executeQuery();
+            resultSet.next();
             Long l=resultSet.getLong(1);
             toReturn=l.intValue();
         } catch (SQLException e) {

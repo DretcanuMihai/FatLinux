@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.skeletons.entity_based;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PagingRepository;
@@ -86,4 +87,12 @@ public interface MessageRepositoryInterface extends PagingRepository<Integer, Me
      * @return said page
      */
     Page<Message> getMessagesToUserFromFriendInInterval(String userEmail,String friendEmail, LocalDate begin, LocalDate end, Pageable pageable);
+
+    /**
+     * gets a count of new messages received since last login for a user
+     *
+     * @param user - said user
+     * @return the page
+     */
+    int getUserNewMessagesCount(User user);
 }

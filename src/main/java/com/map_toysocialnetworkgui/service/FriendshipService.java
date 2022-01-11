@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
@@ -178,5 +179,7 @@ public class FriendshipService extends AbstractObservable<EntityModificationObsE
         return friendshipRepo.getUserFriendshipsFromInterval(userEmail,begin,end,pageable);
     }
 
-
+    public int getUserNewFriendshipsCount(User user) {
+        return friendshipRepo.getUserNewFriendshipsCount(user);
+    }
 }

@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
@@ -154,5 +155,9 @@ public class FriendRequestService extends AbstractObservable<EntityModificationO
         if (friendRequest == null)
             throw new AdministrationException("Error: Users aren't friends!\n");
         return friendRequest;
+    }
+
+    public int getNewFriendRequestCount(User user) {
+        return friendRequestRepository.getNewFriendRequestCount(user);
     }
 }

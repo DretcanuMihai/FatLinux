@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.MessageValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
@@ -217,5 +218,9 @@ public class MessageService extends AbstractObservable<EntityModificationObsEven
      */
     public Page<Message> getMessagesToUserFromFriendInInterval(String userEmail,String friendEmail, LocalDate begin, LocalDate end, Pageable pageable) {
         return messageRepo.getMessagesToUserFromFriendInInterval(userEmail,friendEmail, begin, end, pageable);
+    }
+
+    public int getUserNewMessagesCount(User user) {
+        return messageRepo.getUserNewMessagesCount(user);
     }
 }

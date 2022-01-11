@@ -8,6 +8,7 @@ import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserReposit
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -135,8 +136,8 @@ public class UserDBRepository implements UserRepositoryInterface {
             statementUpdate.setString(2, user.getFirstName());
             statementUpdate.setString(3, user.getLastName());
             statementUpdate.setDate(4, Date.valueOf(user.getJoinDate()));
-            statementUpdate.setString(5, user.getEmail());
-            statementUpdate.setTimestamp(6,Timestamp.valueOf(user.getLastLoginTime()));
+            statementUpdate.setTimestamp(5,Timestamp.valueOf(user.getLastLoginTime()));
+            statementUpdate.setString(6, user.getEmail());
             int affectedRows = statementUpdate.executeUpdate();
             if (affectedRows != 0)
                 toReturn = null;
@@ -229,6 +230,7 @@ public class UserDBRepository implements UserRepositoryInterface {
         String passwordHash = resultSet.getString("password_hash");
         LocalDate joinDate = resultSet.getDate("join_date").toLocalDate();
         String lastName = resultSet.getString("last_name");
-        return new User(email, passwordHash, firstName, lastName, joinDate);
+        LocalDateTime lastLoginTime=resultSet.getTimestamp("last_login_time").toLocalDateTime();
+        return new User(email, passwordHash, firstName, lastName, joinDate,lastLoginTime);
     }
 }

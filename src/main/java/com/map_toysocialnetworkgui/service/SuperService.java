@@ -568,26 +568,12 @@ public class SuperService {
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public UserDTO login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
-        User user = userService.login(userEmail, userPassword);
-        return new UserDTO(user);
-    }
-
-    /**
-     * logs in a user
-     *
-     * @param userEmail    - said user's email
-     * @param userPassword - said user's password
-     * @return said user's info
-     * @throws ValidationException     - if said user's email is invalid
-     * @throws AdministrationException - if credentials are invalid
-     */
-    public UserPage login2(String userEmail, String userPassword) throws ValidationException, AdministrationException {
+    public UserPage login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
         User user = userService.login(userEmail, userPassword);
         int nrOfNotifications= eventService.getNumberOfNotification(user);
-        int nrOfNewFriends=0;
-        int nrOfNewRequests=0;
-        int nrOfNewMessages=0;
+        int nrOfNewFriends=friendshipService.getUserNewFriendshipsCount(user);
+        int nrOfNewRequests=friendRequestService.getNewFriendRequestCount(user);
+        int nrOfNewMessages=messageService.getUserNewMessagesCount(user);
         return new UserPage(new UserDTO(user),nrOfNotifications,nrOfNewFriends,nrOfNewRequests,nrOfNewMessages);
     }
 
