@@ -9,6 +9,7 @@ module com.map_toysocialnetworkgui {
     requires java.sql;
     requires de.mkammerer.argon2.nolibs;
     requires com.sun.jna;
+    requires org.apache.pdfbox;
 
     opens com.map_toysocialnetworkgui to javafx.fxml;
     exports com.map_toysocialnetworkgui;
@@ -18,6 +19,4 @@ module com.map_toysocialnetworkgui {
 
     exports com.map_toysocialnetworkgui.model.entities_dto;
     opens com.map_toysocialnetworkgui.model.entities_dto to javafx.fxml;
-
-    requires org.apache.pdfbox;
 }

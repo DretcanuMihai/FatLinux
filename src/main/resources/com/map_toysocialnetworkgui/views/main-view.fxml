@@ -88,7 +88,7 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                        <JFXButton alignment="BASELINE_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Profile" textFill="#ff7700">
+                        <JFXButton fx:id="profileButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="10.0" onAction="#showUserProfile" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Profile" textFill="#ff7700">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
@@ -158,6 +158,11 @@
                   <ImageView fx:id="notificationBell" fitHeight="30.0" fitWidth="30.0" layoutX="195.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/noNotificationsIcon.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="120.0" fitWidth="120.0" layoutX="56.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/defaultProfilePic.png" />
                      </image>
                   </ImageView>
                </children>

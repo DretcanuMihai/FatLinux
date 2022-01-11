@@ -41,6 +41,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * controllers for child views
      */
     SearchFriendsController searchFriendsController;
+    UserProfileController userProfileController;
     EventsController eventsController;
     InboxController inboxController;
     FriendsViewController friendsViewController;
@@ -50,6 +51,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     Parent mainPageRoot;
     Parent searchForFriendRoot;
+    Parent userProfileRoot;
     Parent eventsRoot;
     Parent inboxRoot;
     Parent showFriendsRoot;
@@ -95,25 +97,29 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     private void initLoadersAndControllers() throws IOException {
         URL mainPageURL = getClass().getResource("/com/map_toysocialnetworkgui/views/mainPage-view.fxml");
         URL searchForFriendURL = getClass().getResource("/com/map_toysocialnetworkgui/views/searchFriend-view.fxml");
+        URL userProfileURL = getClass().getResource("/com/map_toysocialnetworkgui/views/userProfile-view.fxml");
         URL eventsURL = getClass().getResource("/com/map_toysocialnetworkgui/views/events-view.fxml");
         URL inboxURL = getClass().getResource("/com/map_toysocialnetworkgui/views/inbox-view.fxml");
         URL showFriendsURL = getClass().getResource("/com/map_toysocialnetworkgui/views/friends-view.fxml");
 
         FXMLLoader mainPageLoader = new FXMLLoader(mainPageURL);
         FXMLLoader searchForFriendLoader = new FXMLLoader(searchForFriendURL);
+        FXMLLoader userProfileLoader = new FXMLLoader(userProfileURL);
         FXMLLoader eventsLoader = new FXMLLoader(eventsURL);
         FXMLLoader inboxLoader = new FXMLLoader(inboxURL);
         FXMLLoader showFriendsLoader = new FXMLLoader(showFriendsURL);
 
         this.mainPageRoot = mainPageLoader.load();
         this.searchForFriendRoot = searchForFriendLoader.load();
+        this.userProfileRoot = userProfileLoader.load();
         this.eventsRoot = eventsLoader.load();
         this.inboxRoot = inboxLoader.load();
         this.showFriendsRoot = showFriendsLoader.load();
 
         this.searchFriendsController = searchForFriendLoader.getController();
-        this.inboxController = inboxLoader.getController();
+        this.userProfileController = userProfileLoader.getController();
         this.eventsController = eventsLoader.getController();
+        this.inboxController = inboxLoader.getController();
         this.friendsViewController = showFriendsLoader.getController();
     }
 
@@ -129,6 +135,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
         initEventsController();
         initSearchFriendsController();
+        initUserProfileController();
         initInboxController();
         initFriendsController();
         loadNotifications();
@@ -141,6 +148,14 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     private void initSearchFriendsController() {
         searchFriendsController.setLoggedUser(this.loggedUser);
         searchFriendsController.setService(this.service);
+    }
+
+    /**
+     * initiates user profile controller
+     */
+    private void initUserProfileController() {
+        userProfileController.setLoggedUser(this.loggedUser);
+        userProfileController.setService(this.service);
     }
 
     /**
@@ -246,6 +261,14 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     public void showSearchFriends() {
         searchFriendsController.search(searchBar.getText());
         mainBorderPane.setCenter(searchForFriendRoot);
+    }
+
+    /**
+     * shows the user profile view
+     */
+    public void showUserProfile() {
+        userProfileController.init();
+        mainBorderPane.setCenter(userProfileRoot);
     }
 
     /**

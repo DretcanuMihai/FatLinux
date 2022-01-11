@@ -23,6 +23,13 @@ public interface Page<E> {
     Pageable nextPageable();
 
     /**
+     * gets the previous pageable entity
+     *
+     * @return said pageable entity
+     */
+    Pageable previousPageable();
+
+    /**
      * gets the content of a page
      *
      * @return
