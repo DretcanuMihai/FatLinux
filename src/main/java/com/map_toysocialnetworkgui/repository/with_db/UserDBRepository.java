@@ -8,7 +8,9 @@ import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserReposit
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -144,7 +146,7 @@ public class UserDBRepository implements UserRepositoryInterface {
 
     @Override
     public Page<User> findAll(Pageable pageable) {
-        Set<User> users = new HashSet<>();
+        List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -168,7 +170,7 @@ public class UserDBRepository implements UserRepositoryInterface {
 
     @Override
     public Iterable<User> getUsersByName(String string) {
-        Set<User> users = new HashSet<>();
+        List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users u WHERE u.first_name || ' ' || u.last_name LIKE '%' || (?) || '%'";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -189,7 +191,7 @@ public class UserDBRepository implements UserRepositoryInterface {
 
     @Override
     public Page<User> getUsersByName(String string, Pageable pageable) {
-        Set<User> users = new HashSet<>();
+        List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users u WHERE u.first_name || ' ' || u.last_name LIKE '%' || (?) ||'%' OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);

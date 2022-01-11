@@ -162,4 +162,18 @@ public class FriendshipService extends AbstractObservable<EntityModificationObsE
             throw new ValidationException("Error: Invalid month!\n");
         return friendshipRepo.getUserFriendshipsFromMonth(userEmail, month, pageable);
     }
+
+    /**
+     * returns a page of all friendships of a user that were created in a specific month
+     *
+     * @param userEmail - email of user
+     * @param begin - begin of the interval
+     * @param end  - end of the interval
+     * @param pageable  - for paging
+     * @return a page of said friendships
+     * @throws ValidationException if month is invalid
+     */
+    public Page<Friendship> getUserFriendshipsFromInterval(String userEmail, LocalDate begin, LocalDate end, Pageable pageable) throws ValidationException {
+        return friendshipRepo.getUserFriendshipsFromInterval(userEmail,begin,end,pageable);
+    }
 }
