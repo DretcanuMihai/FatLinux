@@ -2,9 +2,16 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import java.io.IOException;
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 
 public class UserProfileController extends AbstractController {
@@ -12,6 +19,21 @@ public class UserProfileController extends AbstractController {
      * currently logged-in user
      */
     UserDTO loggedUser;
+
+    /**
+     * save report controller
+     */
+    SaveReportController saveReportController;
+
+    /**
+     * save report scene
+     */
+    Scene saveReportScene;
+
+    /**
+     * save report stage
+     */
+    Stage saveReportStage;
 
     /**
      * FXML data
@@ -27,13 +49,9 @@ public class UserProfileController extends AbstractController {
     @FXML
     TextField friendEmailTextField;
     @FXML
-    DatePicker startDatePickerGeneral;
+    DatePicker startDatePicker;
     @FXML
-    DatePicker endDatePickerGeneral;
-    @FXML
-    DatePicker startDatePickerFriend;
-    @FXML
-    DatePicker endDatePickerFriend;
+    DatePicker endDatePicker;
 
     /**
      * sets the currently logged-in user
@@ -44,6 +62,36 @@ public class UserProfileController extends AbstractController {
         this.loggedUser = loggedUser;
     }
 
+    /**
+     * initiates the scene for report saving
+     *
+     * @throws IOException - if an IO error occurs
+     */
+    public void initSaveReportScene() throws IOException {
+        URL saveReportURL = getClass().getResource("/com/map_toysocialnetworkgui/views/saveReport-view.fxml");
+        FXMLLoader saveReportLoader = new FXMLLoader(saveReportURL);
+        Parent saveReportRoot = saveReportLoader.load();
+        this.saveReportController = saveReportLoader.getController();
+        this.saveReportScene = new Scene(saveReportRoot);
+    }
+
+    /**
+     * initializes save report window's elements
+     */
+    public void initSaveReportWindow() {
+        this.saveReportStage = new Stage();
+        this.saveReportController.setService(this.service);
+        this.saveReportController.setLoggedUser(this.loggedUser);
+        this.saveReportStage.setScene(this.saveReportScene);
+        this.saveReportStage.initStyle(StageStyle.UNDECORATED);
+        this.saveReportStage.centerOnScreen();
+    }
+
+    @FXML
+    public void initialize() throws IOException {
+        initSaveReportScene();
+    }
+
     private void initProfileDetails() {
         this.firstNameTextField.setText(this.loggedUser.getFirstName());
         this.lastNameTextField.setText(this.loggedUser.getLastName());
@@ -51,12 +99,28 @@ public class UserProfileController extends AbstractController {
         this.joinDateTextField.setText(this.loggedUser.getJoinDate().format(DateTimeFormatter.ofPattern("EEE, d MMM yyyy")));
     }
 
-    public void generateGeneralReport() {
+    /**
+     * opens the save report window
+     */
+    public void openSaveReportWindow() {
+        this.saveReportStage.show();
+    }
 
+    public void generateGeneralReport() {
+        this.saveReportController.setReportType("general");
+        this.saveReportController.setStartDate(this.startDatePicker.getValue());
+        this.saveReportController.setEndDate(this.endDatePicker.getValue());
+        this.saveReportController.init();
+        openSaveReportWindow();
     }
 
     public void generateFriendReport() {
-
+        this.saveReportController.setReportType("friend");
+        this.saveReportController.setStartDate(this.startDatePicker.getValue());
+        this.saveReportController.setEndDate(this.endDatePicker.getValue());
+        this.saveReportController.setFriendEmail(this.friendEmailTextField.getText());
+        this.saveReportController.init();
+        openSaveReportWindow();
     }
 
     /**
@@ -64,15 +128,14 @@ public class UserProfileController extends AbstractController {
      */
     public void init() {
         initProfileDetails();
+        initSaveReportWindow();
         reset();
     }
 
     @Override
     public void reset() {
-        this.startDatePickerGeneral.getEditor().clear();
-        this.endDatePickerGeneral.getEditor().clear();
-        this.startDatePickerFriend.getEditor().clear();
-        this.endDatePickerFriend.getEditor().clear();
+        this.startDatePicker.getEditor().clear();
+        this.endDatePicker.getEditor().clear();
         this.friendEmailTextField.clear();
     }
 }
