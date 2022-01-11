@@ -89,6 +89,7 @@ public class MainApplication extends Application {
      * initiates FXML URLs
      */
     private void initURLs() {
+        var link =getClass().getResource("views/login-view.fxml");
         loginFXMLURL = getClass().getResource("views/login-view.fxml");
         mainFXMLURL = getClass().getResource("views/main-view.fxml");
         registerFXMLURL = getClass().getResource("views/register-view.fxml");

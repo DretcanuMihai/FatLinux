@@ -2,7 +2,9 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.EventDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
 import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,6 +38,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * currently logged-in user
      */
     UserDTO loggedUser;
+    UserPage userPage;
 
     /**
      * controllers for child views
@@ -131,6 +134,14 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     public void init(UserDTO user) {
         loggedUser = user;
+        Pageable notificationPageable=new PageableImplementation(1,10);
+        Pageable eventsPageable=new PageableImplementation(1,1);
+        Pageable sentPageable=new PageableImplementation(1,10);
+        Pageable receivedPageable=new PageableImplementation(1,10);
+        Pageable friendPageable=new PageableImplementation(1,10);
+        Pageable requestPageable=new PageableImplementation(1,10);
+        userPage=service.getUserPage(user.getEmail(),notificationPageable,eventsPageable,sentPageable,
+                receivedPageable,friendPageable,requestPageable);
         mainWindowTopAnchorPane.setStyle("-fx-border-color: black; -fx-border-width: 0px 0px 1px 0px");
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
         initEventsController();

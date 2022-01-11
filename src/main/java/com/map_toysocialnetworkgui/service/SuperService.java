@@ -573,6 +573,34 @@ public class SuperService {
         return new UserDTO(user);
     }
 
+
+    /**
+     * returns a User's info and some page's for app startup
+     * @param userEmail - said user's email
+     * @param notificationPageable - page of notifications
+     * @param eventsPageable - page of events
+     * @param sentPageable - page of snet messages
+     * @param receivedPageable - page of received messages
+     * @param friendPageable - page of friends
+     * @param requestPageable - page of friend requests
+     * @return - said page
+     * @throws ValidationException - if any data is invalid
+     * @throws AdministrationException - if user doesn't exist
+     */
+    public UserPage getUserPage(String userEmail,Pageable notificationPageable, Pageable eventsPageable,
+                                Pageable sentPageable,Pageable receivedPageable,
+                                Pageable friendPageable,Pageable requestPageable) throws ValidationException, AdministrationException {
+        UserDTO userDTO=new UserDTO(userService.getUserInfo(userEmail));
+        Page<EventDTO> currentNotification=getUserNotificationEvents(userEmail,notificationPageable);
+        Page<EventDTO> currentEvents=getUserEventsChronoDesc(userEmail,eventsPageable);
+        Page<MessageDTO> currentSent=getMessagesSentByUser(userEmail,sentPageable);
+        Page<MessageDTO> currentReceived=getMessagesReceivedByUser(userEmail,receivedPageable);
+        Page<FriendshipDTO> currentFriend=getAllFriendshipDTOsOfUser(userEmail,friendPageable);
+        Page<FriendRequestDTO> currentRequest=getFriendRequestsSentToUser(userEmail,requestPageable);
+        return new UserPage(userDTO,currentNotification,currentEvents,currentSent,
+                currentReceived,currentFriend,currentRequest);
+    }
+
     /**
      * retracts a friend request from sender to receiver
      *
@@ -847,7 +875,7 @@ public class SuperService {
      */
     public void preparePage(PDPageContentStream cont) throws IOException {
         cont.setFont(PDType1Font.COURIER_BOLD, 9);
-        cont.setLeading(10.5f);
+        cont.setLeading(10f);
         cont.newLineAtOffset(25, 700);
 
     }
@@ -1064,6 +1092,7 @@ public class SuperService {
 
         Pageable pageable=new PageableImplementation(1,7);
         while(true) {
+
             Page<Message> messagePage=messageService.getMessagesToUserInInterval(user.getEmail(),beginDate,endDate,pageable);
             List<Message> messages=messagePage.getContent().toList();
             if(messages.size()==0){
@@ -1188,4 +1217,5 @@ public class SuperService {
         }
         return toReturn;
     }
+
 }
