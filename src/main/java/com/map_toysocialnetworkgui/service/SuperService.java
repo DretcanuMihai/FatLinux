@@ -1067,7 +1067,7 @@ public class SuperService {
      * adds all the pages of messages received in interval to document
      *
      * @param document  - said document
-     * @param user      -said user
+     * @param user      - said user
      * @param beginDate - the beginning of the interval
      * @param endDate   - the end of the interval
      */
@@ -1092,7 +1092,8 @@ public class SuperService {
      *
      * @param userEmail - said user's email
      * @param beginDate - the beginning of the interval
-     * @param endDate   the end of the interval
+     * @param endDate   - the end of the interval
+     * @param fileName  - name of file
      * @throws ValidationException     - if data is invalid
      * @throws AdministrationException - if user doesn't exist
      */
@@ -1112,7 +1113,7 @@ public class SuperService {
             friendsPagesActivities(pdDocument, user, beginDate, endDate);
             mainMessagesPageActivities(pdDocument);
             messagesPagesActivities(pdDocument, user, beginDate, endDate);
-            pdDocument.save(fileName);
+            pdDocument.save("data/" + fileName + ".pdf");
             toReturn = pdDocument;
         } catch (IOException e) {
             e.printStackTrace();
@@ -1183,6 +1184,7 @@ public class SuperService {
      * @param friendEmail - said friend's email
      * @param beginDate   - the beginning of the interval
      * @param endDate     - the end of the interval
+     * @param fileName    - name of file
      * @throws ValidationException     - if data is invalid
      * @throws AdministrationException - if users don't exist, or they're not friends
      */
@@ -1203,7 +1205,7 @@ public class SuperService {
             mainPageConversation(pdDocument, beginDate, endDate, user, friend);
             messagesPagesConversation(pdDocument, user, friend, beginDate, endDate);
 
-            pdDocument.save(fileName);
+            pdDocument.save("data/" + fileName + ".pdf");
             toReturn = pdDocument;
         } catch (IOException e) {
             e.printStackTrace();

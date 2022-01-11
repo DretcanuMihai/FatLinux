@@ -281,12 +281,12 @@
     -fx-background-color: #F04A00;
 }
 
-.button#closeSaveEventButton {
+.button#closeSaveReportButton {
     -fx-focus-traversable: false;
     -fx-background-radius: 10px;
     -fx-background-color: #000000;
 }
 
-.button#closeSaveEventButton:hover {
+.button#closeSaveReportButton:hover {
     -fx-background-color: #424043;
 }

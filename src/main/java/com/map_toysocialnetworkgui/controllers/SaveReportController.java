@@ -7,10 +7,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
+/**
+ * controller for save report view
+ */
 public class SaveReportController extends AbstractControllerWithTitleBar {
     /**
      * currently logged-in user
@@ -26,6 +30,8 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
     Button saveReportButton;
     @FXML
     TextField fileNameTextField;
+    @FXML
+    BorderPane mainBorderPane;
 
     /**
      * type of report
@@ -53,6 +59,7 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
 
     /**
      * sets the report type
+     *
      * @param reportType - said report type
      */
     public void setReportType(String reportType) {
@@ -61,6 +68,7 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
 
     /**
      * sets the friend email for report
+     *
      * @param friendEmail - said friend email
      */
     public void setFriendEmail(String friendEmail) {
@@ -69,6 +77,7 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
 
     /**
      * sets start date for report
+     *
      * @param startDate - said start date
      */
     public void setStartDate(LocalDate startDate) {
@@ -77,6 +86,7 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
 
     /**
      * sets end date for report
+     *
      * @param endDate - said end date
      */
     public void setEndDate(LocalDate endDate) {
@@ -92,6 +102,7 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
     }
 
     public void init() {
+        mainBorderPane.setStyle("-fx-border-color: black; -fx-border-width: 1px");
         reset();
     }
 
@@ -101,7 +112,13 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
     public void saveReport() {
         if (this.reportType.equals("general")) {
             try {
-                this.service.reportActivities(this.loggedUser.getEmail(), this.startDate, this.endDate, "/data/" + this.fileNameTextField.getText() + ".pdf");
+                this.service.reportActivities(this.loggedUser.getEmail(), this.startDate, this.endDate, this.fileNameTextField.getText());
+                this.closeSaveReportWindow();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success!");
+                alert.setHeaderText("Report generated!");
+                alert.setContentText("The report has been successfully generated! See data folder for the generated .pdf report!");
+                alert.showAndWait();
             } catch (ValidationException | AdministrationException ex) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Warning!");
@@ -109,8 +126,7 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
                 alert.setContentText(ex.getMessage());
                 alert.showAndWait();
             }
-        }
-        else if (this.reportType.equals("friend")) {
+        } else if (this.reportType.equals("friend")) {
             if (this.friendEmail.equals("")) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Warning!");
@@ -119,7 +135,13 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
                 alert.showAndWait();
             } else
                 try {
-                    this.service.reportConversation(this.loggedUser.getEmail(), this.friendEmail, this.startDate, this.endDate, "/data/" + this.fileNameTextField.getText() + ".pdf");
+                    this.service.reportConversation(this.loggedUser.getEmail(), this.friendEmail, this.startDate, this.endDate, this.fileNameTextField.getText());
+                    this.closeSaveReportWindow();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success!");
+                    alert.setHeaderText("Report generated!");
+                    alert.setContentText("The report has been successfully generated! See data folder for the generated .pdf report!");
+                    alert.showAndWait();
                 } catch (ValidationException | AdministrationException ex) {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Warning!");
@@ -133,7 +155,7 @@ public class SaveReportController extends AbstractControllerWithTitleBar {
     /**
      * closes the window
      */
-    public void close() {
+    public void closeSaveReportWindow() {
         ((Stage) this.closeSaveReportButton.getScene().getWindow()).close();
     }
 

@@ -9,7 +9,6 @@ import com.map_toysocialnetworkgui.utils.observer.Observer;
 import com.map_toysocialnetworkgui.utils.structures.ConversationCustomVBox;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import com.map_toysocialnetworkgui.utils.styling.TextColoring;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

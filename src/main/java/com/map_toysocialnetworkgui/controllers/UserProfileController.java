@@ -92,6 +92,9 @@ public class UserProfileController extends AbstractController {
         initSaveReportScene();
     }
 
+    /**
+     * initializes profile details for currently logged in user
+     */
     private void initProfileDetails() {
         this.firstNameTextField.setText(this.loggedUser.getFirstName());
         this.lastNameTextField.setText(this.loggedUser.getLastName());
@@ -106,6 +109,9 @@ public class UserProfileController extends AbstractController {
         this.saveReportStage.show();
     }
 
+    /**
+     * generates report for new friendships and new messages received in a time interval
+     */
     public void generateGeneralReport() {
         this.saveReportController.setReportType("general");
         this.saveReportController.setStartDate(this.startDatePicker.getValue());
@@ -114,6 +120,9 @@ public class UserProfileController extends AbstractController {
         openSaveReportWindow();
     }
 
+    /**
+     * generates report for new messages received from a friend in a time interval
+     */
     public void generateFriendReport() {
         this.saveReportController.setReportType("friend");
         this.saveReportController.setStartDate(this.startDatePicker.getValue());
