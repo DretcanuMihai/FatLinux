@@ -2,6 +2,7 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import javafx.fxml.FXML;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 
 import java.time.format.DateTimeFormatter;
@@ -23,6 +24,16 @@ public class UserProfileController extends AbstractController {
     TextField emailTextField;
     @FXML
     TextField joinDateTextField;
+    @FXML
+    TextField friendEmailTextField;
+    @FXML
+    DatePicker startDatePickerGeneral;
+    @FXML
+    DatePicker endDatePickerGeneral;
+    @FXML
+    DatePicker startDatePickerFriend;
+    @FXML
+    DatePicker endDatePickerFriend;
 
     /**
      * sets the currently logged-in user
@@ -40,10 +51,28 @@ public class UserProfileController extends AbstractController {
         this.joinDateTextField.setText(this.loggedUser.getJoinDate().format(DateTimeFormatter.ofPattern("EEE, d MMM yyyy")));
     }
 
+    public void generateGeneralReport() {
+
+    }
+
+    public void generateFriendReport() {
+
+    }
+
     /**
      * initiates the user profile view
      */
     public void init() {
         initProfileDetails();
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        this.startDatePickerGeneral.getEditor().clear();
+        this.endDatePickerGeneral.getEditor().clear();
+        this.startDatePickerFriend.getEditor().clear();
+        this.endDatePickerFriend.getEditor().clear();
+        this.friendEmailTextField.clear();
     }
 }
