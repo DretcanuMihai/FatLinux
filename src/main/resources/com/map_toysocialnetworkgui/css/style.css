@@ -174,13 +174,13 @@
     -fx-background-color: #ff7700;
 }
 
-.inboxViewControlButtons, .inboxMessagingButtons, .eventsButtons {
+.inboxViewControlButtons, .inboxMessagingButtons, .eventsButtons, .reportButtons {
     -fx-focus-traversable: false;
     -fx-background-radius: 10px;
     -fx-background-color: #ff7700;
 }
 
-.inboxViewControlButtons:hover, .inboxMessagingButtons:hover, .eventsButtons:hover {
+.inboxViewControlButtons:hover, .inboxMessagingButtons:hover, .eventsButtons:hover, .reportButtons:hover {
     -fx-background-color: #F04A00;
 }
 

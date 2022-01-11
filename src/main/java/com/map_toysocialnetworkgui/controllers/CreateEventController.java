@@ -54,6 +54,9 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
         this.hostTextField.setPromptText(this.loggedUser.getFirstName() + " " + this.loggedUser.getLastName());
     }
 
+    /**
+     * creates a new event with the details entered in the corresponding text fields
+     */
     public void createNewEvent() {
         String eventTitle = this.titleTextField.getText();
         LocalDateTime eventDate = this.dateDatePicker.getValue().atTime(LocalTime.now());
@@ -61,11 +64,21 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
 
         this.service.createEvent(eventTitle, eventDescription, this.loggedUser.getEmail(), eventDate);
         this.close();
+        this.reset();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Success!");
         alert.setHeaderText("Event created!");
         alert.setContentText("Your event has been successfully created!");
         alert.showAndWait();
+    }
+
+
+    @Override
+    public void reset() {
+        this.hostTextField.setPromptText(this.loggedUser.getFirstName() + " " + this.loggedUser.getLastName());
+        this.titleTextField.clear();
+        this.dateDatePicker.getEditor().clear();
+        this.descriptionTextArea.clear();
     }
 
     /**

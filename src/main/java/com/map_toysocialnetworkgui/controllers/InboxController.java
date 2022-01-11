@@ -2,6 +2,7 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.utils.Constants;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
@@ -150,9 +151,24 @@ public class InboxController extends AbstractController implements Observer<Enti
             openComposeMessageWindow();
         });
 
+        this.conversationScrollPane.setOnScroll(event -> {
+            if (conversationScrollPane.getVvalue() < Constants.EPSILON) {
+                if (!conversationVBox.getChildren().isEmpty()) {
+                    ConversationCustomVBox lastParent = (ConversationCustomVBox) conversationVBox.getChildren().get(0);
+                    String parentMessageId = getTextFromTextFlow(lastParent.getParentMessageIdFlow());
+
+                    if (!parentMessageId.equals("")) {
+                        MessageDTO newParentMessage = service.getMessageDTO(Integer.parseInt(parentMessageId));
+                        ConversationCustomVBox root = createConversationCustomVBox(newParentMessage);
+                        conversationVBox.getChildren().add(0, root);
+                    }
+                }
+            }
+        });
+        /*
         this.conversationScrollPane.vvalueProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-                    if (newValue.doubleValue() == 0) {
+                    if (newValue.doubleValue() < Constants.EPSILON) {
                         if (!conversationVBox.getChildren().isEmpty()) {
                             ConversationCustomVBox lastParent = (ConversationCustomVBox) conversationVBox.getChildren().get(0);
                             String parentMessageId = getTextFromTextFlow(lastParent.getParentMessageIdFlow());
@@ -161,11 +177,14 @@ public class InboxController extends AbstractController implements Observer<Enti
                                 MessageDTO newParentMessage = service.getMessageDTO(Integer.parseInt(parentMessageId));
                                 ConversationCustomVBox root = createConversationCustomVBox(newParentMessage);
                                 conversationVBox.getChildren().add(0, root);
+                                // conversationScrollPane.setVvalue(1.0d / (conversationVBox.getChildren().size() * lastParent.getHeight()));
                             }
                         }
                     }
                 }
         );
+        */
+
     }
 
     /**
@@ -252,6 +271,7 @@ public class InboxController extends AbstractController implements Observer<Enti
         root1.setStyle("-fx-background-color: black");
         root1.changeTextAreaId("highlightedMessageTextArea");
 
+        this.conversationScrollPane.setVvalue(1);
         conversationVBox.getChildren().clear();
         if (message.getParentMessageId() != null) {
             conversationVBox.getChildren().add(0, root1);

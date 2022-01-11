@@ -263,7 +263,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         String sqlEvents = """
                 SELECT e.event_id, e.title, e.description, e.host_email, e.date
                 FROM events e inner join attendances a on e.event_id = a.event_id
-                WHERE a.user_email = (?) and e.date >= now()
+                WHERE a.user_email = (?)
                 ORDER BY e.date DESC
                 OFFSET (?) LIMIT (?)
                 """;
@@ -301,7 +301,8 @@ public class EventDBRepository implements EventRepositoryInterface {
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementEvents = connection.prepareStatement(sqlEvents)) {
 
-            statementEvents.setString(1,string);
+            statementEvents.setString(1, string);
+            statementEvents.setString(2, string);
             ResultSet resultSet = statementEvents.executeQuery();
             while (resultSet.next()) {
                 Event event = getNextFromSet(resultSet);
@@ -321,17 +322,19 @@ public class EventDBRepository implements EventRepositoryInterface {
                 FROM events
                 WHERE title like '%' || (?) || '%' or description like '%' || (?) || '%'
                 ORDER BY date DESC
+                OFFSET (?) LIMIT (?)
                 """;
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementEvents = connection.prepareStatement(sqlEvents)) {
 
-            statementEvents.setString(1,string);
+            statementEvents.setString(1, string);
+            statementEvents.setString(2, string);
             int pageSize = pageable.getPageSize();
             int pageNr = pageable.getPageNumber();
             int start = (pageNr - 1) * pageSize;
-            statementEvents.setInt(2, start);
-            statementEvents.setInt(3, pageSize);
+            statementEvents.setInt(3, start);
+            statementEvents.setInt(4, pageSize);
             ResultSet resultSet = statementEvents.executeQuery();
             while (resultSet.next()) {
                 Event event = getNextFromSet(resultSet);
