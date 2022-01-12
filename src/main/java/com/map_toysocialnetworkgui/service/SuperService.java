@@ -1117,6 +1117,9 @@ public class SuperService {
         if (beginDate == null || endDate == null) {
             throw new ValidationException("Error: begin and end date shouldn't be null");
         }
+        if (!(beginDate.compareTo(endDate)<0)) {
+            throw new ValidationException("Error: begin date should be before end date");
+        }
         if (fileName == null || fileName.equals("")) {
             throw new ValidationException("Error: file name cannot be null!");
         }
@@ -1210,6 +1213,9 @@ public class SuperService {
         friendshipService.getFriendship(userEmail, friendEmail);
         if (beginDate == null || endDate == null) {
             throw new ValidationException("Error: begin and end date shouldn't be null");
+        }
+        if (!(beginDate.compareTo(endDate)<0)) {
+            throw new ValidationException("Error: begin date should be before end date");
         }
         if (fileName == null || fileName.equals("")) {
             throw new ValidationException("Error: file name cannot be null!");
