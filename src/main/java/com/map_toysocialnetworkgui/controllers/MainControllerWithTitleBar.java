@@ -75,6 +75,12 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     ImageView notificationBell;
 
     /**
+     * notification bell images
+     */
+    Image noNewNotifications = new Image("com/map_toysocialnetworkgui/images/noNotificationsIcon.png");
+    Image newNotifications = new Image("com/map_toysocialnetworkgui/images/newNotificationsIcon.png");
+
+    /**
      * event DTO page
      */
     Page<EventDTO> eventDTOPage;
@@ -192,31 +198,31 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     private void loadNotifications() {
         this.eventDTOPage = this.service.getUserNotificationEvents(this.loggedUser.getEmail(), new PageableImplementation(1, 7));
-        if (eventDTOPage.getContent() == null) {
-            Image noNewNotifications = new Image("com/map_toysocialnetworkgui/images/noNotificationsIcon.png");
-            notificationBell.setImage(noNewNotifications);
-        } else {
-            Image noNewNotifications = new Image("com/map_toysocialnetworkgui/images/newNotificationsIcon.png");
-            notificationBell.setImage(noNewNotifications);
-            Stream<EventDTO> eventDTOStream = eventDTOPage.getContent();
-            this.events = new ArrayList<>(eventDTOStream.toList());
+        notificationBell.setImage(noNewNotifications);
+        Stream<EventDTO> eventDTOStream = eventDTOPage.getContent();
+        this.events = new ArrayList<>(eventDTOStream.toList());
+
+        if (this.events.size() != 0) {
+            notificationBell.setImage(newNotifications);
             Notifications.create()
                     .title("FAT Linux!")
-                    .text("You have new notifications!")
+                    .text("You have " + this.events.size() + " new notifications!")
                     .graphic(null)
                     .hideAfter(Duration.seconds(5))
                     .position(Pos.BOTTOM_RIGHT)
                     .showWarning();
 
             notificationBell.setOnMouseClicked(event -> {
-                Image newNotifications = new Image("com/map_toysocialnetworkgui/images/noNotificationsIcon.png");
-                notificationBell.setImage(newNotifications);
+                notificationBell.setImage(noNewNotifications);
 
                 ObservableList<String> modelNotifications = FXCollections.observableArrayList();
                 List<String> notificationMessages = new ArrayList<>();
                 this.events.forEach(eventDTO -> {
                     long daysLeft = ChronoUnit.DAYS.between(LocalDateTime.now(), eventDTO.getDate());
-                    notificationMessages.add(0, daysLeft + " days left until " + eventDTO.getTitle() + " takes place!");
+                    if (daysLeft == 0)
+                        notificationMessages.add(0, eventDTO.getTitle() + " takes place today!");
+                    else
+                        notificationMessages.add(0, daysLeft + " days left until " + eventDTO.getTitle() + " takes place!");
                 });
 
                 modelNotifications.setAll(notificationMessages);
@@ -242,6 +248,18 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
                 });
 
                 PopOver popOver = new PopOver(eventDTOListView);
+                popOver.setTitle("Notifications");
+                popOver.setDetachable(false);
+                popOver.setAnimated(true);
+                popOver.setHeaderAlwaysVisible(true);
+                popOver.show(notificationBell);
+            });
+        } else {
+            notificationBell.setOnMouseClicked(event -> {
+                Label noNewNotificationsLabel = new Label("No notifications!");
+                noNewNotificationsLabel.setFont(new Font(20));
+                noNewNotificationsLabel.setStyle("-fx-text-fill: black; -fx-padding: 10px 10px 10px 10px");
+                PopOver popOver = new PopOver(noNewNotificationsLabel);
                 popOver.setTitle("Notifications");
                 popOver.setDetachable(false);
                 popOver.setAnimated(true);
