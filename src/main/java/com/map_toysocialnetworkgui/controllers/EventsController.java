@@ -377,8 +377,6 @@ public class EventsController extends AbstractController {
      */
     public void searchForEvents() {
         currentMode="search";
-        loadEventPage();
-        showEvents();
         buttonColoring.setButtonForCancelSearchEvent(this.searchForEventsButton);
         eventsSearchBar.textProperty().addListener(textChangedListener);
 
@@ -387,5 +385,11 @@ public class EventsController extends AbstractController {
             eventsSearchBar.clear();
             init();
         });
+        if (this.eventsSearchBar.getText().equals(""))
+            showNoEventsLabel();
+        else {
+            loadEventPage();
+            showEvents();
+        }
     }
 }
