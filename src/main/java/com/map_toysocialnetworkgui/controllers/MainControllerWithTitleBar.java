@@ -6,6 +6,7 @@ import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -176,7 +177,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     private void initInboxController() {
         inboxController.setLoggedUser(loggedUser);
         inboxController.setService(this.service);
-        this.service.addMessageObserver(inboxController);
         inboxController.initModels();
     }
 
@@ -304,6 +304,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     public void logout() {
         application.changeToLogin();
+        service.logout(loggedUser.getEmail());
         reset();
     }
 
@@ -312,9 +313,16 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         searchFriendsController.reset();
         inboxController.reset();
         friendsViewController.reset();
-        this.service.removeMessageObserver(inboxController);
         loggedUser = null;
         userNameLabel.setText("");
         searchBar.setText("");
+    }
+
+    @Override
+    public void initAppExitButton() {
+        appExitButton.setOnMouseClicked(event -> {
+            service.logout(loggedUser.getEmail());
+            Platform.exit();
+        });
     }
 }

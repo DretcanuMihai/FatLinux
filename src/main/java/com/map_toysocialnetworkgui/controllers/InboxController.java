@@ -2,6 +2,7 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.service.SuperService;
 import com.map_toysocialnetworkgui.utils.Constants;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
@@ -9,7 +10,6 @@ import com.map_toysocialnetworkgui.utils.observer.Observer;
 import com.map_toysocialnetworkgui.utils.structures.ConversationCustomVBox;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import com.map_toysocialnetworkgui.utils.styling.TextColoring;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -42,11 +42,55 @@ import java.util.stream.StreamSupport;
 /**
  * controller for inbox view
  */
-public class InboxController extends AbstractController implements Observer<EntityModificationObsEvent<Integer>> {
+public class InboxController extends AbstractController {
     /**
      * currently logged-in user
      */
     UserDTO loggedUser;
+
+    Observer<EntityModificationObsEvent<Integer>> eventObserver=new Observer<EntityModificationObsEvent<Integer>>() {
+        @Override
+        public void update(EntityModificationObsEvent<Integer> event) {
+            ChangeEventType type = event.getType();
+            if (type == ChangeEventType.DELETE)
+                updateForDelete(event.getModifiedEntityID());
+            if (type == ChangeEventType.UPDATE)
+                updateForUpdate(event.getModifiedEntityID());
+            if (type == ChangeEventType.ADD)
+                updateForAdd(event.getModifiedEntityID());
+        }
+
+        /**
+         * method for delete (observer pattern)
+         *
+         * @param id - id of modified entity
+         */
+        public void updateForDelete(Integer id) {
+            // TODO
+        }
+
+        /**
+         * method for add (observer pattern)
+         *
+         * @param id - id of modified entity
+         */
+        public void updateForAdd(Integer id) {
+            MessageDTO messageDTO = service.getMessageDTO(id);
+            if (messageDTO.getFromEmail().equals(loggedUser.getEmail()))
+                modelSentMessages.add(0, messageDTO);
+            if (messageDTO.getToEmails().contains(loggedUser.getEmail()))
+                modelReceivedMessages.add(0, messageDTO);
+        }
+
+        /**
+         * method for update (observer pattern)
+         *
+         * @param id - id of modified entity
+         */
+        public void updateForUpdate(Integer id) {
+            // TODO
+        }
+    };
 
     /**
      * observable lists for sent and received messages
@@ -416,47 +460,7 @@ public class InboxController extends AbstractController implements Observer<Enti
         initComposeMessageWindow();
     }
 
-    @Override
-    public void update(EntityModificationObsEvent<Integer> event) {
-        ChangeEventType type = event.getType();
-        if (type == ChangeEventType.DELETE)
-            updateForDelete(event.getModifiedEntityID());
-        if (type == ChangeEventType.UPDATE)
-            updateForUpdate(event.getModifiedEntityID());
-        if (type == ChangeEventType.ADD)
-            updateForAdd(event.getModifiedEntityID());
-    }
 
-    /**
-     * method for delete (observer pattern)
-     *
-     * @param id - id of modified entity
-     */
-    public void updateForDelete(Integer id) {
-        // TODO
-    }
-
-    /**
-     * method for add (observer pattern)
-     *
-     * @param id - id of modified entity
-     */
-    public void updateForAdd(Integer id) {
-        MessageDTO messageDTO = service.getMessageDTO(id);
-        if (messageDTO.getFromEmail().equals(loggedUser.getEmail()))
-            modelSentMessages.add(0, messageDTO);
-        if (messageDTO.getToEmails().contains(loggedUser.getEmail()))
-            modelReceivedMessages.add(0, messageDTO);
-    }
-
-    /**
-     * method for update (observer pattern)
-     *
-     * @param id - id of modified entity
-     */
-    public void updateForUpdate(Integer id) {
-        // TODO
-    }
 
     @Override
     public void reset() {
@@ -464,6 +468,13 @@ public class InboxController extends AbstractController implements Observer<Enti
         modelReceivedMessages.setAll();
         modelSentMessages.setAll();
         conversationVBox.getChildren().clear();
+        this.service.removeMessageObserver(eventObserver);
+    }
+
+    @Override
+    public void setService(SuperService service) {
+        super.setService(service);
+        this.service.addMessageObserver(eventObserver);
     }
 
     /**

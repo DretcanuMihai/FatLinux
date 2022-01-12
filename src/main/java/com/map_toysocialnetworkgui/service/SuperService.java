@@ -578,6 +578,17 @@ public class SuperService {
     }
 
     /**
+     * logs a user out
+     *
+     * @param userEmail    - said user's email
+     * @throws ValidationException     - if said user's email is invalid
+     * @throws AdministrationException - if user doesn't exist
+     */
+    public void logout(String userEmail) throws ValidationException, AdministrationException {
+        userService.logout(userEmail);
+    }
+
+    /**
      * retracts a friend request from sender to receiver
      *
      * @param senderEmail   - sender's email
