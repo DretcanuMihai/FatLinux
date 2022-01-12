@@ -167,7 +167,6 @@ public class EventsController extends AbstractController {
 
         initCreateEventWindow();
         eventsSearchBar.textProperty().removeListener(textChangedListener);
-        eventsSearchBar.clear();
         buttonColoring.setButtonForSearchEvent(this.searchForEventsButton);
         buttonColoring.setButtonBlackWithLighterHover(this.deleteEventButton);
         this.deleteEventButton.setGraphic(deleteEventIcon);
