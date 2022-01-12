@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.skeletons.entity_based;
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PagingRepository;
@@ -58,4 +59,12 @@ public interface FriendshipRepositoryInterface extends PagingRepository<Unordere
      * @return the page
      */
     Page<Friendship> getUserFriendshipsFromInterval(String userEmail, LocalDate begin, LocalDate end, Pageable pageable);
+
+    /**
+     * gets a count of new friends made since last login
+     *
+     * @param user - said user
+     * @return the page
+     */
+    int getUserNewFriendshipsCount(User user);
 }

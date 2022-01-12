@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.model.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -28,6 +29,30 @@ public class User extends Entity<String> {
     private String passwordHash;
 
     /**
+     * asociated last time the user logged in
+     */
+    private LocalDateTime lastLoginTime;
+
+    /**
+     * creates a user based on the given information
+     *
+     * @param email        - user's email
+     * @param passwordHash - user's password hash
+     * @param firstName    - user's first name
+     * @param lastName     - user's last name
+     * @param joinDate     - the date the user joined
+     * @param lastLoginTime - the last time the user logged in
+     */
+    public User(String email, String passwordHash, String firstName, String lastName, LocalDate joinDate,LocalDateTime lastLoginTime) {
+        super(email);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.passwordHash = passwordHash;
+        this.joinDate = joinDate;
+        this.lastLoginTime=lastLoginTime;
+    }
+
+    /**
      * creates a user based on the given information
      *
      * @param email        - user's email
@@ -37,11 +62,7 @@ public class User extends Entity<String> {
      * @param joinDate     - the date the user joined
      */
     public User(String email, String passwordHash, String firstName, String lastName, LocalDate joinDate) {
-        super(email);
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.passwordHash = passwordHash;
-        this.joinDate = joinDate;
+        this(email,passwordHash,firstName,lastName,joinDate,LocalDateTime.now());
     }
 
     /**
@@ -114,6 +135,23 @@ public class User extends Entity<String> {
      */
     public LocalDate getJoinDate() {
         return joinDate;
+    }
+
+    /**
+     * gets the time the user last logged in
+     *
+     * @return said time
+     */
+    public LocalDateTime getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    /**
+     * sets the last time the user logged in
+     * @param lastLoginTime - the new time
+     */
+    public void setLastLoginTime(LocalDateTime lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
     }
 
     /**

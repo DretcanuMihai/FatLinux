@@ -1,12 +1,14 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Event;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.EventRepositoryInterface;
 
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -343,6 +345,30 @@ public class EventDBRepository implements EventRepositoryInterface {
             e.printStackTrace();
         }
         return new PageImplementation<>(pageable, events.stream());
+    }
+
+    @Override
+    public int getNumberOfNotification(User user) {
+        int toReturn=0;
+        String sqlEvents = """
+                SELECT count(*)
+                FROM events e inner join attendances a on e.event_id = a.event_id
+                WHERE a.user_email = (?) and e.date >= now() and e.date >= (?)
+                """;
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementEvents = connection.prepareStatement(sqlEvents)) {
+
+            statementEvents.setString(1,user.getEmail());
+            statementEvents.setDate(2, Date.valueOf(user.getLastLoginTime().toLocalDate()));
+            ResultSet resultSet = statementEvents.executeQuery();
+            resultSet.next();
+            Long l=resultSet.getLong(1);
+            toReturn=l.intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
     }
 
     /**

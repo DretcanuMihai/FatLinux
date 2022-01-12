@@ -568,9 +568,24 @@ public class SuperService {
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public UserDTO login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
+    public UserPage login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
         User user = userService.login(userEmail, userPassword);
-        return new UserDTO(user);
+        int nrOfNotifications= eventService.getNumberOfNotification(user);
+        int nrOfNewFriends=friendshipService.getUserNewFriendshipsCount(user);
+        int nrOfNewRequests=friendRequestService.getNewFriendRequestCount(user);
+        int nrOfNewMessages=messageService.getUserNewMessagesCount(user);
+        return new UserPage(new UserDTO(user),nrOfNotifications,nrOfNewFriends,nrOfNewRequests,nrOfNewMessages);
+    }
+
+    /**
+     * logs a user out
+     *
+     * @param userEmail    - said user's email
+     * @throws ValidationException     - if said user's email is invalid
+     * @throws AdministrationException - if user doesn't exist
+     */
+    public void logout(String userEmail) throws ValidationException, AdministrationException {
+        userService.logout(userEmail);
     }
 
     /**
@@ -848,7 +863,7 @@ public class SuperService {
      */
     public void preparePage(PDPageContentStream cont) throws IOException {
         cont.setFont(PDType1Font.COURIER_BOLD, 9);
-        cont.setLeading(10.5f);
+        cont.setLeading(10f);
         cont.newLineAtOffset(25, 700);
 
     }
@@ -1212,4 +1227,5 @@ public class SuperService {
         }
         return toReturn;
     }
+
 }

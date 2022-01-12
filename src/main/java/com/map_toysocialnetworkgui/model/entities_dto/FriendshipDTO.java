@@ -4,6 +4,7 @@ import com.map_toysocialnetworkgui.model.entities.Friendship;
 import com.map_toysocialnetworkgui.model.entities.User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * DTO class for friendship entities
@@ -12,7 +13,7 @@ public class FriendshipDTO {
     /**
      * begin date info
      */
-    private final LocalDate beginDate;
+    private final LocalDateTime beginDate;
 
     /**
      * users info
@@ -38,7 +39,7 @@ public class FriendshipDTO {
      *
      * @return said date
      */
-    public LocalDate getBeginDate() {
+    public LocalDateTime getBeginDate() {
         return beginDate;
     }
 

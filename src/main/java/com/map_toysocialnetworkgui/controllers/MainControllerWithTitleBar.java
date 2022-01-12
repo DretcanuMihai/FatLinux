@@ -2,8 +2,11 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.EventDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
 import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -36,6 +39,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * currently logged-in user
      */
     UserDTO loggedUser;
+    UserPage userPage;
 
     /**
      * controllers for child views
@@ -127,9 +131,10 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * initiates the main controller with the currently logged-in user
      * shows the main page view
      *
-     * @param user - said user
+     * @param userPage - said user's page
      */
-    public void init(UserDTO user) {
+    public void init(UserPage userPage) {
+        UserDTO user=userPage.getUserInfo();
         loggedUser = user;
         mainWindowTopAnchorPane.setStyle("-fx-border-color: black; -fx-border-width: 0px 0px 1px 0px");
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
@@ -172,7 +177,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     private void initInboxController() {
         inboxController.setLoggedUser(loggedUser);
         inboxController.setService(this.service);
-        this.service.addMessageObserver(inboxController);
         inboxController.initModels();
     }
 
@@ -300,6 +304,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     public void logout() {
         application.changeToLogin();
+        service.logout(loggedUser.getEmail());
         reset();
     }
 
@@ -308,9 +313,16 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         searchFriendsController.reset();
         inboxController.reset();
         friendsViewController.reset();
-        this.service.removeMessageObserver(inboxController);
         loggedUser = null;
         userNameLabel.setText("");
         searchBar.setText("");
+    }
+
+    @Override
+    public void initAppExitButton() {
+        appExitButton.setOnMouseClicked(event -> {
+            service.logout(loggedUser.getEmail());
+            Platform.exit();
+        });
     }
 }

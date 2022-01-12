@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
@@ -258,6 +259,26 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
             e.printStackTrace();
         }
         return new PageImplementation<>(pageable, friendRequests.stream());
+    }
+
+    @Override
+    public int getNewFriendRequestCount(User user) {
+        int toReturn = 0;
+        String sql = "SELECT count(*) FROM friend_requests WHERE receiver_email = (?) and send_time > (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, user.getEmail());
+            statement.setTimestamp(2, Timestamp.valueOf(user.getLastLoginTime()));
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            Long l=resultSet.getLong(1);
+            toReturn=l.intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
     }
 
     /**

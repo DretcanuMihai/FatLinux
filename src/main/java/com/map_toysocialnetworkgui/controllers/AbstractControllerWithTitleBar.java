@@ -18,7 +18,7 @@ public class AbstractControllerWithTitleBar extends AbstractController {
      * Window control buttons and title bar
      */
     @FXML
-    ImageView appExitButton;
+    protected ImageView appExitButton;
     @FXML
     ImageView appMaximizeButton;
     @FXML

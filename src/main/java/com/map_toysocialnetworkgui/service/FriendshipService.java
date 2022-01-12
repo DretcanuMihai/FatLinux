@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
@@ -12,6 +13,7 @@ import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * class that incorporates a service that works with friendship administration
@@ -48,7 +50,7 @@ public class FriendshipService extends AbstractObservable<EntityModificationObsE
      * @throws AdministrationException - if the friendship already exists
      */
     public void addFriendship(String userEmail1, String userEmail2) throws ValidationException, AdministrationException {
-        Friendship friendship = new Friendship(userEmail1, userEmail2, LocalDate.now());
+        Friendship friendship = new Friendship(userEmail1, userEmail2, LocalDateTime.now());
         friendshipValidator.validateDefault(friendship);
         Friendship result = friendshipRepo.save(friendship);
         if (result != null)
@@ -175,5 +177,9 @@ public class FriendshipService extends AbstractObservable<EntityModificationObsE
      */
     public Page<Friendship> getUserFriendshipsFromInterval(String userEmail, LocalDate begin, LocalDate end, Pageable pageable) throws ValidationException {
         return friendshipRepo.getUserFriendshipsFromInterval(userEmail,begin,end,pageable);
+    }
+
+    public int getUserNewFriendshipsCount(User user) {
+        return friendshipRepo.getUserNewFriendshipsCount(user);
     }
 }

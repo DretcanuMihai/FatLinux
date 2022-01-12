@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
@@ -434,6 +435,31 @@ public class MessageDBRepository implements MessageRepositoryInterface {
         }
         return new PageImplementation<>(pageable, conversation.stream());
 
+    }
+
+    @Override
+    public int getUserNewMessagesCount(User user) {
+        int toReturn=0;
+        String sqlFilterConversationByTime = """
+                SELECT count(*)
+                FROM messages m INNER JOIN message_deliveries md
+                ON m.message_id = md.message_id
+                WHERE md.receiver_email = (?) and m.send_time > (?)
+                """;
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, user.getEmail());
+            statementConversation.setTimestamp(2, Timestamp.valueOf(user.getLastLoginTime()));
+            ResultSet resultSet = statementConversation.executeQuery();
+            resultSet.next();
+            Long l=resultSet.getLong(1);
+            toReturn=l.intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
     }
 
     /**

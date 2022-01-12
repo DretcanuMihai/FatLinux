@@ -13,6 +13,7 @@ import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -185,8 +186,13 @@ public class UserService extends AbstractObservable<EntityModificationObsEvent<S
 
         if (found == null || !argon2.verify(found.getPasswordHash(), userPassword.toCharArray()))
             throw new AdministrationException("Invalid email or password!\n");
-        else
+        else {
+            LocalDateTime lastLogin=found.getLastLoginTime();
+            found.setLastLoginTime(LocalDateTime.now());
+            usersRepo.update(found);
+            found.setLastLoginTime(lastLogin);
             return found;
+        }
     }
 
     /**
@@ -214,5 +220,17 @@ public class UserService extends AbstractObservable<EntityModificationObsEvent<S
         if (string == null)
             throw new ValidationException("Error: string must be non null;\n");
         return usersRepo.getUsersByName(string, pageable);
+    }
+
+    /**
+     * logs a user out
+     * @param userEmail - said user's email
+     * @throws ValidationException - if any data is invalid
+     * @throws AdministrationException - if no user with given email exists
+     */
+    public void logout(String userEmail) throws ValidationException,AdministrationException{
+        User user=getUserInfo(userEmail);
+        user.setLastLoginTime(LocalDateTime.now());
+        usersRepo.update(user);
     }
 }
