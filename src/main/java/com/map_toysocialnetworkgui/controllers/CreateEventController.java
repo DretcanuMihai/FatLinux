@@ -1,6 +1,8 @@
 package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -66,19 +68,35 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
      */
     public void createNewEvent() {
         String eventTitle = this.titleTextField.getText();
-        LocalDateTime eventDate = this.dateDatePicker.getValue().atTime(LocalTime.now());
-        String eventDescription = this.descriptionTextArea.getText();
 
-        this.service.createEvent(eventTitle, eventDescription, this.loggedUser.getEmail(), eventDate);
-        this.close();
-        this.reset();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Success!");
-        alert.setHeaderText("Event created!");
-        alert.setContentText("Your event has been successfully created!");
-        alert.showAndWait();
+        if (this.dateDatePicker.getValue() == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning!");
+            alert.setHeaderText("Create event warning!");
+            alert.setContentText("Event date cannot be null!");
+            alert.showAndWait();
+        } else {
+            LocalDateTime eventDate = this.dateDatePicker.getValue().atTime(LocalTime.now());
+            String eventDescription = this.descriptionTextArea.getText();
+
+            try {
+                this.service.createEvent(eventTitle, eventDescription, this.loggedUser.getEmail(), eventDate);
+                this.close();
+                this.reset();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success!");
+                alert.setHeaderText("Event created!");
+                alert.setContentText("Your event has been successfully created!");
+                alert.showAndWait();
+            } catch (ValidationException | AdministrationException ex) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Warning!");
+                alert.setHeaderText("Create event warning!");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
+        }
     }
-
 
     @Override
     public void reset() {
