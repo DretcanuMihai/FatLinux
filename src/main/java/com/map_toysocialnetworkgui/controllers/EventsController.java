@@ -252,8 +252,10 @@ public class EventsController extends AbstractController {
     private void showEvents() {
         if (this.events.size() != 0) {
             fillEventDetails();
-            this.subscriptionToEventButton.setText("✘ Unsubscribe");
-            this.deleteEventButton.setVisible(this.events.get(0).getHostUser().getEmail().equals(this.loggedUser.getEmail()));
+            if (this.events.get(0).getAttendees().contains(this.loggedUser.getEmail()))
+                this.subscriptionToEventButton.setText("✘ Unsubscribe");
+            else
+                this.subscriptionToEventButton.setText("✔ Subscribe");
             this.eventDetailsPane.setVisible(true);
             this.eventImageStackPane.setVisible(true);
             this.eventImageView.setVisible(true);
@@ -261,6 +263,7 @@ public class EventsController extends AbstractController {
             this.subscriptionToEventButton.setVisible(true);
             this.nextEventButton.setVisible(pageHasNext());
             this.previousEventButton.setVisible(pageHasPrevious());
+            this.deleteEventButton.setVisible(this.events.get(0).getHostUser().getEmail().equals(this.loggedUser.getEmail()));
         } else {
             showNoEventsLabel();
         }
@@ -288,58 +291,26 @@ public class EventsController extends AbstractController {
         showEvents();
 
     }
-
-    /**
-     * shows the navigation buttons
-     */
-    private void setUpEventDetails() {
-        this.nextEventButton.setVisible(true);
-        this.previousEventButton.setVisible(true);
-        fillEventDetails();
-        if (this.events.get(0).getAttendees().contains(this.loggedUser.getEmail()))
-            this.subscriptionToEventButton.setText("✘ Unsubscribe");
-        else
-            this.subscriptionToEventButton.setText("✔ Subscribe");
-        this.deleteEventButton.setVisible(this.events.get(0).getHostUser().getEmail().equals(this.loggedUser.getEmail()));
+    public void initForDelete(){
+        initComponents();
+        loadEventPage();
+        showEvents();
     }
 
     /**
      * shows the previous event from the list
      */
     public void showPreviousEvent() {
-        showEvents(eventDTOPage.previousPageable());
-        this.eventDTOPage=getEventDTOPage();
-        this.nextPage = this.eventDTOPage;
-        this.eventDTOPage = this.previousPage;
-        if (this.previousPage.getPageable().getPageNumber() != 1)
-            this.previousPage = this.service.getUserEventsChronoDesc(loggedUser.getEmail(), this.previousPage.previousPageable());
-        else
-            this.previousEvents = new ArrayList<>();
-        this.events = new ArrayList<>(this.eventDTOPage.getContent().toList());
-        this.nextEvents = new ArrayList<>(this.nextPage.getContent().toList());
-
-        setUpEventDetails();
-        if (this.previousEvents.size() == 0)
-            this.previousEventButton.setVisible(false);
-
-        this.nextEventButton.setVisible(true);
+        loadEventPage(eventDTOPage.previousPageable());
+        showEvents();
     }
 
     /**
      * shows the next event from the list
      */
     public void showNextEvent() {
-        this.eventDTOPage=getEventDTOPage(eventDTOPage.nextPageable());
-        this.nextPage = this.service.getUserEventsChronoDesc(loggedUser.getEmail(), this.nextPage.nextPageable());
-        this.events = new ArrayList<>(this.eventDTOPage.getContent().toList());
-        this.nextEvents = new ArrayList<>(this.nextPage.getContent().toList());
-        this.previousEvents = new ArrayList<>(this.previousPage.getContent().toList());
-
-        setUpEventDetails();
-        if (this.nextEvents.size() == 0)
-            this.nextEventButton.setVisible(false);
-
-        this.previousEventButton.setVisible(true);
+        loadEventPage(eventDTOPage.nextPageable());
+        showEvents();
     }
 
     /**
@@ -354,7 +325,7 @@ public class EventsController extends AbstractController {
      */
     public void deleteEvent() {
         service.deleteEvent(this.events.get(0).getId());
-        init();
+        initForDelete();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Success!");
         alert.setHeaderText("Event deleted!");
@@ -396,26 +367,8 @@ public class EventsController extends AbstractController {
         if (this.eventsSearchBar.getText().equals("")) {
             showNoEventsLabel();
         } else {
-            eventDTOPage = this.service.getEventsFiltered(this.eventsSearchBar.getText(), new PageableImplementation(1, 7));
-            if (eventDTOPage.getContent() == null) {
-                showNoEventsLabel();
-            } else {
-                Stream<EventDTO> eventDTOStream = eventDTOPage.getContent();
-                this.events = new ArrayList<>(eventDTOStream.toList());
-                if (this.events.size() == 0)
-                    showNoEventsLabel();
-                else {
-                    showEvents();
-                    if (this.events.size() > 1)
-                        this.nextEventButton.setVisible(true);
-                    fillEventDetails();
-                    if (this.events.get(0).getAttendees().contains(this.loggedUser.getEmail()))
-                        this.subscriptionToEventButton.setText("✘ Unsubscribe");
-                    else
-                        this.subscriptionToEventButton.setText("✔ Subscribe");
-                    this.deleteEventButton.setVisible(this.events.get(0).getHostUser().getEmail().equals(this.loggedUser.getEmail()));
-                }
-            }
+            loadEventPage();
+            showEvents();
         }
     }
 
@@ -423,7 +376,9 @@ public class EventsController extends AbstractController {
      * enables searching with text changed from search bar
      */
     public void searchForEvents() {
-        loadSearchedEvents();
+        currentMode="search";
+        loadEventPage();
+        showEvents();
         buttonColoring.setButtonForCancelSearchEvent(this.searchForEventsButton);
         eventsSearchBar.textProperty().addListener(textChangedListener);
 

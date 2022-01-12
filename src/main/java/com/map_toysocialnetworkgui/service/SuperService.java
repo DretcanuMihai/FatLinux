@@ -1112,7 +1112,7 @@ public class SuperService {
      * @throws ValidationException     - if data is invalid
      * @throws AdministrationException - if user doesn't exist
      */
-    public PDDocument reportActivities(String userEmail, LocalDate beginDate, LocalDate endDate, String fileName) throws ValidationException, AdministrationException {
+    public void reportActivities(String userEmail, LocalDate beginDate, LocalDate endDate, String fileName) throws ValidationException, AdministrationException {
         User user = userService.getUserInfo(userEmail);
         if (beginDate == null || endDate == null) {
             throw new ValidationException("Error: begin and end date shouldn't be null");
@@ -1123,7 +1123,6 @@ public class SuperService {
         if (fileName == null || fileName.equals("")) {
             throw new ValidationException("Error: file name cannot be null!");
         }
-        PDDocument toReturn = null;
         try (PDDocument pdDocument = new PDDocument()) {
 
             mainPageActivities(pdDocument, beginDate, endDate, user);
@@ -1132,11 +1131,9 @@ public class SuperService {
             mainMessagesPageActivities(pdDocument);
             messagesPagesActivities(pdDocument, user, beginDate, endDate);
             pdDocument.save("data/" + fileName + ".pdf");
-            toReturn = pdDocument;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return toReturn;
     }
 
     /**
@@ -1206,7 +1203,7 @@ public class SuperService {
      * @throws ValidationException     - if data is invalid
      * @throws AdministrationException - if users don't exist, or they're not friends
      */
-    public PDDocument reportConversation(String userEmail, String friendEmail, LocalDate beginDate,
+    public void reportConversation(String userEmail, String friendEmail, LocalDate beginDate,
                                          LocalDate endDate, String fileName) throws ValidationException, AdministrationException {
         User user = userService.getUserInfo(userEmail);
         User friend = userService.getUserInfo(friendEmail);
@@ -1220,18 +1217,15 @@ public class SuperService {
         if (fileName == null || fileName.equals("")) {
             throw new ValidationException("Error: file name cannot be null!");
         }
-        PDDocument toReturn = null;
         try (PDDocument pdDocument = new PDDocument()) {
 
             mainPageConversation(pdDocument, beginDate, endDate, user, friend);
             messagesPagesConversation(pdDocument, user, friend, beginDate, endDate);
 
             pdDocument.save("data/" + fileName + ".pdf");
-            toReturn = pdDocument;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return toReturn;
     }
 
 }
