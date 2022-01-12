@@ -4,9 +4,7 @@ import com.map_toysocialnetworkgui.model.entities_dto.EventDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
 import com.map_toysocialnetworkgui.repository.paging.Page;
-import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -134,8 +132,9 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * @param userPage - said user's page
      */
     public void init(UserPage userPage) {
-        UserDTO user=userPage.getUserInfo();
+        UserDTO user = userPage.getUserInfo();
         loggedUser = user;
+        this.setAppExitButtonForUserLogout(this.loggedUser);
         mainWindowTopAnchorPane.setStyle("-fx-border-color: black; -fx-border-width: 0px 0px 1px 0px");
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
         initEventsController();
@@ -316,13 +315,5 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         loggedUser = null;
         userNameLabel.setText("");
         searchBar.setText("");
-    }
-
-    @Override
-    public void initAppExitButton() {
-        appExitButton.setOnMouseClicked(event -> {
-            service.logout(loggedUser.getEmail());
-            Platform.exit();
-        });
     }
 }

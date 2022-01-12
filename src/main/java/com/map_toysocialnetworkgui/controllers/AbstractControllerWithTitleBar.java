@@ -1,5 +1,6 @@
 package com.map_toysocialnetworkgui.controllers;
 
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
@@ -98,6 +99,25 @@ public class AbstractControllerWithTitleBar extends AbstractController {
         appExitButton.setOnMouseClicked(event -> {
             Stage stage = (Stage) appExitButton.getScene().getWindow();
             stage.close();
+        });
+        appExitButton.setOnMouseEntered(event -> {
+            appExitButton.setImage(appExitHoveredButton);
+        });
+        appExitButton.setOnMouseExited(event -> {
+            appExitButton.setImage(exitButtonImage);
+        });
+    }
+
+    /**
+     * sets the exit button to log out the currently logged-in user before exiting
+     *
+     * @param loggedUser - said logged user
+     */
+    public void setAppExitButtonForUserLogout(UserDTO loggedUser) {
+        Image exitButtonImage = appExitButton.getImage();
+        appExitButton.setOnMouseClicked(event -> {
+            service.logout(loggedUser.getEmail());
+            Platform.exit();
         });
         appExitButton.setOnMouseEntered(event -> {
             appExitButton.setImage(appExitHoveredButton);

@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 /**
  * controller for events view
@@ -193,37 +192,40 @@ public class EventsController extends AbstractController {
     }
 
     /**
-     *  gets the eventDTO page for a pageable
+     * gets the eventDTO page for a pageable
+     *
      * @param pageable - said pageable
      * @return said page
      */
-    private Page<EventDTO> getEventDTOPage(Pageable pageable){
-        if(currentMode.equals("normal"))
+    private Page<EventDTO> getEventDTOPage(Pageable pageable) {
+        if (currentMode.equals("normal"))
             return this.service.getUserEventsChronoDesc(this.loggedUser.getEmail(), pageable);
-        return this.service.getEventsFiltered(eventsSearchBar.getText(),pageable);
+        return this.service.getEventsFiltered(eventsSearchBar.getText(), pageable);
     }
 
     /**
      * verifies if current page has next page
+     *
      * @return true if it has next page, false otherwise
      */
-    private boolean pageHasNext(){
-        return getEventDTOPage(eventDTOPage.nextPageable()).getContent().toList().size()!=0;
+    private boolean pageHasNext() {
+        return getEventDTOPage(eventDTOPage.nextPageable()).getContent().toList().size() != 0;
     }
 
     /**
      * verifies if current page has previous page
+     *
      * @return true if it has next page, false otherwise
      */
-    private boolean pageHasPrevious(){
-        return eventDTOPage.getPageable().getPageNumber()!=1;
+    private boolean pageHasPrevious() {
+        return eventDTOPage.getPageable().getPageNumber() != 1;
     }
 
     /**
      * loads events
      */
     private void loadEventPage() {
-        loadEventPage(new PageableImplementation(1,1));
+        loadEventPage(new PageableImplementation(1, 1));
     }
 
     /**
@@ -285,13 +287,14 @@ public class EventsController extends AbstractController {
      * initiates the events view
      */
     public void init() {
-        currentMode="normal";
+        currentMode = "normal";
         initComponents();
         loadEventPage();
         showEvents();
 
     }
-    public void initForDelete(){
+
+    public void initForDelete() {
         initComponents();
         loadEventPage();
         showEvents();
@@ -376,10 +379,9 @@ public class EventsController extends AbstractController {
      * enables searching with text changed from search bar
      */
     public void searchForEvents() {
-        currentMode="search";
+        currentMode = "search";
         buttonColoring.setButtonForCancelSearchEvent(this.searchForEventsButton);
         eventsSearchBar.textProperty().addListener(textChangedListener);
-
         searchForEventsButton.setOnAction(event -> {
             eventsSearchBar.textProperty().removeListener(textChangedListener);
             eventsSearchBar.clear();
