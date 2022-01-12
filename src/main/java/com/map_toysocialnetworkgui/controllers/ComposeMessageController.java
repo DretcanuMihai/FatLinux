@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.util.Arrays;
@@ -48,6 +49,8 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
     TextField subjectTextField;
     @FXML
     TextArea messageTextArea;
+    @FXML
+    BorderPane composeMessageBorderPane;
 
     /**
      * makes the exit button able to only close the associated window
@@ -100,6 +103,7 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
      * initiates compose message window based on its main functionality
      */
     public void init() {
+        composeMessageBorderPane.setStyle("-fx-border-color: black; -fx-border-width: 1px");
         messageTextArea.setWrapText(true);
         switch (this.primaryFunction) {
             case "Compose New" -> {

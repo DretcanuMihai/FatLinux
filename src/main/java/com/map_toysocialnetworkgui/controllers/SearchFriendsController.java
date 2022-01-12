@@ -170,7 +170,7 @@ public class SearchFriendsController extends AbstractController {
                         }
                     } else if (addFriendButton.getText().equals("Cancel friend request")) {
                         service.retractFriendRequest(loggedUser.getEmail(), user.getEmail());
-                        friendRequestedEmails.remove(user.getEmail()) ;
+                        friendRequestedEmails.remove(user.getEmail());
                         addFriendButton.setText("Add friend");
                     }
                 });

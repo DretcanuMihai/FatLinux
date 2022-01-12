@@ -9,7 +9,7 @@ public class TextColoring {
     /**
      * method for coloring a text in white
      *
-     * @param text
+     * @param text - said text
      */
     public void setTextWhite(Text text) {
         text.setStyle("-fx-fill: white");

@@ -195,6 +195,11 @@ public class InboxController extends AbstractController {
             openComposeMessageWindow();
         });
 
+        this.conversationScrollPane.getContent().setOnScroll(scrollEvent -> {
+            double deltaY = scrollEvent.getDeltaY() * 0.01;
+            this.conversationScrollPane.setVvalue(this.conversationScrollPane.getVvalue() - deltaY);
+        });
+
         this.conversationScrollPane.setOnScroll(event -> {
             if (conversationScrollPane.getVvalue() < Constants.EPSILON) {
                 if (!conversationVBox.getChildren().isEmpty()) {
@@ -228,7 +233,6 @@ public class InboxController extends AbstractController {
                 }
         );
         */
-
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Event;
-import com.map_toysocialnetworkgui.model.entities.Message;
 import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
@@ -99,7 +98,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PageImplementation<>(pageable,events.stream());
+        return new PageImplementation<>(pageable, events.stream());
     }
 
     @Override
@@ -183,15 +182,15 @@ public class EventDBRepository implements EventRepositoryInterface {
         Collection<Event> events = new ArrayList<>();
         String sqlEvents = """
                 SELECT e.event_id, e.title, e.description, e.host_email, e.date
-                FROM events e inner join attendances a on e.event_id = a.event_id
-                WHERE a.user_email = (?) and e.date >= now()
+                FROM events e INNER JOIN attendances a ON e.event_id = a.event_id
+                WHERE a.user_email = (?) AND e.date >= now()
                 ORDER BY e.date DESC
                 """;
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementEvents = connection.prepareStatement(sqlEvents)) {
 
-            statementEvents.setString(1,email);
+            statementEvents.setString(1, email);
             ResultSet resultSet = statementEvents.executeQuery();
             while (resultSet.next()) {
                 Event event = getNextFromSet(resultSet);
@@ -208,8 +207,8 @@ public class EventDBRepository implements EventRepositoryInterface {
         Collection<Event> events = new ArrayList<>();
         String sqlEvents = """
                 SELECT e.event_id, e.title, e.description, e.host_email, e.date
-                FROM events e inner join attendances a on e.event_id = a.event_id
-                WHERE a.user_email = (?) and e.date >= now()
+                FROM events e INNER JOIN attendances a ON e.event_id = a.event_id
+                WHERE a.user_email = (?) AND e.date >= now()
                 ORDER BY e.date DESC
                 OFFSET (?) LIMIT (?)
                 """;
@@ -217,7 +216,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementEvents = connection.prepareStatement(sqlEvents)) {
 
-            statementEvents.setString(1,email);
+            statementEvents.setString(1, email);
             int pageSize = pageable.getPageSize();
             int pageNr = pageable.getPageNumber();
             int start = (pageNr - 1) * pageSize;
@@ -231,7 +230,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PageImplementation<>(pageable,events.stream());
+        return new PageImplementation<>(pageable, events.stream());
     }
 
     @Override
@@ -239,7 +238,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         Collection<Event> events = new ArrayList<>();
         String sqlEvents = """
                 SELECT e.event_id, e.title, e.description, e.host_email, e.date
-                FROM events e inner join attendances a on e.event_id = a.event_id
+                FROM events e INNER JOIN attendances a ON e.event_id = a.event_id
                 WHERE a.user_email = (?)
                 ORDER BY e.date DESC
                 """;
@@ -247,7 +246,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementEvents = connection.prepareStatement(sqlEvents)) {
 
-            statementEvents.setString(1,email);
+            statementEvents.setString(1, email);
             ResultSet resultSet = statementEvents.executeQuery();
             while (resultSet.next()) {
                 Event event = getNextFromSet(resultSet);
@@ -264,7 +263,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         Collection<Event> events = new ArrayList<>();
         String sqlEvents = """
                 SELECT e.event_id, e.title, e.description, e.host_email, e.date
-                FROM events e inner join attendances a on e.event_id = a.event_id
+                FROM events e INNER JOIN attendances a ON e.event_id = a.event_id
                 WHERE a.user_email = (?)
                 ORDER BY e.date DESC
                 OFFSET (?) LIMIT (?)
@@ -273,7 +272,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementEvents = connection.prepareStatement(sqlEvents)) {
 
-            statementEvents.setString(1,email);
+            statementEvents.setString(1, email);
             int pageSize = pageable.getPageSize();
             int pageNr = pageable.getPageNumber();
             int start = (pageNr - 1) * pageSize;
@@ -287,7 +286,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PageImplementation<>(pageable,events.stream());
+        return new PageImplementation<>(pageable, events.stream());
     }
 
     @Override
@@ -296,8 +295,8 @@ public class EventDBRepository implements EventRepositoryInterface {
         String sqlEvents = """
                 SELECT *
                 FROM events
-                WHERE title like '%' || (?) || '%' or description like '%' || (?) || '%'
-                ORDER BY date DESC
+                WHERE title LIKE '%' || (?) || '%' OR description LIKE '%' || (?) || '%'
+                ORDER BY DATE DESC
                 """;
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -322,8 +321,8 @@ public class EventDBRepository implements EventRepositoryInterface {
         String sqlEvents = """
                 SELECT *
                 FROM events
-                WHERE title like '%' || (?) || '%' or description like '%' || (?) || '%'
-                ORDER BY date DESC
+                WHERE title LIKE '%' || (?) || '%' OR description LIKE '%' || (?) || '%'
+                ORDER BY DATE DESC
                 OFFSET (?) LIMIT (?)
                 """;
 
@@ -345,7 +344,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PageImplementation<>(pageable,events.stream());
+        return new PageImplementation<>(pageable, events.stream());
     }
 
     @Override
@@ -385,8 +384,8 @@ public class EventDBRepository implements EventRepositoryInterface {
         String description = resultSet.getString("description");
         String hostEmail = resultSet.getString("host_email");
         List<String> attendeesEmails = getAttendeeEmailsOf(id);
-        LocalDateTime date=resultSet.getTimestamp("date").toLocalDateTime();
-        return new Event(id,title,description,hostEmail,attendeesEmails,date);
+        LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
+        return new Event(id, title, description, hostEmail, attendeesEmails, date);
     }
 
     /**
@@ -430,7 +429,7 @@ public class EventDBRepository implements EventRepositoryInterface {
     /**
      * saves an attendance into the database
      *
-     * @param eventID     - the event ID
+     * @param eventID       - the event ID
      * @param attendeeEmail - the attendee's email
      */
     private void saveAttendance(Integer eventID, String attendeeEmail) {
@@ -463,7 +462,7 @@ public class EventDBRepository implements EventRepositoryInterface {
      * @param id - the event's id
      */
     private void deleteAttendancesOf(Integer id) {
-        String sqlDeleteMessageDeliveries = "DELETE from attendances WHERE event_id = (?)";
+        String sqlDeleteMessageDeliveries = "DELETE FROM attendances WHERE event_id = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
 

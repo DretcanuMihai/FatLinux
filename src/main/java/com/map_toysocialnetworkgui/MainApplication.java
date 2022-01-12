@@ -8,7 +8,6 @@ import com.map_toysocialnetworkgui.model.validators.*;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.*;
 import com.map_toysocialnetworkgui.repository.with_db.*;
 import com.map_toysocialnetworkgui.service.*;
-import com.map_toysocialnetworkgui.utils.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,7 +17,6 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 
 public class MainApplication extends Application {
     /**
@@ -75,15 +73,15 @@ public class MainApplication extends Application {
         FriendshipValidator friendshipValidator = new FriendshipValidator();
         MessageValidator messageValidator = new MessageValidator();
         FriendRequestValidator friendRequestValidator = new FriendRequestValidator();
-        EventValidator eventValidator=new EventValidator();
+        EventValidator eventValidator = new EventValidator();
 
         // Services
         UserService userService = new UserService(userRepo, userValidator);
         FriendshipService friendshipService = new FriendshipService(friendshipRepo, friendshipValidator);
         FriendRequestService friendRequestService = new FriendRequestService(friendRequestRepository, friendRequestValidator);
         MessageService messageService = new MessageService(messageDBRepository, messageValidator);
-        EventService eventService=new EventService(eventRepository,eventValidator);
-        this.service = new SuperService(userService, friendshipService, friendRequestService, messageService,eventService);
+        EventService eventService = new EventService(eventRepository, eventValidator);
+        this.service = new SuperService(userService, friendshipService, friendRequestService, messageService, eventService);
     }
 
     /**
