@@ -75,6 +75,10 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     @FXML
     Label eventNotificationNumberLabel;
     @FXML
+    Label inboxNotificationNumberLabel;
+    @FXML
+    Label friendsNotificationNumberLabel;
+    @FXML
     BorderPane mainBorderPane;
     @FXML
     TextField searchBar;
@@ -82,6 +86,10 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     Button searchForFriendsButton;
     @FXML
     ImageView notificationBell;
+    @FXML
+    ImageView inboxNotificationBubble;
+    @FXML
+    ImageView friendsNotificationBubble;
 
     /**
      * button coloring
@@ -152,6 +160,38 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         this.friendsViewController = showFriendsLoader.getController();
     }
 
+    private void initNumberOfNotifications(UserPage userPage) {
+        if (userPage.getNrOfNotifications() > 0) {
+            eventNotificationNumberLabel.setVisible(true);
+            eventNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNotifications()));
+            if (userPage.getNrOfNotifications() > 9)
+                eventNotificationNumberLabel.setText("9＋");
+        }
+        if (userPage.getNrOfNewRequests() > 0) {
+            friendsNotificationBubble.setVisible(true);
+            friendsNotificationNumberLabel.setVisible(true);
+            friendsNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNewRequests()));
+            if (userPage.getNrOfNewRequests() > 9)
+                friendsNotificationNumberLabel.setText("9＋");
+        }
+        if (userPage.getNrOfNewMessages() > 0) {
+            inboxNotificationBubble.setVisible(true);
+            inboxNotificationNumberLabel.setVisible(true);
+            inboxNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNewMessages()));
+            if (userPage.getNrOfNewMessages() > 9)
+                inboxNotificationNumberLabel.setText("9＋");
+        }
+        if (userPage.getNrOfNewFriends() > 0) {
+            Notifications.create()
+                    .title("FAT Linux!")
+                    .text("You have " + userPage.getNrOfNewFriends() + " new friends!")
+                    .graphic(null)
+                    .hideAfter(Duration.seconds(5))
+                    .position(Pos.BOTTOM_RIGHT)
+                    .showInformation();
+        }
+    }
+
     /**
      * initiates the main controller with the currently logged-in user
      * shows the main page view
@@ -164,12 +204,13 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         this.setAppExitButtonForUserLogout(this.loggedUser);
         mainWindowTopAnchorPane.setStyle("-fx-border-color: black; -fx-border-width: 0px 0px 1px 0px");
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
-        if (userPage.getNrOfNotifications() > 0) {
-            eventNotificationNumberLabel.setVisible(true);
-            eventNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNotifications()));
-            if (userPage.getNrOfNotifications() > 9)
-                eventNotificationNumberLabel.setText("9+");
-        }
+        notificationBell.setImage(noNewNotifications);
+        eventNotificationNumberLabel.setVisible(false);
+        friendsNotificationBubble.setVisible(false);
+        friendsNotificationNumberLabel.setVisible(false);
+        inboxNotificationBubble.setVisible(false);
+        inboxNotificationNumberLabel.setVisible(false);
+        initNumberOfNotifications(userPage);
         initEventsController();
         initSearchFriendsController();
         initUserProfileController();
@@ -294,8 +335,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     private void loadNotifications() {
         this.eventDTOPage = this.service.getUserNotificationEvents(this.loggedUser.getEmail(), new PageableImplementation(1, 7));
-        notificationBell.setImage(noNewNotifications);
-        eventNotificationNumberLabel.setVisible(false);
         Stream<EventDTO> eventDTOStream = eventDTOPage.getContent();
         this.events = new ArrayList<>(eventDTOStream.toList());
 
@@ -375,6 +414,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows the inbox view
      */
     public void showInbox() {
+        inboxNotificationBubble.setVisible(false);
+        inboxNotificationNumberLabel.setVisible(false);
         inboxController.init();
         mainBorderPane.setCenter(inboxRoot);
     }
@@ -383,6 +424,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows the friends view
      */
     public void showFriends() {
+        friendsNotificationBubble.setVisible(false);
+        friendsNotificationNumberLabel.setVisible(false);
         friendsViewController.init();
         mainBorderPane.setCenter(showFriendsRoot);
     }
