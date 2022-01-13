@@ -290,3 +290,16 @@
 .button#closeSaveReportButton:hover {
     -fx-background-color: #424043;
 }
+
+.popover > .border {
+    -fx-border-style: none;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-fill: derive(-fx-base, 35%);;
+}
+
+.popover > .content > .title > .text {
+    -fx-text-fill: black;
+    -fx-font-size: 20;
+    -fx-padding: 10px 10px 10px 10px;
+}

@@ -5,17 +5,22 @@ import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
+import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
+import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
@@ -27,6 +32,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -37,7 +43,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * currently logged-in user
      */
     UserDTO loggedUser;
-    UserPage userPage;
 
     /**
      * controllers for child views
@@ -75,6 +80,17 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     ImageView notificationBell;
 
     /**
+     * button coloring
+     */
+    ButtonColoring buttonColoring;
+
+    /**
+     * page navigation button images
+     */
+    ImageView nextPageButtonImage = new ImageView("com/map_toysocialnetworkgui/images/nextPageIcon.png");
+    ImageView previousPageButtonImage = new ImageView("com/map_toysocialnetworkgui/images/previousPageIcon.png");
+
+    /**
      * notification bell images
      */
     Image noNewNotifications = new Image("com/map_toysocialnetworkgui/images/noNotificationsIcon.png");
@@ -94,6 +110,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     @Override
     public void initialize() throws IOException {
         super.initialize();
+        buttonColoring = new ButtonColoring();
         initLoadersAndControllers();
     }
 
@@ -194,6 +211,75 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     }
 
     /**
+     * initializes notifications list
+     */
+    private ListView<String> initNotificationsList(ObservableList<String> modelNotifications, List<String> notificationMessages) {
+        modelNotifications.setAll(notificationMessages);
+        ListView<String> eventDTOListView = new ListView<>(modelNotifications);
+        eventDTOListView.setFocusModel(new NoFocusModel<>());
+        eventDTOListView.setStyle("-fx-padding: 0px; -fx-background-insets: 0");
+        eventDTOListView.setPrefWidth(500);
+        eventDTOListView.setCellFactory(param -> new ListCell<>() {
+            {
+                setPrefHeight(60);
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                if (item != null && !empty) {
+                    this.setWrapText(true);
+                    this.setFont(new Font(15));
+                    this.setStyle("-fx-border-color: black; -fx-border-width: 0 0 3 0");
+                    setText(item);
+                } else {
+                    setText(null);
+                }
+            }
+        });
+
+        return eventDTOListView;
+    }
+
+    /**
+     * generate the content shown in notifications' pop over
+     */
+    private VBox generateNotificationsPopOverContent(ListView<String> eventDTOListView) {
+        VBox notificationsVBox = new VBox();
+        HBox pageButtonsHBox = new HBox();
+        Button nextPageButton = new Button();
+        Button previousPageButton = new Button();
+
+        pageButtonsHBox.setAlignment(Pos.CENTER);
+        pageButtonsHBox.setSpacing(10);
+        pageButtonsHBox.setPrefHeight(40);
+        buttonColoring.setButtonOrange(nextPageButton);
+        buttonColoring.setButtonOrange(previousPageButton);
+        nextPageButton.setGraphic(nextPageButtonImage);
+        previousPageButton.setGraphic(previousPageButtonImage);
+        pageButtonsHBox.getChildren().addAll(previousPageButton, nextPageButton);
+        notificationsVBox.getChildren().add(eventDTOListView);
+        notificationsVBox.getChildren().add(pageButtonsHBox);
+
+        return notificationsVBox;
+    }
+
+    /**
+     * initiates notifications' pop over
+     */
+    private void initNotificationsPopOver(Node content) {
+        PopOver popOver = new PopOver(content);
+        popOver.setTitle("Notifications");
+        popOver.setArrowSize(20.0);
+        popOver.setDetachable(false);
+        popOver.setAnimated(true);
+        popOver.setHeaderAlwaysVisible(true);
+        popOver.show(notificationBell);
+        ((Parent)popOver.getSkin().getNode()).getStylesheets()
+                .add(Objects.requireNonNull(getClass()
+                        .getResource("/com/map_toysocialnetworkgui/css/style.css")).toExternalForm());
+    }
+
+    /**
      * loads the notifications for user
      */
     private void loadNotifications() {
@@ -214,9 +300,9 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
 
             notificationBell.setOnMouseClicked(event -> {
                 notificationBell.setImage(noNewNotifications);
-
                 ObservableList<String> modelNotifications = FXCollections.observableArrayList();
                 List<String> notificationMessages = new ArrayList<>();
+
                 this.events.forEach(eventDTO -> {
                     long daysLeft = ChronoUnit.DAYS.between(LocalDateTime.now(), eventDTO.getDate());
                     if (daysLeft == 0)
@@ -225,46 +311,16 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
                         notificationMessages.add(0, daysLeft + " days left until " + eventDTO.getTitle() + " takes place!");
                 });
 
-                modelNotifications.setAll(notificationMessages);
-                ListView<String> eventDTOListView = new ListView<>(modelNotifications);
-                eventDTOListView.setPrefWidth(500);
-                eventDTOListView.setCellFactory(param -> new ListCell<>() {
-                    {
-                        setPrefHeight(60);
-                        setFocused(false);
-                    }
-
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        if (item != null && !empty) {
-                            this.setWrapText(true);
-                            this.setFont(new Font(15));
-                            this.setStyle("-fx-border-color: black; -fx-border-width: 0 0 3 0");
-                            setText(item);
-                        } else {
-                            setText(null);
-                        }
-                    }
-                });
-
-                PopOver popOver = new PopOver(eventDTOListView);
-                popOver.setTitle("Notifications");
-                popOver.setDetachable(false);
-                popOver.setAnimated(true);
-                popOver.setHeaderAlwaysVisible(true);
-                popOver.show(notificationBell);
+                ListView<String> eventDTOListView = initNotificationsList(modelNotifications, notificationMessages);
+                VBox notificationsVBox = generateNotificationsPopOverContent(eventDTOListView);
+                initNotificationsPopOver(notificationsVBox);
             });
         } else {
             notificationBell.setOnMouseClicked(event -> {
                 Label noNewNotificationsLabel = new Label("No notifications!");
                 noNewNotificationsLabel.setFont(new Font(20));
                 noNewNotificationsLabel.setStyle("-fx-text-fill: black; -fx-padding: 10px 10px 10px 10px");
-                PopOver popOver = new PopOver(noNewNotificationsLabel);
-                popOver.setTitle("Notifications");
-                popOver.setDetachable(false);
-                popOver.setAnimated(true);
-                popOver.setHeaderAlwaysVisible(true);
-                popOver.show(notificationBell);
+                initNotificationsPopOver(noNewNotificationsLabel);
             });
         }
     }

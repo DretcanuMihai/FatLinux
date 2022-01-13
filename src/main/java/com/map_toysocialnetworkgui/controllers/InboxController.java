@@ -48,7 +48,12 @@ public class InboxController extends AbstractController {
      */
     UserDTO loggedUser;
 
-    Observer<EntityModificationObsEvent<Integer>> eventObserver=new Observer<EntityModificationObsEvent<Integer>>() {
+    /**
+     * observable lists for sent and received messages
+     */
+    ObservableList<MessageDTO> modelReceivedMessages = FXCollections.observableArrayList();
+    ObservableList<MessageDTO> modelSentMessages = FXCollections.observableArrayList();
+    Observer<EntityModificationObsEvent<Integer>> eventObserver = new Observer<EntityModificationObsEvent<Integer>>() {
         @Override
         public void update(EntityModificationObsEvent<Integer> event) {
             ChangeEventType type = event.getType();
@@ -91,12 +96,6 @@ public class InboxController extends AbstractController {
             // TODO
         }
     };
-
-    /**
-     * observable lists for sent and received messages
-     */
-    ObservableList<MessageDTO> modelReceivedMessages = FXCollections.observableArrayList();
-    ObservableList<MessageDTO> modelSentMessages = FXCollections.observableArrayList();
 
     /**
      * FXML data
@@ -463,7 +462,6 @@ public class InboxController extends AbstractController {
         viewReceivedMessages();
         initComposeMessageWindow();
     }
-
 
 
     @Override
