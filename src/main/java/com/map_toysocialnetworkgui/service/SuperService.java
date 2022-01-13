@@ -856,6 +856,32 @@ public class SuperService {
     }
 
     /**
+     * unsubscribes an user to an event's notifications
+     *
+     * @param id        - said event's id
+     * @param userEmail - said user's emails
+     * @throws ValidationException     - if data is invalid
+     * @throws AdministrationException - if the user/event doesn't exist or if it's not subscribed
+     */
+    public void requestNotificationsFromEvent(Integer id, String userEmail) {
+        userService.getUserInfo(userEmail);
+        eventService.requestNotificationsFromEvent(id, userEmail);
+    }
+
+    /**
+     * unsubscribes an user to an event's notifications
+     *
+     * @param id        - said event's id
+     * @param userEmail - said user's emails
+     * @throws ValidationException     - if data is invalid
+     * @throws AdministrationException - if the user/event doesn't exist or if it's not subscribed
+     */
+    public void unrequestNotificationsFromEvent(Integer id, String userEmail) {
+        userService.getUserInfo(userEmail);
+        eventService.unrequestNotificationsFromEvent(id, userEmail);
+    }
+
+    /**
      * preapres a page with normal format
      *
      * @param cont - said page's content stream

@@ -7,6 +7,7 @@ import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.EventRepositoryInterface;
+import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class EventService {
      * @throws ValidationException is data is invalid
      */
     public void save(String title, String description, String hostEmail, LocalDateTime date) throws ValidationException {
-        Event event = new Event(null, title, description, hostEmail, List.of(hostEmail), date);
+        Event event = new Event(null, title, description, hostEmail, List.of(new Pair<>(hostEmail,true)), date);
         validator.validateDefault(event);
         repo.save(event);
     }
@@ -83,9 +84,11 @@ public class EventService {
      */
     public void subscribeToEvent(Integer id, String userEmail) throws ValidationException, AdministrationException {
         Event event = findOne(id);
-        if (event.getAttendees().contains(userEmail))
-            throw new AdministrationException("Error: User already subscribed to event;\n");
-        event.getAttendees().add(userEmail);
+        for(Pair<String,Boolean> p : event.getAttendees()) {
+            if(p.getFirst().equals(userEmail))
+                throw new AdministrationException("Error: User already subscribed to event;\n");
+        }
+        event.getAttendees().add(new Pair<>(userEmail,true));
         repo.update(event);
     }
 
@@ -99,9 +102,64 @@ public class EventService {
      */
     public void unsubscribeFromEvent(Integer id, String userEmail) {
         Event event = findOne(id);
-        if (!event.getAttendees().contains(userEmail))
-            throw new AdministrationException("Error: User not subscribed to event;\n");
-        event.getAttendees().remove(userEmail);
+        Pair<String,Boolean> toDelete=null;
+        for(Pair<String,Boolean> p : event.getAttendees()) {
+            if(p.getFirst().equals(userEmail))
+                toDelete=p;
+        }
+        if(toDelete==null)
+            throw new AdministrationException("Error: User isn't subscribed to event;\n");
+        event.getAttendees().remove(toDelete);
+        repo.update(event);
+    }
+
+    /**
+     * subscribes an user to an event's notifications
+     *
+     * @param id        - said event's id
+     * @param userEmail - said user's emails
+     * @throws ValidationException     - if data is invalid
+     * @throws AdministrationException - if the event doesn't exist or it's already subscribed
+     */
+    public void requestNotificationsFromEvent(Integer id, String userEmail) throws ValidationException, AdministrationException {
+        Event event = findOne(id);
+        Pair<String,Boolean> toModify=null;
+        for(Pair<String,Boolean> p : event.getAttendees()) {
+            if(p.getFirst().equals(userEmail))
+                toModify=p;
+        }
+        if(toModify==null){
+            throw new AdministrationException("Error: User isn't subscribed to event;\n");
+        }
+        if(toModify.getSecond().equals(true))
+            throw new AdministrationException("Error: User already receives notifications from event;\n");
+        event.getAttendees().remove(toModify);
+        event.getAttendees().add(new Pair<>(userEmail,true));
+        repo.update(event);
+    }
+
+    /**
+     * unsubscribes an user to an event's notifications
+     *
+     * @param id        - said event's id
+     * @param userEmail - said user's emails
+     * @throws ValidationException     - if data is invalid
+     * @throws AdministrationException - if the event doesn't exist or it's not subscribed
+     */
+    public void unrequestNotificationsFromEvent(Integer id, String userEmail) {
+        Event event = findOne(id);
+        Pair<String,Boolean> toModify=null;
+        for(Pair<String,Boolean> p : event.getAttendees()) {
+            if(p.getFirst().equals(userEmail))
+                toModify=p;
+        }
+        if(toModify==null){
+            throw new AdministrationException("Error: User isn't subscribed to event;\n");
+        }
+        if(toModify.getSecond().equals(false))
+            throw new AdministrationException("Error: User already doesn't receive notifications from event;\n");
+        event.getAttendees().remove(toModify);
+        event.getAttendees().add(new Pair<>(userEmail,false));
         repo.update(event);
     }
 

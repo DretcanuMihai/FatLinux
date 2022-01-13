@@ -88,12 +88,12 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
                 this.service.createEvent(eventTitle, eventDescription, this.loggedUser.getEmail(), eventDate);
                 this.close();
                 this.reset();
+                this.parentController.init();
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Success!");
                 alert.setHeaderText("Event created!");
                 alert.setContentText("Your event has been successfully created!");
                 alert.showAndWait();
-                this.parentController.showEvents();
 
             } catch (ValidationException | AdministrationException ex) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);

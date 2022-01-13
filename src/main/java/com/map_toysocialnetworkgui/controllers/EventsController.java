@@ -5,6 +5,7 @@ import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
+import com.map_toysocialnetworkgui.utils.structures.Pair;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -254,7 +255,8 @@ public class EventsController extends AbstractController {
     public void showEvents() {
         if (this.events.size() != 0) {
             fillEventDetails();
-            if (this.events.get(0).getAttendees().contains(this.loggedUser.getEmail()))
+            if (this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(),true))||
+                    this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(),false)))
                 this.subscriptionToEventButton.setText("✘ Unsubscribe");
             else
                 this.subscriptionToEventButton.setText("✔ Subscribe");
