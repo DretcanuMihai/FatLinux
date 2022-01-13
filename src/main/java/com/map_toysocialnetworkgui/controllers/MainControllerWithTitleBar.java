@@ -295,11 +295,13 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     private void loadNotifications() {
         this.eventDTOPage = this.service.getUserNotificationEvents(this.loggedUser.getEmail(), new PageableImplementation(1, 7));
         notificationBell.setImage(noNewNotifications);
+        eventNotificationNumberLabel.setVisible(false);
         Stream<EventDTO> eventDTOStream = eventDTOPage.getContent();
         this.events = new ArrayList<>(eventDTOStream.toList());
 
         if (this.events.size() != 0) {
             notificationBell.setImage(newNotifications);
+            eventNotificationNumberLabel.setVisible(true);
             Notifications.create()
                     .title("FAT Linux!")
                     .text("You have " + this.events.size() + " new notifications!")
@@ -326,7 +328,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
                 VBox notificationsVBox = generateNotificationsPopOverContent(eventDTOListView);
                 initNotificationsPopOver(notificationsVBox);
             };
-
             notificationBell.setOnMouseClicked(mouseClickedEvent);
             eventNotificationNumberLabel.setOnMouseClicked(mouseClickedEvent);
         } else {
