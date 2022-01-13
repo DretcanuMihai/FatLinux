@@ -174,12 +174,13 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public Iterable<User> getUsersByName(String string) {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users u WHERE u.first_name || ' ' || u.last_name LIKE '%' || (?) || '%'";
+        String sql = "SELECT * FROM users u WHERE u.first_name || ' ' || u.last_name LIKE '%' || (?) || '%' or u.email LIKE '%' || (?) || '%'";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, string);
+            statement.setString(2, string);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 User user = getNextFromSet(resultSet);
@@ -195,17 +196,18 @@ public class UserDBRepository implements UserRepositoryInterface {
     @Override
     public Page<User> getUsersByName(String string, Pageable pageable) {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users u WHERE u.first_name || ' ' || u.last_name LIKE '%' || (?) ||'%' OFFSET (?) LIMIT (?)";
+        String sql = "SELECT * FROM users u WHERE u.first_name || ' ' || u.last_name LIKE '%' || (?) ||'%' or u.email LIKE '%' || (?) || '%' OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, string);
+            statement.setString(2, string);
             int pageSize = pageable.getPageSize();
             int pageNr = pageable.getPageNumber();
             int start = (pageNr - 1) * pageSize;
-            statement.setInt(2, start);
-            statement.setInt(3, pageSize);
+            statement.setInt(3, start);
+            statement.setInt(4, pageSize);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 User user = getNextFromSet(resultSet);
