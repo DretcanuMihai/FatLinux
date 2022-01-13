@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.model.entities_dto;
 
 import com.map_toysocialnetworkgui.model.entities.Event;
+import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,7 +11,7 @@ public class EventDTO {
     String title;
     String description;
     UserDTO hostUser;
-    List<String> attendees;
+    List<Pair<String,Boolean>> attendees;
     LocalDateTime date;
 
     /**
@@ -22,7 +23,7 @@ public class EventDTO {
      * @param attendees - event attendees
      * @param date - event date
      */
-    public EventDTO(Integer id, String title, String description, UserDTO hostUser, List<String> attendees, LocalDateTime date) {
+    public EventDTO(Integer id, String title, String description, UserDTO hostUser, List<Pair<String,Boolean>> attendees, LocalDateTime date) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -71,7 +72,7 @@ public class EventDTO {
      * attendee email list
      * @return said list
      */
-    public List<String> getAttendees() {
+    public List<Pair<String,Boolean>> getAttendees() {
         return attendees;
     }
 

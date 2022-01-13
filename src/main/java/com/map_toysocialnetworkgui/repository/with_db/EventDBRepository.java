@@ -6,6 +6,7 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.EventRepositoryInterface;
+import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.sql.*;
 import java.sql.Date;
@@ -183,7 +184,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         String sqlEvents = """
                 SELECT e.event_id, e.title, e.description, e.host_email, e.date
                 FROM events e INNER JOIN attendances a ON e.event_id = a.event_id
-                WHERE a.user_email = (?) AND e.date >= now()
+                WHERE a.user_email = (?) AND e.date >= now() AND a.to_notify=1
                 ORDER BY e.date DESC
                 """;
 
@@ -208,7 +209,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         String sqlEvents = """
                 SELECT e.event_id, e.title, e.description, e.host_email, e.date
                 FROM events e INNER JOIN attendances a ON e.event_id = a.event_id
-                WHERE a.user_email = (?) AND e.date >= now()
+                WHERE a.user_email = (?) AND e.date >= now() AND a.to_notify=1
                 ORDER BY e.date DESC
                 OFFSET (?) LIMIT (?)
                 """;
@@ -353,7 +354,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         String sqlEvents = """
                 SELECT count(*)
                 FROM events e inner join attendances a on e.event_id = a.event_id
-                WHERE a.user_email = (?) and e.date >= now() and e.date >= (?)
+                WHERE a.user_email = (?) and e.date >= now() and e.date >= (?) and a.to_notify=1
                 """;
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -383,7 +384,7 @@ public class EventDBRepository implements EventRepositoryInterface {
         String title = resultSet.getString("title");
         String description = resultSet.getString("description");
         String hostEmail = resultSet.getString("host_email");
-        List<String> attendeesEmails = getAttendeeEmailsOf(id);
+        List<Pair<String,Boolean>> attendeesEmails = getAttendeeEmailsOf(id);
         LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
         return new Event(id, title, description, hostEmail, attendeesEmails, date);
     }
@@ -394,8 +395,8 @@ public class EventDBRepository implements EventRepositoryInterface {
      * @param id - said id
      * @return - a list of said emails
      */
-    private List<String> getAttendeeEmailsOf(Integer id) {
-        List<String> emails = new ArrayList<>();
+    private List<Pair<String,Boolean>> getAttendeeEmailsOf(Integer id) {
+        List<Pair<String,Boolean>> emails = new ArrayList<>();
         String sqlGetAttendeesEmails = "SELECT * FROM attendances WHERE event_id = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -405,7 +406,9 @@ public class EventDBRepository implements EventRepositoryInterface {
             ResultSet resultSet = statementGetAttendeesEmails.executeQuery();
             while (resultSet.next()) {
                 String email = resultSet.getString("user_email");
-                emails.add(email);
+                Integer aux=resultSet.getInt("to_notify");
+                Boolean toNotify = aux.equals(1);
+                emails.add(new Pair<>(email,toNotify));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -432,14 +435,18 @@ public class EventDBRepository implements EventRepositoryInterface {
      * @param eventID       - the event ID
      * @param attendeeEmail - the attendee's email
      */
-    private void saveAttendance(Integer eventID, String attendeeEmail) {
-        String sqlInsertDelivery = "INSERT INTO attendances(event_id, user_email) VALUES (?, ?)";
+    private void saveAttendance(Integer eventID, Pair<String,Boolean> attendeeEmail) {
+        String sqlInsertDelivery = "INSERT INTO attendances(event_id, user_email,to_notify) VALUES (?, ?,?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementInsertDelivery = connection.prepareStatement(sqlInsertDelivery)) {
 
             statementInsertDelivery.setInt(1, eventID);
-            statementInsertDelivery.setString(2, attendeeEmail);
+            statementInsertDelivery.setString(2, attendeeEmail.getFirst());
+            Integer toNotify=0;
+            if(attendeeEmail.getSecond().equals(true))
+                toNotify=1;
+            statementInsertDelivery.setInt(3,toNotify);
             statementInsertDelivery.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

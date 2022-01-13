@@ -5,6 +5,7 @@ import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
+import com.map_toysocialnetworkgui.utils.structures.Pair;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -254,7 +255,8 @@ public class EventsController extends AbstractController {
     public void showEvents() {
         if (this.events.size() != 0) {
             fillEventDetails();
-            if (this.events.get(0).getAttendees().contains(this.loggedUser.getEmail()))
+            if (this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(),true))||
+                    this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(),false)))
                 this.subscriptionToEventButton.setText("✘ Unsubscribe");
             else
                 this.subscriptionToEventButton.setText("✔ Subscribe");
@@ -294,12 +296,6 @@ public class EventsController extends AbstractController {
 
     }
 
-    public void initForDelete() {
-        initComponents();
-        loadEventPage();
-        showEvents();
-    }
-
     /**
      * shows the previous event from the list
      */
@@ -328,7 +324,12 @@ public class EventsController extends AbstractController {
      */
     public void deleteEvent() {
         service.deleteEvent(this.events.get(0).getId());
-        initForDelete();
+        loadEventPage(eventDTOPage.getPageable());
+        if (events.size() == 0) {
+            if (eventDTOPage.getPageable().getPageNumber() != 1)
+                loadEventPage(eventDTOPage.previousPageable());
+        }
+        showEvents();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Success!");
         alert.setHeaderText("Event deleted!");
@@ -352,7 +353,6 @@ public class EventsController extends AbstractController {
                     .showInformation();
         } else if (this.subscriptionToEventButton.getText().equals("✘ Unsubscribe")) {
             this.service.unsubscribeFromEvent(this.events.get(0).getId(), this.loggedUser.getEmail());
-            this.subscriptionToEventButton.setText("✔ Subscribe");
             Notifications.create()
                     .title("Unsubscribed!")
                     .text("You are now unsubscribed to the following event: " + this.events.get(0).getTitle())
@@ -360,6 +360,17 @@ public class EventsController extends AbstractController {
                     .hideAfter(Duration.seconds(5))
                     .position(Pos.BOTTOM_RIGHT)
                     .showWarning();
+            if(currentMode.equals("normal"))
+            {
+                loadEventPage(eventDTOPage.getPageable());
+                if (events.size() == 0) {
+                    if (eventDTOPage.getPageable().getPageNumber() != 1)
+                        loadEventPage(eventDTOPage.previousPageable());
+                }
+                showEvents();
+            }
+            else
+                this.subscriptionToEventButton.setText("✔ Subscribe");
         }
     }
 
