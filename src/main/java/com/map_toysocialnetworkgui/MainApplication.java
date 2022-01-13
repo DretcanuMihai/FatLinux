@@ -11,6 +11,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -172,6 +173,7 @@ public class MainApplication extends Application {
         primaryStage = stage;
         primaryStage.initStyle(StageStyle.UNDECORATED);
         changeToLogin();
+        primaryStage.getIcons().add(new Image("com/map_toysocialnetworkgui/images/fatLinux0.png"));
         primaryStage.show();
     }
 }
