@@ -2,7 +2,6 @@ package com.map_toysocialnetworkgui;
 
 import com.map_toysocialnetworkgui.controllers.AbstractControllerWithTitleBar;
 import com.map_toysocialnetworkgui.controllers.MainControllerWithTitleBar;
-import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
 import com.map_toysocialnetworkgui.model.validators.*;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.*;
@@ -88,7 +87,6 @@ public class MainApplication extends Application {
      * initiates FXML URLs
      */
     private void initURLs() {
-        var link =getClass().getResource("views/login-view.fxml");
         loginFXMLURL = getClass().getResource("views/login-view.fxml");
         mainFXMLURL = getClass().getResource("views/main-view.fxml");
         registerFXMLURL = getClass().getResource("views/register-view.fxml");

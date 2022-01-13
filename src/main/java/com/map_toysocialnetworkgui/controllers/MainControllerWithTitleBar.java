@@ -9,6 +9,7 @@ import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -17,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -70,6 +72,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     AnchorPane mainWindowTopAnchorPane;
     @FXML
     Label userNameLabel;
+    @FXML
+    Label eventNotificationNumberLabel;
     @FXML
     BorderPane mainBorderPane;
     @FXML
@@ -160,6 +164,12 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         this.setAppExitButtonForUserLogout(this.loggedUser);
         mainWindowTopAnchorPane.setStyle("-fx-border-color: black; -fx-border-width: 0px 0px 1px 0px");
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
+        if (userPage.getNrOfNotifications() > 0) {
+            eventNotificationNumberLabel.setVisible(true);
+            eventNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNotifications()));
+            if (userPage.getNrOfNotifications() > 9)
+                eventNotificationNumberLabel.setText("9+");
+        }
         initEventsController();
         initSearchFriendsController();
         initUserProfileController();
@@ -250,7 +260,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         Button previousPageButton = new Button();
 
         pageButtonsHBox.setAlignment(Pos.CENTER);
-        pageButtonsHBox.setSpacing(10);
+        pageButtonsHBox.setSpacing(20);
         pageButtonsHBox.setPrefHeight(40);
         buttonColoring.setButtonOrange(nextPageButton);
         buttonColoring.setButtonOrange(previousPageButton);
@@ -298,8 +308,9 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
                     .position(Pos.BOTTOM_RIGHT)
                     .showWarning();
 
-            notificationBell.setOnMouseClicked(event -> {
+            EventHandler<MouseEvent> mouseClickedEvent = event -> {
                 notificationBell.setImage(noNewNotifications);
+                eventNotificationNumberLabel.setVisible(false);
                 ObservableList<String> modelNotifications = FXCollections.observableArrayList();
                 List<String> notificationMessages = new ArrayList<>();
 
@@ -314,7 +325,10 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
                 ListView<String> eventDTOListView = initNotificationsList(modelNotifications, notificationMessages);
                 VBox notificationsVBox = generateNotificationsPopOverContent(eventDTOListView);
                 initNotificationsPopOver(notificationsVBox);
-            });
+            };
+
+            notificationBell.setOnMouseClicked(mouseClickedEvent);
+            eventNotificationNumberLabel.setOnMouseClicked(mouseClickedEvent);
         } else {
             notificationBell.setOnMouseClicked(event -> {
                 Label noNewNotificationsLabel = new Label("No notifications!");
