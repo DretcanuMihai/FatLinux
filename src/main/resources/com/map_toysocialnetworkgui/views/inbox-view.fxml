@@ -26,11 +26,11 @@
       </AnchorPane>
    </left>
    <bottom>
-      <Pane prefHeight="50.0" prefWidth="642.0" BorderPane.alignment="CENTER">
+      <Pane prefHeight="65.0" prefWidth="642.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="250.0" spacing="30.0">
+            <HBox alignment="CENTER" layoutY="3.0" prefHeight="30.0" prefWidth="250.0" spacing="30.0">
                <children>
-                  <Button fx:id="viewSentMessagesButton" mnemonicParsing="false" onAction="#viewSentMessages" text="View Sent">
+                  <Button fx:id="viewSentMessagesButton" mnemonicParsing="false" onAction="#viewSentMessages" prefWidth="100.0" text="View Sent">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -42,7 +42,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" layoutX="250.0" prefHeight="50.0" prefWidth="390.0" spacing="30.0">
+            <HBox alignment="CENTER" layoutX="250.0" prefHeight="65.0" prefWidth="390.0" spacing="30.0">
                <children>
                   <Button fx:id="replyButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply">
                      <font>
@@ -61,6 +61,8 @@
                   </Button>
                </children>
             </HBox>
+            <Button fx:id="previousMessagesPageButton" layoutX="78.0" layoutY="41.0" mnemonicParsing="false" styleClass="previousPageNavigationButton" />
+            <Button fx:id="nextMessagesPageButton" layoutX="140.0" layoutY="41.0" mnemonicParsing="false" styleClass="nextPageNavigationButton" />
          </children>
       </Pane>
    </bottom>

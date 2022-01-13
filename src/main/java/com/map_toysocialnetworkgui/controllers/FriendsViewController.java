@@ -17,6 +17,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
 import java.util.Collection;
@@ -47,6 +48,10 @@ public class FriendsViewController extends AbstractController {
     Button viewFriendsButton;
     @FXML
     Button viewFriendRequestsButton;
+    @FXML
+    Button nextFriendsPageButton;
+    @FXML
+    Button previousFriendsPageButton;
     @FXML
     Label emptyListLabel;
 
@@ -151,7 +156,9 @@ public class FriendsViewController extends AbstractController {
         private static final String IDLE_BUTTON_STYLE = "-fx-focus-traversable: false; -fx-background-radius: 10px; -fx-background-color: #ff7700;";
         private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
         HBox root = new HBox(10);
+        VBox userDetails = new VBox();
         Label label = new Label("Null");
+        Label emailLabel = new Label("Null");
         Region region = new Region();
         Button removeFriendButton = new Button("Remove friend");
 
@@ -161,10 +168,12 @@ public class FriendsViewController extends AbstractController {
         public FriendCell() {
             super();
             label.setFont(new Font(25.0));
+            emailLabel.setFont(new Font(10.0));
 
+            userDetails.getChildren().addAll(label, emailLabel);
             root.setAlignment(Pos.CENTER_LEFT);
             root.setPadding(new Insets(5, 10, 5, 10));
-            root.getChildren().add(label);
+            root.getChildren().add(userDetails);
             HBox.setHgrow(region, Priority.ALWAYS);
             root.getChildren().add(region);
 
@@ -184,6 +193,7 @@ public class FriendsViewController extends AbstractController {
                 setGraphic(null);
             } else {
                 label.setText(friendshipDTO.getUser2().getFirstName() + " " + friendshipDTO.getUser2().getLastName());
+                emailLabel.setText(" " + friendshipDTO.getUser2().getEmail());
                 removeFriendButton.setOnAction(event -> {
                     service.deleteFriendship(loggedUser.getEmail(), friendshipDTO.getUser2().getEmail());
                     updateModelFriends();
@@ -204,7 +214,9 @@ public class FriendsViewController extends AbstractController {
         private static final String IDLE_BUTTON_STYLE = "-fx-focus-traversable: false; -fx-background-radius: 10px; -fx-background-color: #ff7700;";
         private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
         HBox root = new HBox(10);
+        VBox userDetails = new VBox();
         Label label = new Label("Null");
+        Label emailLabel = new Label("Null");
         Region region = new Region();
         Button acceptButton = new Button("Accept");
         Button declineButton = new Button("Decline");
@@ -215,10 +227,12 @@ public class FriendsViewController extends AbstractController {
         public FriendRequestCell() {
             super();
             label.setFont(new Font(25.0));
+            emailLabel.setFont(new Font(10.0));
 
+            userDetails.getChildren().addAll(label, emailLabel);
             root.setAlignment(Pos.CENTER_LEFT);
             root.setPadding(new Insets(5, 10, 5, 10));
-            root.getChildren().add(label);
+            root.getChildren().add(userDetails);
             HBox.setHgrow(region, Priority.ALWAYS);
             root.getChildren().add(region);
 
@@ -243,6 +257,7 @@ public class FriendsViewController extends AbstractController {
                 setGraphic(null);
             } else {
                 label.setText(friendRequestDTO.getSenderFirstName() + " " + friendRequestDTO.getSenderLastName());
+                emailLabel.setText(" " + friendRequestDTO.getSender().getEmail());
                 acceptButton.setOnAction(event -> {
                     service.confirmFriendRequest(friendRequestDTO.getSender().getEmail(), friendRequestDTO.getReceiver().getEmail(), true);
                     updateModelRequests();

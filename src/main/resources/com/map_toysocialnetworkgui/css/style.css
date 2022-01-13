@@ -290,3 +290,38 @@
 .button#closeSaveReportButton:hover {
     -fx-background-color: #424043;
 }
+
+.popover > .border {
+    -fx-border-style: none;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-fill: derive(-fx-base, 35%);;
+}
+
+.popover > .content > .title > .text {
+    -fx-text-fill: black;
+    -fx-font-size: 20;
+    -fx-padding: 10px 10px 10px 10px;
+}
+
+.previousPageNavigationButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+    -fx-graphic: url("../images/previousPageIcon.png");
+}
+
+.previousPageNavigationButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.nextPageNavigationButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+    -fx-graphic: url("../images/nextPageIcon.png");
+}
+
+.nextPageNavigationButton:hover {
+    -fx-background-color: #F04A00;
+}
