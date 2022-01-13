@@ -119,6 +119,10 @@ public class InboxController extends AbstractController {
     @FXML
     Button composeNewButton;
     @FXML
+    Button previousMessagesPageButton;
+    @FXML
+    Button nextMessagesPageButton;
+    @FXML
     Label noMessagesLabel;
 
     /**
