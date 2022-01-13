@@ -296,12 +296,6 @@ public class EventsController extends AbstractController {
 
     }
 
-    public void initForDelete() {
-        initComponents();
-        loadEventPage();
-        showEvents();
-    }
-
     /**
      * shows the previous event from the list
      */
@@ -330,7 +324,12 @@ public class EventsController extends AbstractController {
      */
     public void deleteEvent() {
         service.deleteEvent(this.events.get(0).getId());
-        initForDelete();
+        loadEventPage(eventDTOPage.getPageable());
+        if (events.size() == 0) {
+            if (eventDTOPage.getPageable().getPageNumber() != 1)
+                loadEventPage(eventDTOPage.previousPageable());
+        }
+        showEvents();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Success!");
         alert.setHeaderText("Event deleted!");
@@ -354,7 +353,6 @@ public class EventsController extends AbstractController {
                     .showInformation();
         } else if (this.subscriptionToEventButton.getText().equals("✘ Unsubscribe")) {
             this.service.unsubscribeFromEvent(this.events.get(0).getId(), this.loggedUser.getEmail());
-            this.subscriptionToEventButton.setText("✔ Subscribe");
             Notifications.create()
                     .title("Unsubscribed!")
                     .text("You are now unsubscribed to the following event: " + this.events.get(0).getTitle())
@@ -362,6 +360,17 @@ public class EventsController extends AbstractController {
                     .hideAfter(Duration.seconds(5))
                     .position(Pos.BOTTOM_RIGHT)
                     .showWarning();
+            if(currentMode.equals("normal"))
+            {
+                loadEventPage(eventDTOPage.getPageable());
+                if (events.size() == 0) {
+                    if (eventDTOPage.getPageable().getPageNumber() != 1)
+                        loadEventPage(eventDTOPage.previousPageable());
+                }
+                showEvents();
+            }
+            else
+                this.subscriptionToEventButton.setText("✔ Subscribe");
         }
     }
 
