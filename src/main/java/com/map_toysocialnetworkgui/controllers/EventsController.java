@@ -131,6 +131,7 @@ public class EventsController extends AbstractController {
         this.createEventStage = new Stage();
         this.createEventWindowController.setService(this.service);
         this.createEventWindowController.setLoggedUser(this.loggedUser);
+        this.createEventWindowController.setParentController(this);
         this.createEventWindowController.init();
         this.createEventStage.setScene(this.createEventScene);
         this.createEventStage.initStyle(StageStyle.UNDECORATED);
@@ -250,7 +251,7 @@ public class EventsController extends AbstractController {
     /**
      * shows the event details components
      */
-    private void showEvents() {
+    public void showEvents() {
         if (this.events.size() != 0) {
             fillEventDetails();
             if (this.events.get(0).getAttendees().contains(this.loggedUser.getEmail()))

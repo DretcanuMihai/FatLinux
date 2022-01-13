@@ -19,6 +19,7 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
      * currently logged-in user
      */
     UserDTO loggedUser;
+    EventsController parentController;
 
     /**
      * FXML data
@@ -55,6 +56,10 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
         this.loggedUser = loggedUser;
     }
 
+    public void setParentController(EventsController parentController) {
+        this.parentController = parentController;
+    }
+
     /**
      * initializes create event window elements
      */
@@ -88,6 +93,8 @@ public class CreateEventController extends AbstractControllerWithTitleBar {
                 alert.setHeaderText("Event created!");
                 alert.setContentText("Your event has been successfully created!");
                 alert.showAndWait();
+                this.parentController.showEvents();
+
             } catch (ValidationException | AdministrationException ex) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Warning!");

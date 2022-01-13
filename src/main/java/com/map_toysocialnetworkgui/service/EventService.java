@@ -10,6 +10,7 @@ import com.map_toysocialnetworkgui.repository.skeletons.entity_based.EventReposi
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class EventService {
     EventValidator validator;
@@ -53,7 +54,7 @@ public class EventService {
      * @throws ValidationException is data is invalid
      */
     public void save(String title, String description, String hostEmail, LocalDateTime date) throws ValidationException {
-        Event event = new Event(null, title, description, hostEmail, new ArrayList<>(), date);
+        Event event = new Event(null, title, description, hostEmail, List.of(hostEmail), date);
         validator.validateDefault(event);
         repo.save(event);
     }
