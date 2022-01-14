@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -157,6 +158,7 @@ public class FriendsViewController extends AbstractController {
         private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
         HBox root = new HBox(10);
         VBox userDetails = new VBox();
+        ImageView userProfilePicture = new ImageView("com/map_toysocialnetworkgui/images/defaultProfileIcon.png");
         Label label = new Label("Null");
         Label emailLabel = new Label("Null");
         Region region = new Region();
@@ -173,7 +175,7 @@ public class FriendsViewController extends AbstractController {
             userDetails.getChildren().addAll(label, emailLabel);
             root.setAlignment(Pos.CENTER_LEFT);
             root.setPadding(new Insets(5, 10, 5, 10));
-            root.getChildren().add(userDetails);
+            root.getChildren().addAll(userProfilePicture, userDetails);
             HBox.setHgrow(region, Priority.ALWAYS);
             root.getChildren().add(region);
 
@@ -215,6 +217,7 @@ public class FriendsViewController extends AbstractController {
         private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
         HBox root = new HBox(10);
         VBox userDetails = new VBox();
+        ImageView userProfilePicture = new ImageView("com/map_toysocialnetworkgui/images/defaultProfileIcon.png");
         Label label = new Label("Null");
         Label emailLabel = new Label("Null");
         Region region = new Region();
@@ -232,7 +235,7 @@ public class FriendsViewController extends AbstractController {
             userDetails.getChildren().addAll(label, emailLabel);
             root.setAlignment(Pos.CENTER_LEFT);
             root.setPadding(new Insets(5, 10, 5, 10));
-            root.getChildren().add(userDetails);
+            root.getChildren().addAll(userProfilePicture, userDetails);
             HBox.setHgrow(region, Priority.ALWAYS);
             root.getChildren().add(region);
 

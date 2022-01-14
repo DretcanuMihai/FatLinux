@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -119,6 +120,7 @@ public class SearchFriendsController extends AbstractController {
         private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
         HBox root = new HBox(10);
         VBox userDetails = new VBox();
+        ImageView userProfilePicture = new ImageView("com/map_toysocialnetworkgui/images/defaultProfileIcon.png");
         Label label = new Label("Null");
         Label emailLabel = new Label("Null");
         Region region = new Region();
@@ -135,7 +137,7 @@ public class SearchFriendsController extends AbstractController {
             userDetails.getChildren().addAll(label, emailLabel);
             root.setAlignment(Pos.CENTER_LEFT);
             root.setPadding(new Insets(5, 10, 5, 10));
-            root.getChildren().add(userDetails);
+            root.getChildren().addAll(userProfilePicture, userDetails);
             HBox.setHgrow(region, Priority.ALWAYS);
             root.getChildren().add(region);
 
