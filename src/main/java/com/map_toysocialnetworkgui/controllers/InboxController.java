@@ -2,6 +2,9 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
+import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.service.SuperService;
 import com.map_toysocialnetworkgui.utils.Constants;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
@@ -37,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
@@ -51,8 +55,7 @@ public class InboxController extends AbstractController {
     /**
      * observable lists for sent and received messages
      */
-    ObservableList<MessageDTO> modelReceivedMessages = FXCollections.observableArrayList();
-    ObservableList<MessageDTO> modelSentMessages = FXCollections.observableArrayList();
+    ObservableList<MessageDTO> modelMessages = FXCollections.observableArrayList();
     Observer<EntityModificationObsEvent<Integer>> eventObserver = new Observer<EntityModificationObsEvent<Integer>>() {
         @Override
         public void update(EntityModificationObsEvent<Integer> event) {
@@ -80,11 +83,8 @@ public class InboxController extends AbstractController {
          * @param id - id of modified entity
          */
         public void updateForAdd(Integer id) {
-            MessageDTO messageDTO = service.getMessageDTO(id);
-            if (messageDTO.getFromEmail().equals(loggedUser.getEmail()))
-                modelSentMessages.add(0, messageDTO);
-            if (messageDTO.getToEmails().contains(loggedUser.getEmail()))
-                modelReceivedMessages.add(0, messageDTO);
+            currentMode="s";
+            setPage(new PageableImplementation(1,10));
         }
 
         /**
@@ -101,9 +101,7 @@ public class InboxController extends AbstractController {
      * FXML data
      */
     @FXML
-    ListView<MessageDTO> receivedMessagesList;
-    @FXML
-    ListView<MessageDTO> sentMessagesList;
+    ListView<MessageDTO> messagesList;
     @FXML
     VBox conversationVBox;
     @FXML
@@ -112,10 +110,6 @@ public class InboxController extends AbstractController {
     Button viewReceivedMessagesButton;
     @FXML
     Button viewSentMessagesButton;
-    @FXML
-    Button replyButton;
-    @FXML
-    Button replyAllButton;
     @FXML
     Button composeNewButton;
     @FXML
@@ -151,6 +145,12 @@ public class InboxController extends AbstractController {
     TextColoring textColoring;
 
     /**
+     * message page
+     */
+    Page<MessageDTO> messageDTOPage;
+    String currentMode;
+
+    /**
      * creates a string from a text flow's text
      *
      * @param textFlow - said text flow
@@ -166,34 +166,31 @@ public class InboxController extends AbstractController {
         return sb.toString();
     }
 
+    public void setPage(Pageable pageable){
+        messageDTOPage=getPage(pageable);
+        modelMessages.setAll(messageDTOPage.getContent().collect(Collectors.toList()));
+        setButtonsVisibility();
+    }
+
+    public Page<MessageDTO> getPage(Pageable pageable){
+        if(currentMode.equals("r")){
+            return service.getMessagesReceivedByUser(loggedUser.getEmail(),pageable);
+        }
+        else{
+            return service.getMessagesSentByUser(loggedUser.getEmail(),pageable);
+        }
+    }
+
     /**
      * initializes inbox window elements
      */
     public void initInboxElements() {
         this.buttonStyling = new ButtonStyling();
-        this.receivedMessagesList.setCellFactory(param -> new MessageCell());
-        this.sentMessagesList.setCellFactory(param -> new MessageCell());
-        this.receivedMessagesList.setItems(this.modelReceivedMessages);
-        this.sentMessagesList.setItems(this.modelSentMessages);
-
+        this.messagesList.setCellFactory(param -> new MessageCell());
+        this.messagesList.setItems(this.modelMessages);
         this.composeNewButton.setOnAction(event -> {
             this.composeMessageWindowController.setPrimaryFunction(this.composeNewButton.getText());
             this.composeMessageWindowController.setSelectedMessage(null);
-            this.composeMessageWindowController.init();
-            openComposeMessageWindow();
-        });
-        this.replyButton.setOnAction(event -> {
-            this.composeMessageWindowController.setPrimaryFunction(this.replyButton.getText());
-            this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
-            this.composeMessageWindowController.init();
-            openComposeMessageWindow();
-        });
-        this.replyAllButton.setOnAction(event -> {
-            this.composeMessageWindowController.setPrimaryFunction(this.replyAllButton.getText());
-            if (this.receivedMessagesList.isVisible())
-                this.composeMessageWindowController.setSelectedMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
-            else
-                this.composeMessageWindowController.setSelectedMessage(sentMessagesList.getSelectionModel().getSelectedItem());
             this.composeMessageWindowController.init();
             openComposeMessageWindow();
         });
@@ -216,6 +213,12 @@ public class InboxController extends AbstractController {
                     }
                 }
             }
+        });
+        this.previousMessagesPageButton.setOnAction(event -> {
+            setPage(messageDTOPage.previousPageable());
+        });
+        this.nextMessagesPageButton.setOnAction(event -> {
+            setPage(messageDTOPage.nextPageable());
         });
         /*
         this.conversationScrollPane.vvalueProperty().addListener(
@@ -335,40 +338,7 @@ public class InboxController extends AbstractController {
         }
     }
 
-    /**
-     * updates the observable list of received messages
-     * selected message will display the contents of the message and show reply and reply all buttons
-     */
-    public void initModelReceivedMessages() {
-        Collection<MessageDTO> receivedMessages = StreamSupport
-                .stream(service.getMessagesReceivedByUser(loggedUser.getEmail()).spliterator(), false).toList();
 
-        receivedMessagesList.setOnMouseClicked(event -> {
-            if (receivedMessagesList.getSelectionModel().getSelectedItem() != null) {
-                fillDataForMessage(receivedMessagesList.getSelectionModel().getSelectedItem());
-                replyButton.setVisible(true);
-                replyAllButton.setVisible(true);
-            }
-        });
-        modelReceivedMessages.setAll(receivedMessages);
-    }
-
-    /**
-     * updates the observable list of sent messages
-     */
-    public void initModelSentMessages() {
-        Collection<MessageDTO> sentMessages = StreamSupport
-                .stream(service.getMessagesSentByUser(loggedUser.getEmail()).spliterator(), false).toList();
-
-        sentMessagesList.setOnMouseClicked(event -> {
-            if (sentMessagesList.getSelectionModel().getSelectedItem() != null) {
-                fillDataForMessage(sentMessagesList.getSelectionModel().getSelectedItem());
-                replyButton.setVisible(false);
-                replyAllButton.setVisible(true);
-            }
-        });
-        modelSentMessages.setAll(sentMessages);
-    }
 
     /**
      * initiates the lists
@@ -376,21 +346,31 @@ public class InboxController extends AbstractController {
      * reply and replyAll buttons are by default hidden
      */
     public void initModels() {
-        initModelReceivedMessages();
-        initModelSentMessages();
+
+    }
+
+    public boolean hasNext(){
+        return getPage(messageDTOPage.nextPageable()).getContent().count()!=0;
+    }
+
+    public boolean hasPrevious(){
+        return messageDTOPage.getPageable().getPageNumber()!=1;
+    }
+
+    public void setButtonsVisibility(){
+
+        nextMessagesPageButton.setVisible(hasNext());
+        previousMessagesPageButton.setVisible(hasPrevious());
     }
 
     /**
      * shows the no messages label and hides everything else
      */
     public void showNoMessagesLabel() {
-        this.receivedMessagesList.setVisible(false);
-        this.sentMessagesList.setVisible(false);
+        this.messagesList.setVisible(false);
         this.conversationVBox.getChildren().clear();
         this.conversationVBox.setVisible(false);
         this.conversationScrollPane.setVisible(false);
-        this.replyButton.setVisible(false);
-        this.replyAllButton.setVisible(false);
         this.noMessagesLabel.setVisible(true);
     }
 
@@ -400,19 +380,21 @@ public class InboxController extends AbstractController {
     public void viewReceivedMessages() {
         buttonStyling.setButtonOrange(viewReceivedMessagesButton);
         buttonStyling.setButtonBlack(viewSentMessagesButton);
-        this.sentMessagesList.getSelectionModel().clearSelection();
-        this.receivedMessagesList.getSelectionModel().clearSelection();
-        if (receivedMessagesList.getItems().isEmpty()) {
+        currentMode="r";
+        messagesList.setOnMouseClicked(event -> {
+            if (messagesList.getSelectionModel().getSelectedItem() != null) {
+                fillDataForMessage(messagesList.getSelectionModel().getSelectedItem());
+            }
+        });
+        setPage(new PageableImplementation(1,7));
+        if (messagesList.getItems().isEmpty()) {
             showNoMessagesLabel();
         } else {
-            this.receivedMessagesList.setVisible(true);
+            this.messagesList.setVisible(true);
             this.conversationVBox.getChildren().clear();
             this.conversationVBox.setVisible(true);
             this.conversationScrollPane.setVisible(true);
-            this.sentMessagesList.setVisible(false);
             this.noMessagesLabel.setVisible(false);
-            this.replyButton.setVisible(false);
-            this.replyAllButton.setVisible(false);
         }
     }
 
@@ -422,19 +404,21 @@ public class InboxController extends AbstractController {
     public void viewSentMessages() {
         buttonStyling.setButtonOrange(viewSentMessagesButton);
         buttonStyling.setButtonBlack(viewReceivedMessagesButton);
-        this.sentMessagesList.getSelectionModel().clearSelection();
-        this.receivedMessagesList.getSelectionModel().clearSelection();
-        if (sentMessagesList.getItems().isEmpty()) {
+        currentMode="s";
+        messagesList.setOnMouseClicked(event -> {
+            if (messagesList.getSelectionModel().getSelectedItem() != null) {
+                fillDataForMessage(messagesList.getSelectionModel().getSelectedItem());
+            }
+        });
+        setPage(new PageableImplementation(1,7));
+        if (messagesList.getItems().isEmpty()) {
             showNoMessagesLabel();
         } else {
-            this.receivedMessagesList.setVisible(false);
-            this.sentMessagesList.setVisible(true);
+            this.messagesList.setVisible(true);
             this.conversationVBox.getChildren().clear();
             this.conversationScrollPane.setVisible(true);
             this.conversationVBox.setVisible(true);
             this.noMessagesLabel.setVisible(false);
-            this.replyButton.setVisible(false);
-            this.replyAllButton.setVisible(false);
         }
     }
 
@@ -471,8 +455,7 @@ public class InboxController extends AbstractController {
     @Override
     public void reset() {
         super.reset();
-        modelReceivedMessages.setAll();
-        modelSentMessages.setAll();
+        modelMessages.setAll();
         conversationVBox.getChildren().clear();
         this.service.removeMessageObserver(eventObserver);
     }

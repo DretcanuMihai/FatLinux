@@ -2,6 +2,9 @@ package com.map_toysocialnetworkgui.controllers;
 
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
+import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.service.AdministrationException;
 import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
 import javafx.collections.FXCollections;
@@ -36,6 +39,7 @@ public class SearchFriendsController extends AbstractController {
     ObservableList<UserDTO> modelSearch = FXCollections.observableArrayList();
     Collection<String> friendEmails;
     Collection<String> friendRequestedEmails;
+    Page<UserDTO> page;
 
     /**
      * FXML data
@@ -49,11 +53,19 @@ public class SearchFriendsController extends AbstractController {
     @FXML
     Button nextSearchListButton;
 
+    String string;
+
     @FXML
     public void initialize() {
         searchFriendsList.setFocusModel(new NoFocusModel<>());
         searchFriendsList.setCellFactory(param -> new UserCell());
         searchFriendsList.setItems(modelSearch);
+        nextSearchListButton.setOnAction(event -> {
+            setPage(page.nextPageable());
+        });
+        previousSearchListButton.setOnAction(event -> {
+            setPage(page.previousPageable());
+        });
     }
 
     /**
@@ -65,28 +77,52 @@ public class SearchFriendsController extends AbstractController {
         this.loggedUser = loggedUser;
     }
 
+    public Page<UserDTO> getPage(Pageable pageable){
+        return service.filterUsers(string,pageable);
+    }
+    public void setPage(Pageable pageable){
+        page=getPage(pageable);
+        updateModelUsers();
+    }
+
+    public boolean hasNext(){
+        return getPage(page.nextPageable()).getContent().count()!=0;
+    }
+
+    public boolean hasPrevious(){
+        return page.getPageable().getPageNumber()!=1;
+    }
+
     /**
      * updates the observable list of users (for searching)
      */
-    public void updateModelUsers(String searchText) {
-        if (searchText.equals("")) {
+    public void updateModelUsers() {
+        if (string.equals("")) {
             searchFriendsList.setVisible(false);
             searchFailedLabel.setVisible(true);
+            previousSearchListButton.setVisible(false);
+            nextSearchListButton.setVisible(false);
         } else {
             try {
-                Collection<UserDTO> foundUsers = StreamSupport.stream(service.filterUsers(searchText).spliterator(), false)
-                        .collect(Collectors.toList());
+                Collection<UserDTO> foundUsers = page.getContent().collect(Collectors.toList());
                 if (foundUsers.isEmpty()) {
                     searchFriendsList.setVisible(false);
                     searchFailedLabel.setVisible(true);
+                    previousSearchListButton.setVisible(false);
+                    nextSearchListButton.setVisible(false);
                 } else {
                     modelSearch.setAll(foundUsers);
                     searchFriendsList.setVisible(true);
                     searchFailedLabel.setVisible(false);
+                    previousSearchListButton.setVisible(hasPrevious());
+                    nextSearchListButton.setVisible(hasNext());
+                    searchFriendsList.scrollTo(0);
                 }
             } catch (ValidationException ex) {
                 searchFriendsList.setVisible(false);
                 searchFailedLabel.setVisible(true);
+                previousSearchListButton.setVisible(hasPrevious());
+                nextSearchListButton.setVisible(hasNext());
             }
         }
     }
@@ -101,7 +137,8 @@ public class SearchFriendsController extends AbstractController {
         friendRequestedEmails = service.getFriendRequestsSentByUser(loggedUser.getEmail()).stream()
                 .map(friendRequestDTO -> friendRequestDTO.getReceiver().getEmail())
                 .collect(Collectors.toSet());
-        updateModelUsers(text);
+        string=text;
+        setPage(new PageableImplementation(1,5));
     }
 
     @Override
