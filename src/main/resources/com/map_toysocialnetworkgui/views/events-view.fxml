@@ -118,6 +118,7 @@
                   <Font size="48.0" />
                </font>
             </Label>
+            <Button fx:id="eventNotificationsControlButton" layoutX="29.0" layoutY="9.0" mnemonicParsing="false" onAction="#setEventsNotificationsButton" />
          </children>
       </AnchorPane>
    </center>

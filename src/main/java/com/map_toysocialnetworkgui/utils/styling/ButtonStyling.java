@@ -209,4 +209,58 @@ public class ButtonStyling {
         button.setRipplerFill(Color.valueOf("#ff7700"));
         button.setGraphic(buttonElements);
     }
+
+    /**
+     * styles button for disabling notifications
+     *
+     * @param button - said button
+     */
+    public void setButtonToDisableNotifications(Button button) {
+        ImageView disableNotificationsImage = new ImageView("com/map_toysocialnetworkgui/images/disableNotificationsIcon.png");
+
+        button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 30px;
+                -fx-background-color: #000000;
+                """);
+        button.setOnMouseEntered(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 30px;
+                -fx-background-color: #424043;
+                """));
+        button.setOnMouseExited(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 30px;
+                -fx-background-color: #000000;
+                """));
+        button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        button.setGraphic(disableNotificationsImage);
+    }
+
+    /**
+     * styles button for enabling notifications
+     *
+     * @param button - said button
+     */
+    public void setButtonToEnableNotifications(Button button) {
+        ImageView enableNotificationsImage = new ImageView("com/map_toysocialnetworkgui/images/enableNotificationsIcon.png");
+
+        button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 30px;
+                -fx-background-color: #000000;
+                """);
+        button.setOnMouseEntered(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 30px;
+                -fx-background-color: #424043;
+                """));
+        button.setOnMouseExited(event -> button.setStyle("""
+                -fx-focus-traversable: false;
+                -fx-background-radius: 30px;
+                -fx-background-color: #000000;
+                """));
+        button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        button.setGraphic(enableNotificationsImage);
+    }
 }
