@@ -188,14 +188,14 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
             friendsNotificationNumberLabel.setVisible(true);
             friendsNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNewRequests()));
             if (userPage.getNrOfNewRequests() > 9)
-                friendsNotificationNumberLabel.setText("9＋");
+                friendsNotificationNumberLabel.setText("9+");
         }
         if (userPage.getNrOfNewMessages() > 0) {
             inboxNotificationBubble.setVisible(true);
             inboxNotificationNumberLabel.setVisible(true);
             inboxNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNewMessages()));
             if (userPage.getNrOfNewMessages() > 9)
-                inboxNotificationNumberLabel.setText("9＋");
+                inboxNotificationNumberLabel.setText("9+");
         }
         if (userPage.getNrOfNewFriends() > 0) {
             Notifications.create()
