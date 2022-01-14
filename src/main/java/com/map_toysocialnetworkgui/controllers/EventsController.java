@@ -6,7 +6,7 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
-import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import com.map_toysocialnetworkgui.utils.styling.ButtonStyling;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -93,7 +93,7 @@ public class EventsController extends AbstractController {
     /**
      * button coloring class
      */
-    ButtonColoring buttonColoring;
+    ButtonStyling buttonStyling;
 
     /**
      * event DTO pages
@@ -148,7 +148,7 @@ public class EventsController extends AbstractController {
 
     @FXML
     public void initialize() throws IOException {
-        buttonColoring = new ButtonColoring();
+        buttonStyling = new ButtonStyling();
         initCreateEventScene();
     }
 
@@ -169,10 +169,10 @@ public class EventsController extends AbstractController {
 
         initCreateEventWindow();
         eventsSearchBar.textProperty().removeListener(textChangedListener);
-        buttonColoring.setButtonForSearchEvent(this.searchForEventsButton);
-        buttonColoring.setButtonBlackWithLighterHover(this.deleteEventButton);
+        buttonStyling.setButtonForSearchEvent(this.searchForEventsButton);
+        buttonStyling.setButtonBlackWithLighterHover(this.deleteEventButton);
         this.deleteEventButton.setGraphic(deleteEventIcon);
-        buttonColoring.setButtonOrange(this.subscriptionToEventButton);
+        buttonStyling.setButtonOrange(this.subscriptionToEventButton);
         this.subscriptionToEventButton.setVisible(false);
         this.deleteEventButton.setVisible(false);
         this.searchForEventsButton.setOnAction(event -> searchForEvents());
@@ -391,7 +391,7 @@ public class EventsController extends AbstractController {
      */
     public void searchForEvents() {
         currentMode = "search";
-        buttonColoring.setButtonForCancelSearchEvent(this.searchForEventsButton);
+        buttonStyling.setButtonForCancelSearchEvent(this.searchForEventsButton);
         eventsSearchBar.textProperty().addListener(textChangedListener);
         searchForEventsButton.setOnAction(event -> {
             eventsSearchBar.textProperty().removeListener(textChangedListener);

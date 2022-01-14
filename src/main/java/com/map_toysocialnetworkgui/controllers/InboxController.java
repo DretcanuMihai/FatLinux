@@ -8,7 +8,7 @@ import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
 import com.map_toysocialnetworkgui.utils.structures.ConversationCustomVBox;
-import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import com.map_toysocialnetworkgui.utils.styling.ButtonStyling;
 import com.map_toysocialnetworkgui.utils.styling.TextColoring;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -128,7 +128,7 @@ public class InboxController extends AbstractController {
     /**
      * button styling class
      */
-    ButtonColoring buttonColoring;
+    ButtonStyling buttonStyling;
 
     /**
      * compose message view controller
@@ -170,7 +170,7 @@ public class InboxController extends AbstractController {
      * initializes inbox window elements
      */
     public void initInboxElements() {
-        this.buttonColoring = new ButtonColoring();
+        this.buttonStyling = new ButtonStyling();
         this.receivedMessagesList.setCellFactory(param -> new MessageCell());
         this.sentMessagesList.setCellFactory(param -> new MessageCell());
         this.receivedMessagesList.setItems(this.modelReceivedMessages);
@@ -398,8 +398,8 @@ public class InboxController extends AbstractController {
      * hides the sent messages list and shows the received messages list
      */
     public void viewReceivedMessages() {
-        buttonColoring.setButtonOrange(viewReceivedMessagesButton);
-        buttonColoring.setButtonBlack(viewSentMessagesButton);
+        buttonStyling.setButtonOrange(viewReceivedMessagesButton);
+        buttonStyling.setButtonBlack(viewSentMessagesButton);
         this.sentMessagesList.getSelectionModel().clearSelection();
         this.receivedMessagesList.getSelectionModel().clearSelection();
         if (receivedMessagesList.getItems().isEmpty()) {
@@ -420,8 +420,8 @@ public class InboxController extends AbstractController {
      * hides the received messages list and shows the sent messages list
      */
     public void viewSentMessages() {
-        buttonColoring.setButtonOrange(viewSentMessagesButton);
-        buttonColoring.setButtonBlack(viewReceivedMessagesButton);
+        buttonStyling.setButtonOrange(viewSentMessagesButton);
+        buttonStyling.setButtonBlack(viewReceivedMessagesButton);
         this.sentMessagesList.getSelectionModel().clearSelection();
         this.receivedMessagesList.getSelectionModel().clearSelection();
         if (sentMessagesList.getItems().isEmpty()) {

@@ -1,6 +1,6 @@
 package com.map_toysocialnetworkgui.utils.structures;
 
-import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import com.map_toysocialnetworkgui.utils.styling.ButtonStyling;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -39,7 +39,7 @@ public class ConversationCustomVBox extends VBox {
                 BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
                 CornerRadii.EMPTY, new BorderWidths(1), Insets.EMPTY)));
 
-        ButtonColoring buttonColoring = new ButtonColoring();
+        ButtonStyling buttonStyling = new ButtonStyling();
         HBox hBox = new HBox();
         Region region = new Region();
         replyButton = new Button("Reply");
@@ -66,8 +66,8 @@ public class ConversationCustomVBox extends VBox {
 
         replyButton.setFont(new Font(0));
         replyAllButton.setFont(new Font(0));
-        buttonColoring.setButtonOrangeSquareBorder(replyButton);
-        buttonColoring.setButtonOrangeSquareBorder(replyAllButton);
+        buttonStyling.setButtonOrangeSquareBorder(replyButton);
+        buttonStyling.setButtonOrangeSquareBorder(replyAllButton);
         replyButton.setGraphic(replyIcon);
         replyAllButton.setGraphic(replyAllIcon);
         hBox.getChildren().add(fromFlow);
