@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
@@ -113,58 +112,22 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                        <StackPane prefHeight="50.0" prefWidth="280.0">
-                           <children>
-                              <JFXButton fx:id="inboxButton" alignment="BASELINE_LEFT" onAction="#showInbox" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="FATLook" textFill="#ff7700">
-                                 <font>
-                                    <Font name="System Bold" size="15.0" />
-                                 </font>
-                                 <graphic>
-                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../images/FATLookIcon.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </JFXButton>
-                              <ImageView fx:id="inboxNotificationBubble" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                                 <image>
-                                    <Image url="@../images/notificationRedBubbleIcon.png" />
-                                 </image>
-                              </ImageView>
-                              <Label fx:id="inboxNotificationNumberLabel" alignment="CENTER" prefHeight="15.0" prefWidth="22.0" text="9＋" visible="false">
-                                 <font>
-                                    <Font name="System Bold" size="10.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </StackPane>
-                        <StackPane prefHeight="50.0" prefWidth="280.0">
-                           <children>
-                              <JFXButton fx:id="friendsButton" alignment="BASELINE_LEFT" onAction="#showFriends" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Friends" textFill="#ff7700">
-                                 <font>
-                                    <Font name="System Bold" size="15.0" />
-                                 </font>
-                                 <graphic>
-                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../images/friendsIcon.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </JFXButton>
-                              <ImageView fx:id="friendsNotificationBubble" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" visible="false">
-                                 <image>
-                                    <Image url="@../images/notificationRedBubbleIcon.png" />
-                                 </image>
-                              </ImageView>
-                              <Label fx:id="friendsNotificationNumberLabel" alignment="CENTER" prefHeight="15.0" prefWidth="22.0" text="9＋" visible="false">
-                                 <font>
-                                    <Font name="System Bold" size="10.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </StackPane>
+                        <JFXButton fx:id="inboxButton" alignment="BASELINE_LEFT" onAction="#showInbox" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" textFill="#ff7700">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                           </graphic>
+                        </JFXButton>
+                        <JFXButton fx:id="friendsButton" alignment="BASELINE_LEFT" onAction="#showFriends" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" textFill="#ff7700">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                           </graphic>
+                        </JFXButton>
                         <Line endX="129.0" startX="-100.0" strokeWidth="3.0" />
                         <JFXButton fx:id="logOutButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="161.0" onAction="#logout" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Log Out" textFill="#ff7700">
                            <font>

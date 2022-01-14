@@ -1,5 +1,6 @@
 package com.map_toysocialnetworkgui.controllers;
 
+import com.jfoenix.controls.JFXButton;
 import com.map_toysocialnetworkgui.model.entities_dto.EventDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
@@ -7,10 +8,9 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
-import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import com.map_toysocialnetworkgui.utils.styling.ButtonStyling;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -19,7 +19,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -48,7 +47,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      */
     UserDTO loggedUser;
 
-    PopOver popOverMain=null;
+    PopOver popOverMain = null;
 
     /**
      * controllers for child views
@@ -79,10 +78,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     @FXML
     Label eventNotificationNumberLabel;
     @FXML
-    Label inboxNotificationNumberLabel;
-    @FXML
-    Label friendsNotificationNumberLabel;
-    @FXML
     BorderPane mainBorderPane;
     @FXML
     TextField searchBar;
@@ -91,14 +86,20 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     @FXML
     ImageView notificationBell;
     @FXML
-    ImageView inboxNotificationBubble;
+    JFXButton inboxButton;
     @FXML
-    ImageView friendsNotificationBubble;
+    JFXButton friendsButton;
 
     /**
      * button coloring
      */
-    ButtonColoring buttonColoring;
+    ButtonStyling buttonStyling;
+
+    /**
+     * button images
+     */
+    ImageView inboxButtonIcon = new ImageView("com/map_toysocialnetworkgui/images/FATLookIcon.png");
+    ImageView friendsButtonIcon = new ImageView("com/map_toysocialnetworkgui/images/friendsIcon.png");
 
     /**
      * page navigation button images
@@ -126,7 +127,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     @Override
     public void initialize() throws IOException {
         super.initialize();
-        buttonColoring = new ButtonColoring();
+        buttonStyling = new ButtonStyling();
         initLoadersAndControllers();
     }
 
@@ -165,6 +166,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
     }
 
     private void initNumberOfNotifications(UserPage userPage) {
+        buttonStyling.setJFXButtonWithNotificationBubble(inboxButton, "FATLook", inboxButtonIcon, "", false);
+        buttonStyling.setJFXButtonWithNotificationBubble(friendsButton, "Friends", friendsButtonIcon, "", false);
         if (userPage.getNrOfNotifications() > 0) {
             notificationBell.setImage(newNotifications);
             eventNotificationNumberLabel.setVisible(true);
@@ -178,24 +181,22 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
 
             eventNotificationNumberLabel.setVisible(true);
             if (userPage.getNrOfNotifications() > 9)
-                eventNotificationNumberLabel.setText("9＋");
+                eventNotificationNumberLabel.setText("9+");
             else
                 eventNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNotifications()));
 
         }
         if (userPage.getNrOfNewRequests() > 0) {
-            friendsNotificationBubble.setVisible(true);
-            friendsNotificationNumberLabel.setVisible(true);
-            friendsNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNewRequests()));
+            String noOfRequests = String.valueOf(userPage.getNrOfNewRequests());
+            buttonStyling.setJFXButtonWithNotificationBubble(friendsButton, "Friends", friendsButtonIcon, noOfRequests, true);
             if (userPage.getNrOfNewRequests() > 9)
-                friendsNotificationNumberLabel.setText("9+");
+                buttonStyling.setJFXButtonWithNotificationBubble(friendsButton, "Friends", friendsButtonIcon, "9+", true);
         }
         if (userPage.getNrOfNewMessages() > 0) {
-            inboxNotificationBubble.setVisible(true);
-            inboxNotificationNumberLabel.setVisible(true);
-            inboxNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNewMessages()));
+            String noOfMessages = String.valueOf(userPage.getNrOfNewMessages());
+            buttonStyling.setJFXButtonWithNotificationBubble(inboxButton, "FATLook", inboxButtonIcon, noOfMessages, true);
             if (userPage.getNrOfNewMessages() > 9)
-                inboxNotificationNumberLabel.setText("9+");
+                buttonStyling.setJFXButtonWithNotificationBubble(inboxButton, "FATLook", inboxButtonIcon, "9+", true);
         }
         if (userPage.getNrOfNewFriends() > 0) {
             Notifications.create()
@@ -222,10 +223,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         userNameLabel.setText(user.getFirstName() + " " + user.getLastName());
         notificationBell.setImage(noNewNotifications);
         eventNotificationNumberLabel.setVisible(false);
-        friendsNotificationBubble.setVisible(false);
-        friendsNotificationNumberLabel.setVisible(false);
-        inboxNotificationBubble.setVisible(false);
-        inboxNotificationNumberLabel.setVisible(false);
         initNumberOfNotifications(userPage);
         initEventsController();
         initSearchFriendsController();
@@ -276,7 +273,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         friendsViewController.setService(this.service);
     }
 
-    private List<String> generateNotifications(){
+    private List<String> generateNotifications() {
         List<String> notificationMessages = new ArrayList<>();
         this.events.forEach(eventDTO -> {
             long daysLeft = ChronoUnit.DAYS.between(LocalDateTime.now(), eventDTO.getDate());
@@ -323,13 +320,13 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         return eventDTOListView;
     }
 
-    private boolean hasNextNotification(){
+    private boolean hasNextNotification() {
         return service.getUserNotificationEvents(loggedUser.getEmail(), eventDTOPage.nextPageable())
                 .getContent().findAny().isPresent();
     }
 
-    private boolean hasPreviousNotification(){
-        return eventDTOPage.getPageable().getPageNumber()!=1;
+    private boolean hasPreviousNotification() {
+        return eventDTOPage.getPageable().getPageNumber() != 1;
     }
 
     /**
@@ -344,8 +341,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         pageButtonsHBox.setAlignment(Pos.CENTER);
         pageButtonsHBox.setSpacing(20);
         pageButtonsHBox.setPrefHeight(40);
-        buttonColoring.setButtonOrange(nextPageButton);
-        buttonColoring.setButtonOrange(previousPageButton);
+        buttonStyling.setButtonOrange(nextPageButton);
+        buttonStyling.setButtonOrange(previousPageButton);
         nextPageButton.setGraphic(nextPageButtonImage);
         previousPageButton.setGraphic(previousPageButtonImage);
         pageButtonsHBox.getChildren().addAll(previousPageButton, nextPageButton);
@@ -375,25 +372,26 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         popOver.setAnimated(true);
         popOver.setHeaderAlwaysVisible(true);
         popOver.show(notificationBell);
-        ((Parent)popOver.getSkin().getNode()).getStylesheets()
+        ((Parent) popOver.getSkin().getNode()).getStylesheets()
                 .add(Objects.requireNonNull(getClass()
                         .getResource("/com/map_toysocialnetworkgui/css/style.css")).toExternalForm());
-        popOverMain=popOver;
+        popOverMain = popOver;
     }
 
     /**
      * loads events for notifications
      */
-    public void loadEvents(){
-        loadEvents(new PageableImplementation(1,7));
+    public void loadEvents() {
+        loadEvents(new PageableImplementation(1, 7));
     }
 
     /**
      * loads events for notifications with page
+     *
      * @param pageable - said page's pageable
      */
-    public void loadEvents(Pageable pageable){
-        this.eventDTOPage = this.service.getUserNotificationEvents(this.loggedUser.getEmail(),pageable);
+    public void loadEvents(Pageable pageable) {
+        this.eventDTOPage = this.service.getUserNotificationEvents(this.loggedUser.getEmail(), pageable);
         Stream<EventDTO> eventDTOStream = eventDTOPage.getContent();
         this.events = new ArrayList<>(eventDTOStream.toList());
     }
@@ -402,9 +400,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * loads the notifications for user
      */
     public void loadNotifications() {
-        loadNotifications2(new PageableImplementation(1,6));
+        loadNotifications2(new PageableImplementation(1, 6));
     }
-
 
     /**
      * loads the notifications for user
@@ -413,41 +410,31 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         loadEvents(pageable);
         notificationBell.setImage(noNewNotifications);
         eventNotificationNumberLabel.setVisible(false);
-
         if (events.size() == 0) {
-
-
-            if(popOverMain==null) {
+            if (popOverMain == null) {
                 Label noNewNotificationsLabel = new Label("No notifications!");
                 noNewNotificationsLabel.setFont(new Font(20));
                 noNewNotificationsLabel.setStyle("-fx-text-fill: black; -fx-padding: 10px 10px 10px 10px");
                 initNotificationsPopOver(noNewNotificationsLabel);
-            }
-            else{
-                if(popOverMain.isFocused()){
+            } else {
+                if (popOverMain.isFocused()) {
                     popOverMain.hide();
-                }
-                else{
+                } else {
                     Label noNewNotificationsLabel = new Label("No notifications!");
                     noNewNotificationsLabel.setFont(new Font(20));
                     noNewNotificationsLabel.setStyle("-fx-text-fill: black; -fx-padding: 10px 10px 10px 10px");
                     initNotificationsPopOver(noNewNotificationsLabel);
                 }
             }
-
         } else {
-
-
-            if(popOverMain==null) {
+            if (popOverMain == null) {
                 ListView<String> eventDTOListView = initNotificationsList();
                 VBox notificationsVBox = generateNotificationsPopOverContent(eventDTOListView);
                 initNotificationsPopOver(notificationsVBox);
-            }
-            else{
-                if(popOverMain.isFocused()){
+            } else {
+                if (popOverMain.isFocused()) {
                     popOverMain.hide();
-                }
-                else{
+                } else {
                     ListView<String> eventDTOListView = initNotificationsList();
                     VBox notificationsVBox = generateNotificationsPopOverContent(eventDTOListView);
                     initNotificationsPopOver(notificationsVBox);
@@ -502,8 +489,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows the inbox view
      */
     public void showInbox() {
-        inboxNotificationBubble.setVisible(false);
-        inboxNotificationNumberLabel.setVisible(false);
+        buttonStyling.setJFXButtonWithNotificationBubble(inboxButton, "FATLook", inboxButtonIcon, "", false);
         inboxController.init();
         mainBorderPane.setCenter(inboxRoot);
     }
@@ -512,8 +498,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * shows the friends view
      */
     public void showFriends() {
-        friendsNotificationBubble.setVisible(false);
-        friendsNotificationNumberLabel.setVisible(false);
+        buttonStyling.setJFXButtonWithNotificationBubble(friendsButton, "Friends", friendsButtonIcon, "", false);
         friendsViewController.init();
         mainBorderPane.setCenter(showFriendsRoot);
     }

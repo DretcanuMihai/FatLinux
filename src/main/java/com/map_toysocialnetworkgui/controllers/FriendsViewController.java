@@ -7,7 +7,7 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
-import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import com.map_toysocialnetworkgui.utils.styling.ButtonStyling;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -66,14 +67,14 @@ public class FriendsViewController extends AbstractController {
     /**
      * button styling class
      */
-    ButtonColoring buttonColoring;
+    ButtonStyling buttonStyling;
 
     Page<FriendshipDTO> pageFriends;
     Page<FriendRequestDTO> pageRequests;
 
     @FXML
     public void initialize() {
-        buttonColoring = new ButtonColoring();
+        buttonStyling = new ButtonStyling();
         friendsList.setFocusModel(new NoFocusModel<>());
         friendsList.setCellFactory(param -> new FriendCell());
         friendsList.setItems(modelFriends);
@@ -168,8 +169,8 @@ public class FriendsViewController extends AbstractController {
      * hides the friend request list and shows the friends list
      */
     public void viewAllFriends() {
-        buttonColoring.setButtonOrange(viewFriendsButton);
-        buttonColoring.setButtonBlack(viewFriendRequestsButton);
+        buttonStyling.setButtonOrange(viewFriendsButton);
+        buttonStyling.setButtonBlack(viewFriendRequestsButton);
         if (this.friendsList.getItems().isEmpty()) {
             this.emptyListLabel.setText("No friends to show :(");
             this.friendsList.setVisible(false);
@@ -186,8 +187,8 @@ public class FriendsViewController extends AbstractController {
      * hides the friends list and shows the friend requests list
      */
     public void viewFriendRequests() {
-        buttonColoring.setButtonOrange(viewFriendRequestsButton);
-        buttonColoring.setButtonBlack(viewFriendsButton);
+        buttonStyling.setButtonOrange(viewFriendRequestsButton);
+        buttonStyling.setButtonBlack(viewFriendsButton);
         if (this.requestsList.getItems().isEmpty()) {
             this.emptyListLabel.setText("No friend requests :/");
             this.friendsList.setVisible(false);
@@ -231,6 +232,7 @@ public class FriendsViewController extends AbstractController {
         private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
         HBox root = new HBox(10);
         VBox userDetails = new VBox();
+        ImageView userProfilePicture = new ImageView("com/map_toysocialnetworkgui/images/defaultProfileIcon.png");
         Label label = new Label("Null");
         Label emailLabel = new Label("Null");
         Region region = new Region();
@@ -247,7 +249,7 @@ public class FriendsViewController extends AbstractController {
             userDetails.getChildren().addAll(label, emailLabel);
             root.setAlignment(Pos.CENTER_LEFT);
             root.setPadding(new Insets(5, 10, 5, 10));
-            root.getChildren().add(userDetails);
+            root.getChildren().addAll(userProfilePicture, userDetails);
             HBox.setHgrow(region, Priority.ALWAYS);
             root.getChildren().add(region);
 
@@ -295,6 +297,7 @@ public class FriendsViewController extends AbstractController {
         private static final String HOVERED_BUTTON_STYLE = IDLE_BUTTON_STYLE + "-fx-background-color: #F04A00";
         HBox root = new HBox(10);
         VBox userDetails = new VBox();
+        ImageView userProfilePicture = new ImageView("com/map_toysocialnetworkgui/images/defaultProfileIcon.png");
         Label label = new Label("Null");
         Label emailLabel = new Label("Null");
         Region region = new Region();
@@ -312,7 +315,7 @@ public class FriendsViewController extends AbstractController {
             userDetails.getChildren().addAll(label, emailLabel);
             root.setAlignment(Pos.CENTER_LEFT);
             root.setPadding(new Insets(5, 10, 5, 10));
-            root.getChildren().add(userDetails);
+            root.getChildren().addAll(userProfilePicture, userDetails);
             HBox.setHgrow(region, Priority.ALWAYS);
             root.getChildren().add(region);
 

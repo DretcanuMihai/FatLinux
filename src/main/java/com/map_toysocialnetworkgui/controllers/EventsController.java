@@ -6,7 +6,7 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.structures.Pair;
-import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import com.map_toysocialnetworkgui.utils.styling.ButtonStyling;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -51,6 +51,8 @@ public class EventsController extends AbstractController {
     @FXML
     Button subscriptionToEventButton;
     @FXML
+    Button eventNotificationsControlButton;
+    @FXML
     TextField eventsSearchBar;
     @FXML
     AnchorPane eventsViewBottomAnchorPane;
@@ -93,7 +95,7 @@ public class EventsController extends AbstractController {
     /**
      * button coloring class
      */
-    ButtonColoring buttonColoring;
+    ButtonStyling buttonStyling;
 
     /**
      * event DTO pages
@@ -110,6 +112,9 @@ public class EventsController extends AbstractController {
      */
     ChangeListener<String> textChangedListener = (observable, oldValue, newValue) -> loadSearchedEvents();
 
+    /**
+     * current mode of the events view
+     */
     String currentMode;
 
     /**
@@ -148,7 +153,7 @@ public class EventsController extends AbstractController {
 
     @FXML
     public void initialize() throws IOException {
-        buttonColoring = new ButtonColoring();
+        buttonStyling = new ButtonStyling();
         initCreateEventScene();
     }
 
@@ -169,10 +174,10 @@ public class EventsController extends AbstractController {
 
         initCreateEventWindow();
         eventsSearchBar.textProperty().removeListener(textChangedListener);
-        buttonColoring.setButtonForSearchEvent(this.searchForEventsButton);
-        buttonColoring.setButtonBlackWithLighterHover(this.deleteEventButton);
+        buttonStyling.setButtonForSearchEvent(this.searchForEventsButton);
+        buttonStyling.setButtonBlackWithLighterHover(this.deleteEventButton);
         this.deleteEventButton.setGraphic(deleteEventIcon);
-        buttonColoring.setButtonOrange(this.subscriptionToEventButton);
+        buttonStyling.setButtonOrange(this.subscriptionToEventButton);
         this.subscriptionToEventButton.setVisible(false);
         this.deleteEventButton.setVisible(false);
         this.searchForEventsButton.setOnAction(event -> searchForEvents());
@@ -190,6 +195,7 @@ public class EventsController extends AbstractController {
         this.eventDetailsPane.setStyle("-fx-border-color: black; -fx-border-width: 8px 8px 8px 0px; -fx-border-radius: 10; -fx-background-color: #424043; -fx-background-radius: 10");
         this.nextEventButton.setVisible(false);
         this.previousEventButton.setVisible(false);
+        this.eventNotificationsControlButton.setVisible(false);
     }
 
     /**
@@ -246,7 +252,25 @@ public class EventsController extends AbstractController {
         this.eventImageView.setVisible(false);
         this.previousEventButton.setVisible(false);
         this.nextEventButton.setVisible(false);
+        this.eventNotificationsControlButton.setVisible(false);
         this.noEventsLabel.setVisible(true);
+    }
+
+    /**
+     * sets the notification button for events
+     */
+    public void setEventsNotificationsButton() {
+        if (this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(), true))) {
+            this.events.get(0).getAttendees().remove(new Pair<>(this.loggedUser.getEmail(), true));
+            this.events.get(0).getAttendees().add(new Pair<>(this.loggedUser.getEmail(), false));
+            service.unrequestNotificationsFromEvent(this.events.get(0).getId(), this.loggedUser.getEmail());
+            buttonStyling.setButtonToEnableNotifications(this.eventNotificationsControlButton);
+        } else if (this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(), false))) {
+            this.events.get(0).getAttendees().remove(new Pair<>(this.loggedUser.getEmail(), false));
+            this.events.get(0).getAttendees().add(new Pair<>(this.loggedUser.getEmail(), true));
+            service.requestNotificationsFromEvent(this.events.get(0).getId(), this.loggedUser.getEmail());
+            buttonStyling.setButtonToDisableNotifications(this.eventNotificationsControlButton);
+        }
     }
 
     /**
@@ -255,11 +279,20 @@ public class EventsController extends AbstractController {
     public void showEvents() {
         if (this.events.size() != 0) {
             fillEventDetails();
-            if (this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(),true))||
-                    this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(),false)))
+            if (this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(), true)) ||
+                    this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(), false))) {
                 this.subscriptionToEventButton.setText("✘ Unsubscribe");
-            else
+
+                if (this.events.get(0).getAttendees().contains(new Pair<>(this.loggedUser.getEmail(), true)))
+                    buttonStyling.setButtonToDisableNotifications(this.eventNotificationsControlButton);
+                else
+                    buttonStyling.setButtonToEnableNotifications(this.eventNotificationsControlButton);
+
+                this.eventNotificationsControlButton.setVisible(true);
+            } else {
                 this.subscriptionToEventButton.setText("✔ Subscribe");
+                this.eventNotificationsControlButton.setVisible(false);
+            }
             this.eventDetailsPane.setVisible(true);
             this.eventImageStackPane.setVisible(true);
             this.eventImageView.setVisible(true);
@@ -293,7 +326,6 @@ public class EventsController extends AbstractController {
         initComponents();
         loadEventPage();
         showEvents();
-
     }
 
     /**
@@ -344,6 +376,9 @@ public class EventsController extends AbstractController {
         if (this.subscriptionToEventButton.getText().equals("✔ Subscribe")) {
             this.service.subscribeToEvent(this.events.get(0).getId(), this.loggedUser.getEmail());
             this.subscriptionToEventButton.setText("✘ Unsubscribe");
+            this.events.get(0).getAttendees().add(new Pair<>(loggedUser.getEmail(), true));
+            buttonStyling.setButtonToDisableNotifications(this.eventNotificationsControlButton);
+            this.eventNotificationsControlButton.setVisible(true);
             Notifications.create()
                     .title("Subscribed!")
                     .text("You are now subscribed to the following event: " + this.events.get(0).getTitle())
@@ -353,6 +388,9 @@ public class EventsController extends AbstractController {
                     .showInformation();
         } else if (this.subscriptionToEventButton.getText().equals("✘ Unsubscribe")) {
             this.service.unsubscribeFromEvent(this.events.get(0).getId(), this.loggedUser.getEmail());
+            this.events.get(0).getAttendees().remove(new Pair<>(loggedUser.getEmail(), true));
+            this.events.get(0).getAttendees().remove(new Pair<>(loggedUser.getEmail(), false));
+            this.eventNotificationsControlButton.setVisible(false);
             Notifications.create()
                     .title("Unsubscribed!")
                     .text("You are now unsubscribed to the following event: " + this.events.get(0).getTitle())
@@ -360,16 +398,14 @@ public class EventsController extends AbstractController {
                     .hideAfter(Duration.seconds(5))
                     .position(Pos.BOTTOM_RIGHT)
                     .showWarning();
-            if(currentMode.equals("normal"))
-            {
+            if (currentMode.equals("normal")) {
                 loadEventPage(eventDTOPage.getPageable());
                 if (events.size() == 0) {
                     if (eventDTOPage.getPageable().getPageNumber() != 1)
                         loadEventPage(eventDTOPage.previousPageable());
                 }
                 showEvents();
-            }
-            else
+            } else
                 this.subscriptionToEventButton.setText("✔ Subscribe");
         }
     }
@@ -391,7 +427,7 @@ public class EventsController extends AbstractController {
      */
     public void searchForEvents() {
         currentMode = "search";
-        buttonColoring.setButtonForCancelSearchEvent(this.searchForEventsButton);
+        buttonStyling.setButtonForCancelSearchEvent(this.searchForEventsButton);
         eventsSearchBar.textProperty().addListener(textChangedListener);
         searchForEventsButton.setOnAction(event -> {
             eventsSearchBar.textProperty().removeListener(textChangedListener);

@@ -3,6 +3,7 @@ package com.map_toysocialnetworkgui.controllers;
 import com.map_toysocialnetworkgui.model.entities_dto.MessageDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
+import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -11,9 +12,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * controller for compose message view
@@ -100,10 +107,19 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
     }
 
     /**
+     * sets the autocomplete for the mail
+     */
+    private void setAutoComplete() {
+        List<UserDTO> list = StreamSupport.stream(service.filterUsers(toTextField.getText()).spliterator(), false).toList();
+        TextFields.bindAutoCompletion(toTextField, list.stream().map(UserDTO::getEmail).toList()).setVisibleRowCount(5);
+    }
+
+    /**
      * initiates compose message window based on its main functionality
      */
     public void init() {
         composeMessageBorderPane.setStyle("-fx-border-color: black; -fx-border-width: 1px");
+        setAutoComplete();
         messageTextArea.setWrapText(true);
         switch (this.primaryFunction) {
             case "Compose New" -> {

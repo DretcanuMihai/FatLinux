@@ -11,7 +11,7 @@ import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
 import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.Observer;
 import com.map_toysocialnetworkgui.utils.structures.ConversationCustomVBox;
-import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
+import com.map_toysocialnetworkgui.utils.styling.ButtonStyling;
 import com.map_toysocialnetworkgui.utils.styling.TextColoring;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -122,7 +122,7 @@ public class InboxController extends AbstractController {
     /**
      * button styling class
      */
-    ButtonColoring buttonColoring;
+    ButtonStyling buttonStyling;
 
     /**
      * compose message view controller
@@ -185,10 +185,9 @@ public class InboxController extends AbstractController {
      * initializes inbox window elements
      */
     public void initInboxElements() {
-        this.buttonColoring = new ButtonColoring();
+        this.buttonStyling = new ButtonStyling();
         this.messagesList.setCellFactory(param -> new MessageCell());
         this.messagesList.setItems(this.modelMessages);
-
         this.composeNewButton.setOnAction(event -> {
             this.composeMessageWindowController.setPrimaryFunction(this.composeNewButton.getText());
             this.composeMessageWindowController.setSelectedMessage(null);
@@ -379,14 +378,14 @@ public class InboxController extends AbstractController {
      * hides the sent messages list and shows the received messages list
      */
     public void viewReceivedMessages() {
+        buttonStyling.setButtonOrange(viewReceivedMessagesButton);
+        buttonStyling.setButtonBlack(viewSentMessagesButton);
         currentMode="r";
         messagesList.setOnMouseClicked(event -> {
             if (messagesList.getSelectionModel().getSelectedItem() != null) {
                 fillDataForMessage(messagesList.getSelectionModel().getSelectedItem());
             }
         });
-        buttonColoring.setButtonOrange(viewReceivedMessagesButton);
-        buttonColoring.setButtonBlack(viewSentMessagesButton);
         setPage(new PageableImplementation(1,7));
         if (messagesList.getItems().isEmpty()) {
             showNoMessagesLabel();
@@ -403,16 +402,14 @@ public class InboxController extends AbstractController {
      * hides the received messages list and shows the sent messages list
      */
     public void viewSentMessages() {
+        buttonStyling.setButtonOrange(viewSentMessagesButton);
+        buttonStyling.setButtonBlack(viewReceivedMessagesButton);
         currentMode="s";
-
         messagesList.setOnMouseClicked(event -> {
             if (messagesList.getSelectionModel().getSelectedItem() != null) {
                 fillDataForMessage(messagesList.getSelectionModel().getSelectedItem());
             }
         });
-
-        buttonColoring.setButtonOrange(viewSentMessagesButton);
-        buttonColoring.setButtonBlack(viewReceivedMessagesButton);
         setPage(new PageableImplementation(1,7));
         if (messagesList.getItems().isEmpty()) {
             showNoMessagesLabel();
