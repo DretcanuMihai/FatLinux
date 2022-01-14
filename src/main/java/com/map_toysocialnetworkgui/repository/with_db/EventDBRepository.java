@@ -185,7 +185,7 @@ public class EventDBRepository implements EventRepositoryInterface {
                 SELECT e.event_id, e.title, e.description, e.host_email, e.date
                 FROM events e INNER JOIN attendances a ON e.event_id = a.event_id
                 WHERE a.user_email = (?) AND e.date >= now() AND a.to_notify=1
-                ORDER BY e.date DESC
+                ORDER BY e.date
                 """;
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -210,7 +210,7 @@ public class EventDBRepository implements EventRepositoryInterface {
                 SELECT e.event_id, e.title, e.description, e.host_email, e.date
                 FROM events e INNER JOIN attendances a ON e.event_id = a.event_id
                 WHERE a.user_email = (?) AND e.date >= now() AND a.to_notify=1
-                ORDER BY e.date DESC
+                ORDER BY e.date
                 OFFSET (?) LIMIT (?)
                 """;
 
