@@ -194,11 +194,7 @@
                         <Image url="@../images/defaultProfilePic.png" />
                      </image>
                   </ImageView>
-<<<<<<< HEAD
                   <Label fx:id="eventNotificationNumberLabel" alignment="CENTER" layoutX="202.0" layoutY="13.0" onMouseClicked="#loadNotifications" prefHeight="19.0" prefWidth="18.0" visible="false">
-=======
-                  <Label fx:id="eventNotificationNumberLabel" alignment="CENTER" layoutX="199.0" layoutY="13.0" prefHeight="19.0" prefWidth="23.0" visible="false">
->>>>>>> cf7b4bd03cb0107aab90a75da2a324e6bea2fcc8
                      <font>
                         <Font name="System Bold" size="13.0" />
                      </font>
