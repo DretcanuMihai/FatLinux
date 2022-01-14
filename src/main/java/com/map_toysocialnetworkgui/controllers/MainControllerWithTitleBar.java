@@ -402,7 +402,7 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * loads the notifications for user
      */
     public void loadNotifications() {
-        loadNotifications2(new PageableImplementation(1,7));
+        loadNotifications2(new PageableImplementation(1,6));
     }
 
 

@@ -387,7 +387,7 @@ public class InboxController extends AbstractController {
         });
         buttonColoring.setButtonOrange(viewReceivedMessagesButton);
         buttonColoring.setButtonBlack(viewSentMessagesButton);
-        setPage(new PageableImplementation(1,10));
+        setPage(new PageableImplementation(1,7));
         if (messagesList.getItems().isEmpty()) {
             showNoMessagesLabel();
         } else {
@@ -413,7 +413,7 @@ public class InboxController extends AbstractController {
 
         buttonColoring.setButtonOrange(viewSentMessagesButton);
         buttonColoring.setButtonBlack(viewReceivedMessagesButton);
-        setPage(new PageableImplementation(1,10));
+        setPage(new PageableImplementation(1,7));
         if (messagesList.getItems().isEmpty()) {
             showNoMessagesLabel();
         } else {
