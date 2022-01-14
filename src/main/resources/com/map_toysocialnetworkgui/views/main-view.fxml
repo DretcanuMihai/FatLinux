@@ -184,7 +184,7 @@
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <ImageView fx:id="notificationBell" fitHeight="35.0" fitWidth="35.0" layoutX="193.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="notificationBell" fitHeight="35.0" fitWidth="35.0" layoutX="193.0" layoutY="6.0" onMouseClicked="#loadNotifications" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/noNotificationsIcon.png" />
                      </image>
@@ -194,7 +194,7 @@
                         <Image url="@../images/defaultProfilePic.png" />
                      </image>
                   </ImageView>
-                  <Label fx:id="eventNotificationNumberLabel" alignment="CENTER" layoutX="199.0" layoutY="13.0" prefHeight="19.0" prefWidth="23.0" visible="false">
+                  <Label fx:id="eventNotificationNumberLabel" alignment="CENTER" layoutX="202.0" layoutY="13.0" onMouseClicked="#loadNotifications" prefHeight="19.0" prefWidth="18.0" visible="false">
                      <font>
                         <Font name="System Bold" size="13.0" />
                      </font>

@@ -15,8 +15,7 @@
    <left>
       <AnchorPane prefHeight="460.0" prefWidth="250.0" BorderPane.alignment="CENTER">
          <children>
-            <ListView fx:id="receivedMessagesList" prefHeight="460.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <ListView fx:id="sentMessagesList" prefHeight="460.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <ListView fx:id="messagesList" prefHeight="460.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <Label fx:id="noMessagesLabel" alignment="CENTER" layoutX="54.0" layoutY="187.0" text="No messages " visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font size="24.0" />
@@ -44,16 +43,6 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="250.0" prefHeight="65.0" prefWidth="390.0" spacing="30.0">
                <children>
-                  <Button fx:id="replyButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="replyAllButton" mnemonicParsing="false" styleClass="inboxMessagingButtons" text="Reply All">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Button>
                   <Button fx:id="composeNewButton" mnemonicParsing="false" text="Compose New">
                      <font>
                         <Font size="13.0" />

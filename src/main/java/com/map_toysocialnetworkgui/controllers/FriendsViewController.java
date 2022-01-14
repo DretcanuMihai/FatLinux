@@ -3,10 +3,14 @@ package com.map_toysocialnetworkgui.controllers;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendRequestDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.FriendshipDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
+import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,6 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * controller for friends view
@@ -31,11 +36,14 @@ public class FriendsViewController extends AbstractController {
      */
     UserDTO loggedUser;
 
+    String currentMode;
+
     /**
      * observable lists for friends and friend requests
      */
     ObservableList<FriendshipDTO> modelFriends = FXCollections.observableArrayList();
     ObservableList<FriendRequestDTO> modelRequests = FXCollections.observableArrayList();
+
 
     /**
      * FXML data
@@ -60,6 +68,9 @@ public class FriendsViewController extends AbstractController {
      */
     ButtonColoring buttonColoring;
 
+    Page<FriendshipDTO> pageFriends;
+    Page<FriendRequestDTO> pageRequests;
+
     @FXML
     public void initialize() {
         buttonColoring = new ButtonColoring();
@@ -79,12 +90,69 @@ public class FriendsViewController extends AbstractController {
     public void setLoggedUser(UserDTO loggedUser) {
         this.loggedUser = loggedUser;
     }
+    public Page<FriendshipDTO> getFriendsPage(Pageable pageable){
+        return service.getAllFriendshipDTOsOfUser(loggedUser.getEmail(),pageable);
+    }
+
+    public boolean hasNextFriends(){
+        return getFriendsPage(pageFriends.nextPageable()).getContent().count()!=0;
+    }
+
+    public boolean hasPreviousFriends(){
+        return pageFriends.getPageable().getPageNumber()!=1;
+    }
+
+    public void prepareButtonsFriends(){
+        nextFriendsPageButton.setOnAction(event -> {
+            setFriendsPage(pageFriends.nextPageable());
+        });
+        previousFriendsPageButton.setOnAction(event -> {
+            setFriendsPage(pageFriends.previousPageable());
+        });
+        previousFriendsPageButton.setVisible(hasPreviousFriends());
+        nextFriendsPageButton.setVisible(hasNextFriends());
+    }
+
+    public boolean hasNextRequests(){
+        return getRequestsPage(pageRequests.nextPageable()).getContent().count()!=0;
+    }
+
+    public boolean hasPreviousRequests(){
+        return pageRequests.getPageable().getPageNumber()!=1;
+    }
+
+    public void prepareButtonsRequests(){
+        nextFriendsPageButton.setOnAction(event -> {
+            setRequestsPage(pageRequests.nextPageable());
+        });
+        previousFriendsPageButton.setOnAction(event -> {
+            setRequestsPage(pageRequests.previousPageable());
+        });
+        previousFriendsPageButton.setVisible(hasPreviousRequests());
+        nextFriendsPageButton.setVisible(hasNextRequests());
+    }
+
+    public void setFriendsPage(Pageable pageable){
+        pageFriends=getFriendsPage(pageable);
+        updateModelFriends();
+        viewAllFriends();
+        prepareButtonsFriends();
+    }
+    public Page<FriendRequestDTO> getRequestsPage(Pageable pageable){
+        return service.getFriendRequestsSentToUser(loggedUser.getEmail(),pageable);
+    }
+    public void setRequestsPage(Pageable pageable){
+        pageRequests=getRequestsPage(pageable);
+        updateModelRequests();
+        viewFriendRequests();
+        prepareButtonsRequests();
+    }
 
     /**
      * updates the observable list of friends
      */
     public void updateModelFriends() {
-        Collection<FriendshipDTO> allFriends = service.getAllFriendshipDTOsOfUser(loggedUser.getEmail());
+        Collection<FriendshipDTO> allFriends = pageFriends.getContent().collect(Collectors.toList());
         modelFriends.setAll(allFriends);
     }
 
@@ -92,7 +160,7 @@ public class FriendsViewController extends AbstractController {
      * updates the observable list of friend requests
      */
     public void updateModelRequests() {
-        Collection<FriendRequestDTO> allFriendRequests = service.getFriendRequestsSentToUser(loggedUser.getEmail());
+        Collection<FriendRequestDTO> allFriendRequests = pageRequests.getContent().collect(Collectors.toList());
         modelRequests.setAll(allFriendRequests);
     }
 
@@ -137,9 +205,7 @@ public class FriendsViewController extends AbstractController {
      * friends list is by default visible
      */
     public void init() {
-        updateModelFriends();
-        updateModelRequests();
-        viewAllFriends();
+        setFriendsPage(new PageableImplementation(1,5));
     }
 
     @Override
@@ -147,6 +213,14 @@ public class FriendsViewController extends AbstractController {
         super.reset();
         modelFriends.setAll();
         modelRequests.setAll();
+    }
+
+    public void viewFriends() {
+        setFriendsPage(new PageableImplementation(1,5));
+    }
+
+    public void viewRequests() {
+        setRequestsPage(new PageableImplementation(1,5));
     }
 
     /**
@@ -196,8 +270,14 @@ public class FriendsViewController extends AbstractController {
                 emailLabel.setText(" " + friendshipDTO.getUser2().getEmail());
                 removeFriendButton.setOnAction(event -> {
                     service.deleteFriendship(loggedUser.getEmail(), friendshipDTO.getUser2().getEmail());
-                    updateModelFriends();
-                    viewAllFriends();
+                    if(modelFriends.size()!=1)
+                        setFriendsPage(pageFriends.getPageable());
+                    else{
+                        if(hasPreviousFriends())
+                            setFriendsPage(pageFriends.previousPageable());
+                        else
+                            setFriendsPage(pageFriends.getPageable());
+                    }
                 });
 
                 setPrefHeight(80.0);
@@ -260,15 +340,25 @@ public class FriendsViewController extends AbstractController {
                 emailLabel.setText(" " + friendRequestDTO.getSender().getEmail());
                 acceptButton.setOnAction(event -> {
                     service.confirmFriendRequest(friendRequestDTO.getSender().getEmail(), friendRequestDTO.getReceiver().getEmail(), true);
-                    updateModelRequests();
-                    updateModelFriends();
-                    viewFriendRequests();
+                    if(modelRequests.size()!=1)
+                        setRequestsPage(pageRequests.getPageable());
+                    else{
+                        if(hasPreviousRequests())
+                            setRequestsPage(pageRequests.previousPageable());
+                        else
+                            setRequestsPage(pageRequests.getPageable());
+                    }
                 });
                 declineButton.setOnAction(event -> {
                     service.confirmFriendRequest(friendRequestDTO.getSender().getEmail(), friendRequestDTO.getReceiver().getEmail(), false);
-                    updateModelRequests();
-                    updateModelFriends();
-                    viewFriendRequests();
+                    if(modelRequests.size()!=1)
+                        setRequestsPage(pageRequests.getPageable());
+                    else{
+                        if(hasPreviousRequests())
+                            setRequestsPage(pageRequests.previousPageable());
+                        else
+                            setRequestsPage(pageRequests.getPageable());
+                    }
                 });
 
                 setPrefHeight(80.0);

@@ -4,6 +4,7 @@ import com.map_toysocialnetworkgui.model.entities_dto.EventDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
 import com.map_toysocialnetworkgui.repository.paging.Page;
+import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.paging.PageableImplementation;
 import com.map_toysocialnetworkgui.utils.structures.NoFocusModel;
 import com.map_toysocialnetworkgui.utils.styling.ButtonColoring;
@@ -33,6 +34,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -45,6 +47,8 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
      * currently logged-in user
      */
     UserDTO loggedUser;
+
+    PopOver popOverMain=null;
 
     /**
      * controllers for child views
@@ -162,10 +166,22 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
 
     private void initNumberOfNotifications(UserPage userPage) {
         if (userPage.getNrOfNotifications() > 0) {
+            notificationBell.setImage(newNotifications);
             eventNotificationNumberLabel.setVisible(true);
-            eventNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNotifications()));
+            Notifications.create()
+                    .title("FAT Linux!")
+                    .text("You have " + userPage.getNrOfNotifications() + " new notifications!")
+                    .graphic(null)
+                    .hideAfter(Duration.seconds(5))
+                    .position(Pos.BOTTOM_RIGHT)
+                    .showWarning();
+
+            eventNotificationNumberLabel.setVisible(true);
             if (userPage.getNrOfNotifications() > 9)
-                eventNotificationNumberLabel.setText("9+");
+                eventNotificationNumberLabel.setText("9＋");
+            else
+                eventNotificationNumberLabel.setText(String.valueOf(userPage.getNrOfNotifications()));
+
         }
         if (userPage.getNrOfNewRequests() > 0) {
             friendsNotificationBubble.setVisible(true);
@@ -216,7 +232,6 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         initUserProfileController();
         initInboxController();
         initFriendsController();
-        loadNotifications();
         showMainPage();
     }
 
@@ -261,11 +276,28 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         friendsViewController.setService(this.service);
     }
 
+    private List<String> generateNotifications(){
+        List<String> notificationMessages = new ArrayList<>();
+        this.events.forEach(eventDTO -> {
+            long daysLeft = ChronoUnit.DAYS.between(LocalDateTime.now(), eventDTO.getDate());
+            if (daysLeft == 0)
+                notificationMessages.add(0, eventDTO.getTitle() + " takes place today!");
+            else
+                notificationMessages.add(0, daysLeft + " days left until " + eventDTO.getTitle() + " takes place!");
+        });
+        Collections.reverse(notificationMessages);
+        return notificationMessages;
+    }
+
     /**
      * initializes notifications list
      */
-    private ListView<String> initNotificationsList(ObservableList<String> modelNotifications, List<String> notificationMessages) {
-        modelNotifications.setAll(notificationMessages);
+    private ListView<String> initNotificationsList() {
+
+        ObservableList<String> modelNotifications = FXCollections.observableArrayList();
+
+        modelNotifications.setAll(generateNotifications());
+
         ListView<String> eventDTOListView = new ListView<>(modelNotifications);
         eventDTOListView.setFocusModel(new NoFocusModel<>());
         eventDTOListView.setStyle("-fx-padding: 0px; -fx-background-insets: 0");
@@ -291,6 +323,15 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         return eventDTOListView;
     }
 
+    private boolean hasNextNotification(){
+        return service.getUserNotificationEvents(loggedUser.getEmail(), eventDTOPage.nextPageable())
+                .getContent().findAny().isPresent();
+    }
+
+    private boolean hasPreviousNotification(){
+        return eventDTOPage.getPageable().getPageNumber()!=1;
+    }
+
     /**
      * generate the content shown in notifications' pop over
      */
@@ -310,6 +351,15 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         pageButtonsHBox.getChildren().addAll(previousPageButton, nextPageButton);
         notificationsVBox.getChildren().add(eventDTOListView);
         notificationsVBox.getChildren().add(pageButtonsHBox);
+        nextPageButton.setOnAction(event -> {
+            loadNotifications3(eventDTOPage.nextPageable());
+
+        });
+        previousPageButton.setOnAction(event -> {
+            loadNotifications3(eventDTOPage.previousPageable());
+        });
+        previousPageButton.setVisible(hasPreviousNotification());
+        nextPageButton.setVisible(hasNextNotification());
 
         return notificationsVBox;
     }
@@ -328,56 +378,94 @@ public class MainControllerWithTitleBar extends AbstractControllerWithTitleBar {
         ((Parent)popOver.getSkin().getNode()).getStylesheets()
                 .add(Objects.requireNonNull(getClass()
                         .getResource("/com/map_toysocialnetworkgui/css/style.css")).toExternalForm());
+        popOverMain=popOver;
+    }
+
+    /**
+     * loads events for notifications
+     */
+    public void loadEvents(){
+        loadEvents(new PageableImplementation(1,7));
+    }
+
+    /**
+     * loads events for notifications with page
+     * @param pageable - said page's pageable
+     */
+    public void loadEvents(Pageable pageable){
+        this.eventDTOPage = this.service.getUserNotificationEvents(this.loggedUser.getEmail(),pageable);
+        Stream<EventDTO> eventDTOStream = eventDTOPage.getContent();
+        this.events = new ArrayList<>(eventDTOStream.toList());
     }
 
     /**
      * loads the notifications for user
      */
-    private void loadNotifications() {
-        this.eventDTOPage = this.service.getUserNotificationEvents(this.loggedUser.getEmail(), new PageableImplementation(1, 7));
-        Stream<EventDTO> eventDTOStream = eventDTOPage.getContent();
-        this.events = new ArrayList<>(eventDTOStream.toList());
+    public void loadNotifications() {
+        loadNotifications2(new PageableImplementation(1,6));
+    }
 
-        if (this.events.size() != 0) {
-            notificationBell.setImage(newNotifications);
-            eventNotificationNumberLabel.setVisible(true);
-            Notifications.create()
-                    .title("FAT Linux!")
-                    .text("You have " + this.events.size() + " new notifications!")
-                    .graphic(null)
-                    .hideAfter(Duration.seconds(5))
-                    .position(Pos.BOTTOM_RIGHT)
-                    .showWarning();
 
-            EventHandler<MouseEvent> mouseClickedEvent = event -> {
-                notificationBell.setImage(noNewNotifications);
-                eventNotificationNumberLabel.setVisible(false);
-                ObservableList<String> modelNotifications = FXCollections.observableArrayList();
-                List<String> notificationMessages = new ArrayList<>();
+    /**
+     * loads the notifications for user
+     */
+    public void loadNotifications2(Pageable pageable) {
+        loadEvents(pageable);
+        notificationBell.setImage(noNewNotifications);
+        eventNotificationNumberLabel.setVisible(false);
 
-                this.events.forEach(eventDTO -> {
-                    long daysLeft = ChronoUnit.DAYS.between(LocalDateTime.now(), eventDTO.getDate());
-                    if (daysLeft == 0)
-                        notificationMessages.add(0, eventDTO.getTitle() + " takes place today!");
-                    else
-                        notificationMessages.add(0, daysLeft + " days left until " + eventDTO.getTitle() + " takes place!");
-                });
+        if (events.size() == 0) {
 
-                ListView<String> eventDTOListView = initNotificationsList(modelNotifications, notificationMessages);
-                VBox notificationsVBox = generateNotificationsPopOverContent(eventDTOListView);
-                initNotificationsPopOver(notificationsVBox);
-            };
-            notificationBell.setOnMouseClicked(mouseClickedEvent);
-            eventNotificationNumberLabel.setOnMouseClicked(mouseClickedEvent);
-        } else {
-            notificationBell.setOnMouseClicked(event -> {
+
+            if(popOverMain==null) {
                 Label noNewNotificationsLabel = new Label("No notifications!");
                 noNewNotificationsLabel.setFont(new Font(20));
                 noNewNotificationsLabel.setStyle("-fx-text-fill: black; -fx-padding: 10px 10px 10px 10px");
                 initNotificationsPopOver(noNewNotificationsLabel);
-            });
+            }
+            else{
+                if(popOverMain.isFocused()){
+                    popOverMain.hide();
+                }
+                else{
+                    Label noNewNotificationsLabel = new Label("No notifications!");
+                    noNewNotificationsLabel.setFont(new Font(20));
+                    noNewNotificationsLabel.setStyle("-fx-text-fill: black; -fx-padding: 10px 10px 10px 10px");
+                    initNotificationsPopOver(noNewNotificationsLabel);
+                }
+            }
+
+        } else {
+
+
+            if(popOverMain==null) {
+                ListView<String> eventDTOListView = initNotificationsList();
+                VBox notificationsVBox = generateNotificationsPopOverContent(eventDTOListView);
+                initNotificationsPopOver(notificationsVBox);
+            }
+            else{
+                if(popOverMain.isFocused()){
+                    popOverMain.hide();
+                }
+                else{
+                    ListView<String> eventDTOListView = initNotificationsList();
+                    VBox notificationsVBox = generateNotificationsPopOverContent(eventDTOListView);
+                    initNotificationsPopOver(notificationsVBox);
+                }
+            }
         }
     }
+
+    /**
+     * loads the notifications for user
+     */
+    public void loadNotifications3(Pageable pageable) {
+        loadEvents(pageable);
+        ListView<String> eventDTOListView = initNotificationsList();
+        VBox notificationsVBox = generateNotificationsPopOverContent(eventDTOListView);
+        popOverMain.setContentNode(notificationsVBox);
+    }
+
 
     /**
      * shows the main page view
