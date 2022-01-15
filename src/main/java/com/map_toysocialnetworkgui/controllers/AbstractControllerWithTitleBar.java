@@ -1,7 +1,6 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.MainApplication;
-import com.map_toysocialnetworkgui.service.SuperService;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
@@ -9,25 +8,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 /**
  * class that describes an abstract view controller with a custom title bar
  */
-public class AbstractControllerWithTitleBar {
-    /**
-     * associated super service
-     */
-    protected SuperService service;
-
-    /**
-     * associated application
-     */
-    protected MainApplication application;
+public class AbstractControllerWithTitleBar extends AbstractController {
 
     /**
      * Window control buttons and title bar
      */
     @FXML
-    ImageView appExitButton;
+    protected ImageView appExitButton;
     @FXML
     ImageView appMaximizeButton;
     @FXML
@@ -99,29 +91,47 @@ public class AbstractControllerWithTitleBar {
         });
     }
 
+    /**
+     * sets the exit button to only close the current scene
+     */
+    public void setAppExitButtonToOnlyCloseWindow() {
+        Image exitButtonImage = appExitButton.getImage();
+        appExitButton.setOnMouseClicked(event -> {
+            Stage stage = (Stage) appExitButton.getScene().getWindow();
+            stage.close();
+        });
+        appExitButton.setOnMouseEntered(event -> {
+            appExitButton.setImage(appExitHoveredButton);
+        });
+        appExitButton.setOnMouseExited(event -> {
+            appExitButton.setImage(exitButtonImage);
+        });
+    }
+
+    /**
+     * sets the exit button to log out the currently logged-in user before exiting
+     *
+     * @param loggedUser - said logged user
+     */
+    public void setAppExitButtonForUserLogout(UserDTO loggedUser) {
+        Image exitButtonImage = appExitButton.getImage();
+        appExitButton.setOnMouseClicked(event -> {
+            service.logout(loggedUser.getEmail());
+            Platform.exit();
+        });
+        appExitButton.setOnMouseEntered(event -> {
+            appExitButton.setImage(appExitHoveredButton);
+        });
+        appExitButton.setOnMouseExited(event -> {
+            appExitButton.setImage(exitButtonImage);
+        });
+    }
+
     @FXML
-    public void initialize() {
+    public void initialize() throws IOException {
         setTitleBarOnMousePressedDragWindow();
         initAppExitButton();
         initAppMinimizeButton();
         initAppMaximizeButton();
-    }
-
-    /**
-     * sets associated super service
-     *
-     * @param service - said super service
-     */
-    public void setService(SuperService service) {
-        this.service = service;
-    }
-
-    /**
-     * sets associated application
-     *
-     * @param application - said application
-     */
-    public void setApplication(MainApplication application) {
-        this.application = application;
     }
 }

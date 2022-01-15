@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.FriendRequest;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
@@ -9,7 +10,9 @@ import com.map_toysocialnetworkgui.utils.structures.Pair;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -144,7 +147,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
 
     @Override
     public Iterable<FriendRequest> getFriendRequestsSentToUser(String userEmail) {
-        Set<FriendRequest> friendRequests = new HashSet<>();
+        List<FriendRequest> friendRequests = new ArrayList<>();
         String sql = "SELECT * FROM friend_requests WHERE receiver_email = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -165,7 +168,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
 
     @Override
     public Page<FriendRequest> findAll(Pageable pageable) {
-        Set<FriendRequest> friendRequests = new HashSet<>();
+        List<FriendRequest> friendRequests = new ArrayList<>();
         String sql = "SELECT * FROM friend_requests OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -189,7 +192,7 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
 
     @Override
     public Page<FriendRequest> getFriendRequestsSentToUser(String userEmail, Pageable pageable) {
-        Set<FriendRequest> friendRequests = new HashSet<>();
+        List<FriendRequest> friendRequests = new ArrayList<>();
         String sql = "SELECT * FROM friend_requests WHERE receiver_email = (?) OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -210,6 +213,72 @@ public class FriendRequestDBRepository implements FriendRequestRepositoryInterfa
             e.printStackTrace();
         }
         return new PageImplementation<>(pageable, friendRequests.stream());
+    }
+
+    @Override
+    public Iterable<FriendRequest> getFriendRequestsSentByUser(String userEmail) {
+        List<FriendRequest> friendRequests = new ArrayList<>();
+        String sql = "SELECT * FROM friend_requests WHERE sender_email = (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, userEmail);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                FriendRequest friendRequest = getNextFromSet(resultSet);
+                friendRequests.add(friendRequest);
+            }
+            return friendRequests;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return friendRequests;
+    }
+
+    @Override
+    public Page<FriendRequest> getFriendRequestsSentByUser(String userEmail, Pageable pageable) {
+        List<FriendRequest> friendRequests = new ArrayList<>();
+        String sql = "SELECT * FROM friend_requests WHERE sender_email = (?) OFFSET (?) LIMIT (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, userEmail);
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statement.setInt(2, start);
+            statement.setInt(3, pageSize);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                FriendRequest friendRequest = getNextFromSet(resultSet);
+                friendRequests.add(friendRequest);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable, friendRequests.stream());
+    }
+
+    @Override
+    public int getNewFriendRequestCount(User user) {
+        int toReturn = 0;
+        String sql = "SELECT count(*) FROM friend_requests WHERE receiver_email = (?) and send_time > (?)";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, user.getEmail());
+            statement.setTimestamp(2, Timestamp.valueOf(user.getLastLoginTime()));
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            Long l=resultSet.getLong(1);
+            toReturn=l.intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
     }
 
     /**

@@ -33,6 +33,11 @@ public class PageImplementation<T> implements Page<T> {
     }
 
     @Override
+    public Pageable previousPageable() {
+        return new PageableImplementation(this.pageable.getPageNumber() - 1, this.pageable.getPageSize());
+    }
+
+    @Override
     public Stream<T> getContent() {
         return this.content;
     }

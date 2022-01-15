@@ -1,12 +1,14 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Message;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -140,7 +142,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
     public Message update(Message message) {
         Message toReturn = message;
         String sqlUpdateMessage = """
-                UPDATE messages SET sender_email = (?), message_text = (?), message_subject = (?), send_time = (?), parent_message_id = (?) 
+                UPDATE messages SET sender_email = (?), message_text = (?), message_subject = (?), send_time = (?), parent_message_id = (?)
                 WHERE message_id = (?)
                 """;
 
@@ -168,7 +170,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
 
     @Override
     public Page<Message> findAll(Pageable pageable) {
-        Set<Message> messages = new HashSet<>();
+        List<Message> messages = new ArrayList<>();
         String sql = "SELECT * FROM messages OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -198,7 +200,7 @@ public class MessageDBRepository implements MessageRepositoryInterface {
                 FROM messages m INNER JOIN message_deliveries md
                 ON m.message_id = md.message_id
                 WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
-                ORDER BY send_time
+                ORDER BY send_time DESC
                 """;
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -221,13 +223,13 @@ public class MessageDBRepository implements MessageRepositoryInterface {
 
     @Override
     public Page<Message> getMessagesBetweenUsersChronologically(String userEmail1, String userEmail2, Pageable pageable) {
-        Set<Message> messages = new HashSet<>();
+        List<Message> messages = new ArrayList<>();
         String sql = """
                 SELECT m.message_id, m.sender_email, m.message_text, m.send_time, m.parent_message_id
                 FROM messages m INNER JOIN message_deliveries md
                 ON m.message_id = md.message_id
                 WHERE ((m.sender_email = (?) AND md.receiver_email = (?)) OR (m.sender_email = (?) AND md.receiver_email = (?)))
-                ORDER BY send_time
+                ORDER BY send_time DESC
                 OFFSET (?) LIMIT (?)
                 """;
 
@@ -366,6 +368,98 @@ public class MessageDBRepository implements MessageRepositoryInterface {
             e.printStackTrace();
         }
         return new PageImplementation<>(pageable, conversation.stream());
+    }
+
+    @Override
+    public Page<Message> getMessagesToUserInInterval(String userEmail, LocalDate begin, LocalDate end, Pageable pageable) {
+        List<Message> conversation = new ArrayList<>();
+        String sqlFilterConversationByTime = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.message_subject, m.send_time, m.parent_message_id
+                FROM messages m inner join message_deliveries md on m.message_id = md.message_id
+                WHERE md.receiver_email = (?) and ((?)<=m.send_time and m.send_time<=(?))
+                OFFSET (?) LIMIT (?)
+                """;
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, userEmail);
+            statementConversation.setTimestamp(2,Timestamp.valueOf(begin.atStartOfDay()));
+            statementConversation.setTimestamp(3,Timestamp.valueOf(end.atTime(23,59,59)));
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statementConversation.setInt(4, start);
+            statementConversation.setInt(5, pageSize);
+            ResultSet resultSet = statementConversation.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                conversation.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable, conversation.stream());
+
+    }
+
+    @Override
+    public Page<Message> getMessagesToUserFromFriendInInterval(String userEmail, String friendEmail, LocalDate begin, LocalDate end, Pageable pageable) {
+        List<Message> conversation = new ArrayList<>();
+        String sqlFilterConversationByTime = """
+                SELECT m.message_id, m.sender_email, m.message_text, m.message_subject, m.send_time, m.parent_message_id
+                FROM messages m inner join message_deliveries md on m.message_id = md.message_id
+                WHERE md.receiver_email = (?) and m.sender_email=(?) and ((?)<=m.send_time and m.send_time<=(?))
+                OFFSET (?) LIMIT (?)
+                """;
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, userEmail);
+            statementConversation.setString(2, friendEmail);
+            statementConversation.setTimestamp(3,Timestamp.valueOf(begin.atStartOfDay()));
+            statementConversation.setTimestamp(4,Timestamp.valueOf(end.atTime(23,59,59)));
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statementConversation.setInt(5, start);
+            statementConversation.setInt(6, pageSize);
+            ResultSet resultSet = statementConversation.executeQuery();
+            while (resultSet.next()) {
+                Message message = getNextFromSet(resultSet);
+                conversation.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable, conversation.stream());
+
+    }
+
+    @Override
+    public int getUserNewMessagesCount(User user) {
+        int toReturn=0;
+        String sqlFilterConversationByTime = """
+                SELECT count(*)
+                FROM messages m INNER JOIN message_deliveries md
+                ON m.message_id = md.message_id
+                WHERE md.receiver_email = (?) and m.send_time > (?)
+                """;
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statementConversation = connection.prepareStatement(sqlFilterConversationByTime)) {
+
+            statementConversation.setString(1, user.getEmail());
+            statementConversation.setTimestamp(2, Timestamp.valueOf(user.getLastLoginTime()));
+            ResultSet resultSet = statementConversation.executeQuery();
+            resultSet.next();
+            Long l=resultSet.getLong(1);
+            toReturn=l.intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
     }
 
     /**

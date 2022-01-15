@@ -3,20 +3,19 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="641.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.map_toysocialnetworkgui.controllers.InboxController">
    <left>
       <AnchorPane prefHeight="460.0" prefWidth="250.0" BorderPane.alignment="CENTER">
          <children>
-            <ListView fx:id="receivedMessagesList" prefHeight="460.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <ListView fx:id="sentMessagesList" prefHeight="460.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <ListView fx:id="messagesList" prefHeight="460.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <Label fx:id="noMessagesLabel" alignment="CENTER" layoutX="54.0" layoutY="187.0" text="No messages " visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font size="24.0" />
@@ -26,11 +25,11 @@
       </AnchorPane>
    </left>
    <bottom>
-      <Pane prefHeight="50.0" prefWidth="642.0" BorderPane.alignment="CENTER">
+      <Pane prefHeight="65.0" prefWidth="642.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="250.0" spacing="30.0">
+            <HBox alignment="CENTER" layoutY="3.0" prefHeight="30.0" prefWidth="250.0" spacing="30.0">
                <children>
-                  <Button fx:id="viewSentMessagesButton" mnemonicParsing="false" onAction="#viewSentMessages" text="View Sent">
+                  <Button fx:id="viewSentMessagesButton" mnemonicParsing="false" onAction="#viewSentMessages" prefWidth="100.0" text="View Sent">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -42,62 +41,28 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" layoutX="250.0" prefHeight="50.0" prefWidth="390.0" spacing="30.0">
+            <HBox alignment="CENTER" layoutX="250.0" prefHeight="65.0" prefWidth="390.0" spacing="30.0">
                <children>
-                  <Button fx:id="replyButton" mnemonicParsing="false" onAction="#openWindowForReply" styleClass="inboxMessagingButtons" text="Reply">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="replyAllButton" mnemonicParsing="false" onAction="#openWindowForReplyAll" styleClass="inboxMessagingButtons" text="Reply All">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="composeNewButton" mnemonicParsing="false" onAction="#openWindowForComposeNew" text="Compose New">
+                  <Button fx:id="composeNewButton" mnemonicParsing="false" text="Compose New">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
                </children>
             </HBox>
+            <Button fx:id="previousMessagesPageButton" layoutX="78.0" layoutY="41.0" mnemonicParsing="false" styleClass="previousPageNavigationButton" />
+            <Button fx:id="nextMessagesPageButton" layoutX="140.0" layoutY="41.0" mnemonicParsing="false" styleClass="nextPageNavigationButton" />
          </children>
       </Pane>
    </bottom>
    <center>
       <AnchorPane BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="messageTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
-               <font>
-                  <Font size="14.0" />
-               </font></TextArea>
-            <Label layoutX="12.0" layoutY="14.0" text="From:">
-               <font>
-                  <Font size="13.0" />
-               </font>
-            </Label>
-            <Label layoutX="11.0" layoutY="42.0" text="To:">
-               <font>
-                  <Font size="13.0" />
-               </font>
-            </Label>
-            <Label layoutX="11.0" layoutY="70.0" text="Subject:">
-               <font>
-                  <Font size="13.0" />
-               </font>
-            </Label>
-            <TextField fx:id="fromTextField" editable="false" layoutX="73.0" layoutY="11.0" prefHeight="26.0" prefWidth="300.0">
-               <font>
-                  <Font size="13.0" />
-               </font></TextField>
-            <TextField fx:id="toTextField" editable="false" layoutX="73.0" layoutY="39.0" prefHeight="26.0" prefWidth="300.0">
-               <font>
-                  <Font size="13.0" />
-               </font></TextField>
-            <TextField fx:id="subjectTextField" editable="false" layoutX="73.0" layoutY="67.0" prefHeight="26.0" prefWidth="300.0">
-               <font>
-                  <Font size="13.0" />
-               </font></TextField>
+            <ScrollPane fx:id="conversationScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <content>
+                  <VBox fx:id="conversationVBox" alignment="CENTER" prefHeight="409.6" prefWidth="377.0" />
+               </content>
+            </ScrollPane>
          </children>
       </AnchorPane>
    </center>

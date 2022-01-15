@@ -7,10 +7,13 @@ import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
-import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +21,7 @@ import java.util.List;
 /**
  * class that incorporates a service that works with user administration
  */
-public class UserService extends AbstractObservable<EntityModificationEvent<String>> {
+public class UserService extends AbstractObservable<EntityModificationObsEvent<String>> {
     /**
      * associated users repo
      */
@@ -32,7 +35,7 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * constructs an userService having a specified user repo and validator
      *
-     * @param usersRepo     - said user Repo
+     * @param usersRepo     - said user repo
      * @param userValidator - said user validator
      */
     public UserService(UserRepositoryInterface usersRepo, UserValidator userValidator) {
@@ -43,22 +46,25 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * creates a user account
      *
-     * @param email        - email info
-     * @param passwordHash -password hash info
-     * @param firstName    - first name info
-     * @param lastName     - last name info
+     * @param email     - email info
+     * @param password  - password info
+     * @param firstName - first name info
+     * @param lastName  - last name info
      * @throws ValidationException     - if the user data is invalid
      * @throws AdministrationException - if the email is already in use
      */
-    public void createUserAccount(String email, int passwordHash, String firstName, String lastName)
+    public void createUserAccount(String email, String password, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
+        // Hashes the password using argon2i algorithm
+        Argon2 argon2 = Argon2Factory.create();
+        String passwordHash = argon2.hash(22, 65536, 1, password.toCharArray());
         User user = new User(email, passwordHash, firstName, lastName, LocalDate.now());
         userValidator.validateDefault(user);
         User result = usersRepo.save(user);
         if (result != null)
             throw new AdministrationException("Error: email already in use;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, email));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.ADD, email));
     }
 
     /**
@@ -80,16 +86,19 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     /**
      * updates the data of a user identified by an email
      *
-     * @param email        - email info
-     * @param passwordHash -password hash info
-     * @param firstName    - first name info
-     * @param lastName     - last name info
+     * @param email     - email info
+     * @param password  - password info
+     * @param firstName - first name info
+     * @param lastName  - last name info
      * @throws ValidationException     - if any of the data is invalid
      * @throws AdministrationException - if a user with said email doesn't exist
      */
-    public void updateUserAccountInfo(String email, int passwordHash, String firstName, String lastName)
+    public void updateUserAccountInfo(String email, String password, String firstName, String lastName)
             throws ValidationException, AdministrationException {
 
+        // Hashes the password using argon2i algorithm
+        Argon2 argon2 = Argon2Factory.create();
+        String passwordHash = argon2.hash(22, 65536, 1, password.toCharArray());
         User user = new User(email, passwordHash, firstName, lastName, null);
         userValidator.validateDefault(user);
         User actualUser = usersRepo.findOne(email);
@@ -99,7 +108,7 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
         actualUser.setLastName(lastName);
         actualUser.setPasswordHash(passwordHash);
         usersRepo.update(user);
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.UPDATE, email));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.UPDATE, email));
     }
 
     /**
@@ -114,7 +123,7 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
         User result = usersRepo.delete(email);
         if (result == null)
             throw new AdministrationException("Error: no user with given email;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.DELETE, email));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.DELETE, email));
     }
 
     /**
@@ -162,27 +171,34 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
     }
 
     /**
-     * verifies if user email and password hash exists for logging in
+     * verifies if user exists for logging in
      *
-     * @param userEmail    - said email
-     * @param userPassword - said password hash
+     * @param userEmail    - said user's email
+     * @param userPassword - said user's password
      * @return the user's info
      * @throws ValidationException     - if said user's email is invalid
      * @throws AdministrationException - if credentials are invalid
      */
-    public User login(String userEmail, int userPassword) throws ValidationException, AdministrationException {
+    public User login(String userEmail, String userPassword) throws ValidationException, AdministrationException {
         userValidator.validateEmail(userEmail);
         User found = usersRepo.findOne(userEmail);
+        Argon2 argon2 = Argon2Factory.create();
 
-        if (found == null || found.getPasswordHash() != userPassword)
+        if (found == null || !argon2.verify(found.getPasswordHash(), userPassword.toCharArray()))
             throw new AdministrationException("Invalid email or password!\n");
-        return found;
+        else {
+            LocalDateTime lastLogin=found.getLastLoginTime();
+            found.setLastLoginTime(LocalDateTime.now());
+            usersRepo.update(found);
+            found.setLastLoginTime(lastLogin);
+            return found;
+        }
     }
 
     /**
-     * returns an iterable of all the users in repo with certain string inside of them
+     * returns an iterable of all the users in repo containing a certain string in their complete names
      *
-     * @param string - sais string
+     * @param string - said string
      * @return said iterable
      * @throws ValidationException if string is null
      */
@@ -204,5 +220,17 @@ public class UserService extends AbstractObservable<EntityModificationEvent<Stri
         if (string == null)
             throw new ValidationException("Error: string must be non null;\n");
         return usersRepo.getUsersByName(string, pageable);
+    }
+
+    /**
+     * logs a user out
+     * @param userEmail - said user's email
+     * @throws ValidationException - if any data is invalid
+     * @throws AdministrationException - if no user with given email exists
+     */
+    public void logout(String userEmail) throws ValidationException,AdministrationException{
+        User user=getUserInfo(userEmail);
+        user.setLastLoginTime(LocalDateTime.now());
+        usersRepo.update(user);
     }
 }

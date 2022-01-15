@@ -2,24 +2,16 @@ package com.map_toysocialnetworkgui;
 
 import com.map_toysocialnetworkgui.controllers.AbstractControllerWithTitleBar;
 import com.map_toysocialnetworkgui.controllers.MainControllerWithTitleBar;
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
-import com.map_toysocialnetworkgui.model.validators.FriendRequestValidator;
-import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
-import com.map_toysocialnetworkgui.model.validators.MessageValidator;
-import com.map_toysocialnetworkgui.model.validators.UserValidator;
-import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendRequestRepositoryInterface;
-import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendshipRepositoryInterface;
-import com.map_toysocialnetworkgui.repository.skeletons.entity_based.MessageRepositoryInterface;
-import com.map_toysocialnetworkgui.repository.skeletons.entity_based.UserRepositoryInterface;
-import com.map_toysocialnetworkgui.repository.with_db.FriendRequestDBRepository;
-import com.map_toysocialnetworkgui.repository.with_db.FriendshipDBRepository;
-import com.map_toysocialnetworkgui.repository.with_db.MessageDBRepository;
-import com.map_toysocialnetworkgui.repository.with_db.UserDBRepository;
+import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
+import com.map_toysocialnetworkgui.model.validators.*;
+import com.map_toysocialnetworkgui.repository.skeletons.entity_based.*;
+import com.map_toysocialnetworkgui.repository.with_db.*;
 import com.map_toysocialnetworkgui.service.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -40,14 +32,29 @@ public class MainApplication extends Application {
     URL registerFXMLURL;
 
     /**
+     * scenes
+     */
+    Scene loginScene;
+    Scene mainScene;
+    Scene registerScene;
+
+    /**
      * stages
      */
     Stage primaryStage;
+
+    /**
+     * controllers
+     */
+    MainControllerWithTitleBar mainController;
 
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * initiates the Service
+     */
     private void initService() {
         // Repositories
         UserRepositoryInterface userRepo = new UserDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
@@ -58,19 +65,23 @@ public class MainApplication extends Application {
                 "postgres", "postgres");
         FriendRequestRepositoryInterface friendRequestRepository = new FriendRequestDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
                 "postgres", "postgres");
+        EventRepositoryInterface eventRepository = new EventDBRepository("jdbc:postgresql://localhost:5432/SocialMediaDB",
+                "postgres", "postgres");
 
         // Validators
         UserValidator userValidator = new UserValidator();
         FriendshipValidator friendshipValidator = new FriendshipValidator();
         MessageValidator messageValidator = new MessageValidator();
         FriendRequestValidator friendRequestValidator = new FriendRequestValidator();
+        EventValidator eventValidator = new EventValidator();
 
         // Services
         UserService userService = new UserService(userRepo, userValidator);
         FriendshipService friendshipService = new FriendshipService(friendshipRepo, friendshipValidator);
         FriendRequestService friendRequestService = new FriendRequestService(friendRequestRepository, friendRequestValidator);
         MessageService messageService = new MessageService(messageDBRepository, messageValidator);
-        this.service = new SuperService(userService, friendshipService, friendRequestService, messageService);
+        EventService eventService = new EventService(eventRepository, eventValidator);
+        this.service = new SuperService(userService, friendshipService, friendRequestService, messageService, eventService);
     }
 
     /**
@@ -82,79 +93,87 @@ public class MainApplication extends Application {
         registerFXMLURL = getClass().getResource("views/register-view.fxml");
     }
 
+    /**
+     * initiates all scenes
+     *
+     * @throws IOException - if any error occurs
+     */
+    private void initScenes() throws IOException {
+        loginScene = initScene(loginFXMLURL);
+        mainScene = initMainScene(mainFXMLURL);
+        registerScene = initScene(registerFXMLURL);
+    }
+
     @Override
-    public void init() {
+    public void init() throws IOException {
         initService();
         initURLs();
+        initScenes();
     }
 
     /**
-     * initiates a loader with a URL
+     * initiates a scene described by an url
      *
-     * @param url - said URL
-     * @return said loader
-     * @throws IOException if an IO error occurs
+     * @param url - said url
+     * @throws IOException - if any error occurs
      */
-    private FXMLLoader initLoader(URL url) throws IOException {
+    private Scene initScene(URL url) throws IOException {
         FXMLLoader loader = new FXMLLoader(url);
-        loader.load();
+        Parent parent = loader.load();
         AbstractControllerWithTitleBar controller = loader.getController();
         controller.setService(service);
         controller.setApplication(this);
-        return loader;
+        return new Scene(parent);
     }
 
     /**
-     * changes the main window
+     * initiates a main scene described by an url and sets the MainController for app
      *
-     * @param loader - loader of the new window
+     * @param url - said url
+     * @throws IOException - if any error occurs
      */
-    private void modifyMainWindowWith(FXMLLoader loader) {
-        Parent parent = loader.getRoot();
-        Scene scene = new Scene(parent);
-        primaryStage.setScene(scene);
-        primaryStage.centerOnScreen();
+    private Scene initMainScene(URL url) throws IOException {
+        FXMLLoader loader = new FXMLLoader(url);
+        Parent parent = loader.load();
+        mainController = loader.getController();
+        mainController.setService(service);
+        mainController.setApplication(this);
+        return new Scene(parent);
     }
 
     /**
      * changes to main view
      *
-     * @param user - currently logged-in user
-     * @throws IOException if an IO error occurs
+     * @param userPage - currently logged-in user's page
      */
-    public void changeToMain(UserUIDTO user) throws IOException {
-        FXMLLoader mainLoader = initLoader(mainFXMLURL);
-        MainControllerWithTitleBar controller = mainLoader.getController();
-        controller.init(user);
-        modifyMainWindowWith(mainLoader);
+    public void changeToMain(UserPage userPage) {
+        mainController.init(userPage);
+        primaryStage.setScene(mainScene);
+        primaryStage.centerOnScreen();
     }
 
     /**
      * changes to register view
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void changeToRegister() throws IOException {
-        FXMLLoader registerLoader = initLoader(registerFXMLURL);
-        modifyMainWindowWith(registerLoader);
+    public void changeToRegister() {
+        primaryStage.setScene(registerScene);
+        primaryStage.centerOnScreen();
     }
 
     /**
      * changes to login view
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void changeToLogin() throws IOException {
-        FXMLLoader loginLoader = initLoader(loginFXMLURL);
-        modifyMainWindowWith(loginLoader);
+    public void changeToLogin() {
+        primaryStage.setScene(loginScene);
+        primaryStage.centerOnScreen();
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         primaryStage = stage;
         primaryStage.initStyle(StageStyle.UNDECORATED);
-        FXMLLoader loginLoader = initLoader(loginFXMLURL);
-        modifyMainWindowWith(loginLoader);
+        changeToLogin();
+        primaryStage.getIcons().add(new Image("com/map_toysocialnetworkgui/images/fatLinux0.png"));
         primaryStage.show();
     }
 }

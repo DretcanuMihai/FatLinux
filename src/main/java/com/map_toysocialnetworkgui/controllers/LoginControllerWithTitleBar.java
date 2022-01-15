@@ -1,14 +1,13 @@
 package com.map_toysocialnetworkgui.controllers;
 
-import com.map_toysocialnetworkgui.model.entities_dto.UserUIDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserDTO;
+import com.map_toysocialnetworkgui.model.entities_dto.UserPage;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.service.AdministrationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
-import java.io.IOException;
 
 /**
  * controller for login view
@@ -26,15 +25,15 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
 
     /**
      * logs in a user
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void login() throws IOException {
+    public void login() {
         try {
             String email = emailTextField.getText();
-            UserUIDTO user = service.login(email, passwordTextField.getText().hashCode());
+            String password = passwordTextField.getText();
+            UserPage userPage = service.login(email, password);
             errorLabel.setText("");
-            application.changeToMain(user);
+            application.changeToMain(userPage);
+            reset();
         } catch (ValidationException | AdministrationException ex) {
             errorLabel.setText(ex.getMessage());
         }
@@ -42,10 +41,16 @@ public class LoginControllerWithTitleBar extends AbstractControllerWithTitleBar 
 
     /**
      * changes main window to register window
-     *
-     * @throws IOException if an IO error occurs
      */
-    public void register() throws IOException {
+    public void register() {
         application.changeToRegister();
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        emailTextField.setText("");
+        passwordTextField.setText("");
+        errorLabel.setText("");
     }
 }

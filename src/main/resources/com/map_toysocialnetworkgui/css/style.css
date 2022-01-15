@@ -26,7 +26,7 @@
     -fx-text-fill: red;
 }
 
-.label#passwordTooShortErrorLabel {
+.label#passwordLengthErrorLabel {
     -fx-text-fill: red;
 }
 
@@ -126,7 +126,7 @@
 .sideBarItem:hover {
     -fx-background-color: black;
     -fx-border-color: #ff7700;
-    -fx-border-width: 0px 0px 0px 3px;
+    -fx-border-width: 0px 0px 0px 5px;
 }
 
 .text-field#searchBar {
@@ -174,13 +174,13 @@
     -fx-background-color: #ff7700;
 }
 
-.inboxViewControlButtons, .inboxMessagingButtons {
+.inboxViewControlButtons, .inboxMessagingButtons, .eventsButtons, .reportButtons {
     -fx-focus-traversable: false;
     -fx-background-radius: 10px;
     -fx-background-color: #ff7700;
 }
 
-.inboxViewControlButtons:hover, .inboxMessagingButtons:hover {
+.inboxViewControlButtons:hover, .inboxMessagingButtons:hover, .eventsButtons:hover, .reportButtons:hover {
     -fx-background-color: #F04A00;
 }
 
@@ -212,4 +212,116 @@
 
 .button#closeComposeMessageWindowButton:hover {
     -fx-background-color: #424043;
+}
+
+.text-area#highlightedMessageTextArea .content {
+    -fx-background-color: #1e1e1e;
+}
+
+.text-field#eventsSearchBar {
+    -fx-background-radius: 20 0 0 20;
+    -fx-background-color: #424043;
+}
+
+.text-field#eventsSearchBar:focused {
+    -fx-border-color: #ff7700;
+    -fx-border-radius: 20 0 0 20;
+}
+
+.button#searchForEventsButton {
+    -fx-background-radius: 0 20 20 0;
+    -fx-background-color: black;
+    -fx-background-image: url("../images/searchIcon.png");
+    -fx-background-size: 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+.button#searchForEventsButton:hover {
+    -fx-background-color: #1e1e1e;
+}
+
+.button#createNewEventButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+}
+
+.button#createNewEventButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.button#createEventWindowButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+}
+
+.button#createEventWindowButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.button#closeCreateEventWindowButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #000000;
+}
+
+.button#closeCreateEventWindowButton:hover {
+    -fx-background-color: #424043;
+}
+
+.button#saveReportButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+}
+
+.button#saveReportButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.button#closeSaveReportButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #000000;
+}
+
+.button#closeSaveReportButton:hover {
+    -fx-background-color: #424043;
+}
+
+.popover > .border {
+    -fx-border-style: none;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-fill: derive(-fx-base, 35%);;
+}
+
+.popover > .content > .title > .text {
+    -fx-text-fill: black;
+    -fx-font-size: 20;
+    -fx-padding: 10px 10px 10px 10px;
+}
+
+.previousPageNavigationButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+    -fx-graphic: url("../images/previousPageIcon.png");
+}
+
+.previousPageNavigationButton:hover {
+    -fx-background-color: #F04A00;
+}
+
+.nextPageNavigationButton {
+    -fx-focus-traversable: false;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ff7700;
+    -fx-graphic: url("../images/nextPageIcon.png");
+}
+
+.nextPageNavigationButton:hover {
+    -fx-background-color: #F04A00;
 }

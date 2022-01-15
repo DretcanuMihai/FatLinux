@@ -5,7 +5,7 @@ package com.map_toysocialnetworkgui.utils.events;
  *
  * @param <ID> - the entity's id type
  */
-public class EntityModificationEvent<ID> implements Event {
+public class EntityModificationObsEvent<ID> implements ObsEvent {
     private final ChangeEventType type;
     private final ID modifiedEntityID;
 
@@ -15,7 +15,7 @@ public class EntityModificationEvent<ID> implements Event {
      * @param type             - event's type
      * @param modifiedEntityID - the id of the entity modified
      */
-    public EntityModificationEvent(ChangeEventType type, ID modifiedEntityID) {
+    public EntityModificationObsEvent(ChangeEventType type, ID modifiedEntityID) {
         this.type = type;
         this.modifiedEntityID = modifiedEntityID;
     }

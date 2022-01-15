@@ -17,7 +17,7 @@
    <children>
       <BorderPane fx:id="mainBorderPane" layoutX="200.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <AnchorPane prefHeight="100.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+            <AnchorPane fx:id="mainWindowTopAnchorPane" prefHeight="100.0" prefWidth="800.0" BorderPane.alignment="CENTER">
                <children>
                   <Pane fx:id="titleBar" layoutX="300.0" layoutY="-74.0" prefHeight="40.0" prefWidth="800.0" style="-fx-background-color: #202020;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
@@ -74,7 +74,7 @@
          <left>
             <AnchorPane prefHeight="480.0" prefWidth="230.0" style="-fx-background-color: #424043;" BorderPane.alignment="CENTER">
                <children>
-                  <VBox layoutY="229.0" prefHeight="250.0" prefWidth="230.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="229.0">
+                  <VBox layoutX="-1.0" layoutY="180.0" prefHeight="300.0" prefWidth="230.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="180.0">
                      <children>
                         <JFXButton fx:id="mainPageButton" alignment="BASELINE_LEFT" onAction="#showMainPage" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Main Page" textFill="#ff7700">
                            <font>
@@ -88,7 +88,7 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                        <JFXButton alignment="BASELINE_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Profile" textFill="#ff7700">
+                        <JFXButton fx:id="profileButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="10.0" onAction="#showUserProfile" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Profile" textFill="#ff7700">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
@@ -100,31 +100,35 @@
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                        <JFXButton fx:id="inboxButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="60.0" onAction="#showInbox" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="FATLook" textFill="#ff7700">
+                        <JFXButton fx:id="eventsButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="10.0" onAction="#showEvents" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Events" textFill="#ff7700">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../images/FATLookIcon.png" />
+                                    <Image url="@../images/eventsIcon.png" />
                                  </image>
                               </ImageView>
                            </graphic>
                         </JFXButton>
-                        <JFXButton fx:id="friendsButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="111.0" onAction="#showFriends" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Friends" textFill="#ff7700">
+                        <JFXButton fx:id="inboxButton" alignment="BASELINE_LEFT" onAction="#showInbox" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" textFill="#ff7700">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
                            <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../images/friendsIcon.png" />
-                                 </image>
-                              </ImageView>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
                            </graphic>
                         </JFXButton>
-                        <Line endX="129.0" startX="-100.0" />
+                        <JFXButton fx:id="friendsButton" alignment="BASELINE_LEFT" onAction="#showFriends" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" textFill="#ff7700">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                           </graphic>
+                        </JFXButton>
+                        <Line endX="129.0" startX="-100.0" strokeWidth="3.0" />
                         <JFXButton fx:id="logOutButton" alignment="BASELINE_LEFT" layoutX="10.0" layoutY="161.0" onAction="#logout" prefHeight="50.0" prefWidth="280.0" styleClass="sideBarItem" text="Log Out" textFill="#ff7700">
                            <font>
                               <Font name="System Bold" size="15.0" />
@@ -138,9 +142,24 @@
                            </graphic>
                         </JFXButton>
                      </children></VBox>
-                  <Label fx:id="userNameLabel" alignment="CENTER" layoutX="14.0" layoutY="149.0" prefHeight="45.0" prefWidth="202.0">
+                  <Label fx:id="userNameLabel" alignment="CENTER" layoutX="14.0" layoutY="138.0" prefHeight="45.0" prefWidth="202.0">
                      <font>
                         <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="notificationBell" fitHeight="35.0" fitWidth="35.0" layoutX="193.0" layoutY="6.0" onMouseClicked="#loadNotifications" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/noNotificationsIcon.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="120.0" fitWidth="120.0" layoutX="56.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/defaultProfilePic.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="eventNotificationNumberLabel" alignment="CENTER" layoutX="202.0" layoutY="13.0" onMouseClicked="#loadNotifications" prefHeight="19.0" prefWidth="18.0" visible="false">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
                      </font>
                   </Label>
                </children>

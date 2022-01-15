@@ -1,6 +1,7 @@
 package com.map_toysocialnetworkgui.repository.with_db;
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.PageImplementation;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
@@ -9,7 +10,10 @@ import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -91,7 +95,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
 
             statementSave.setString(1, friendship.getEmails().getFirst());
             statementSave.setString(2, friendship.getEmails().getSecond());
-            statementSave.setDate(3, Date.valueOf(friendship.getBeginDate()));
+            statementSave.setTimestamp(3, Timestamp.valueOf(friendship.getBeginDate()));
             statementSave.execute();
             toReturn = null;
         } catch (SQLException e) {
@@ -130,7 +134,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statementUpdate = connection.prepareStatement(sqlUpdate)) {
 
-            statementUpdate.setDate(1, Date.valueOf(friendship.getBeginDate()));
+            statementUpdate.setTimestamp(1, Timestamp.valueOf(friendship.getBeginDate()));
             statementUpdate.setString(2, friendship.getEmails().getFirst());
             statementUpdate.setString(3, friendship.getEmails().getSecond());
             int affectedRows = statementUpdate.executeUpdate();
@@ -144,7 +148,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
 
     @Override
     public Iterable<Friendship> getUserFriendships(String userEmail) {
-        Set<Friendship> friendships = new HashSet<>();
+        List<Friendship> friendships = new ArrayList<>();
         String sql = "SELECT * FROM friendships WHERE first_user_email = (?) OR second_user_email = (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -165,7 +169,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
 
     @Override
     public Iterable<Friendship> getUserFriendshipsFromMonth(String userEmail, int month) {
-        Set<Friendship> friendships = new HashSet<>();
+        List<Friendship> friendships = new ArrayList<>();
         String sql = """
                 SELECT * FROM friendships WHERE ((first_user_email = (?) OR second_user_email = (?))
                 AND EXTRACT (MONTH FROM begin_date) = (?))
@@ -191,7 +195,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
 
     @Override
     public Page<Friendship> findAll(Pageable pageable) {
-        Set<Friendship> friendships = new HashSet<>();
+        List<Friendship> friendships = new ArrayList<>();
         String sql = "SELECT * FROM friendships OFFSET (?) LIMIT (?)";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -215,7 +219,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
 
     @Override
     public Page<Friendship> getUserFriendships(String userEmail, Pageable pageable) {
-        Set<Friendship> friendships = new HashSet<>();
+        List<Friendship> friendships = new ArrayList<>();
         String sql = """
                 SELECT * FROM friendships WHERE first_user_email = (?) OR second_user_email = (?)
                 OFFSET (?) LIMIT (?)
@@ -244,7 +248,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
 
     @Override
     public Page<Friendship> getUserFriendshipsFromMonth(String userEmail, int month, Pageable pageable) {
-        Set<Friendship> friendships = new HashSet<>();
+        List<Friendship> friendships = new ArrayList<>();
         String sql = """
                 SELECT * FROM friendships WHERE ((first_user_email = (?) OR second_user_email = (?))
                 AND EXTRACT(MONTH FROM begin_date) = (?)) OFFSET (?) LIMIT (?)
@@ -272,6 +276,63 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
         return new PageImplementation<>(pageable, friendships.stream());
     }
 
+    @Override
+    public Page<Friendship> getUserFriendshipsFromInterval(String userEmail, LocalDate begin, LocalDate end, Pageable pageable) {
+        List<Friendship> friendships = new ArrayList<>();
+        String sql = """
+                SELECT * FROM friendships WHERE ((first_user_email = (?) OR second_user_email = (?))
+                AND ((?)<= begin_date AND begin_date<=(?))) OFFSET (?) LIMIT (?)
+                """;
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, userEmail);
+            statement.setString(2, userEmail);
+            statement.setTimestamp(3, Timestamp.valueOf(begin.atStartOfDay()));
+            statement.setTimestamp(4, Timestamp.valueOf(end.atTime(23,59)));
+            int pageSize = pageable.getPageSize();
+            int pageNr = pageable.getPageNumber();
+            int start = (pageNr - 1) * pageSize;
+            statement.setInt(5, start);
+            statement.setInt(6, pageSize);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Friendship friendship = getNextFromSet(resultSet);
+                friendships.add(friendship);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new PageImplementation<>(pageable, friendships.stream());
+    }
+
+    @Override
+    public int getUserNewFriendshipsCount(User user) {
+
+        int toReturn=0;
+        String sql = """
+                SELECT count(*) FROM friendships WHERE (first_user_email = (?) OR second_user_email = (?))
+                AND (?) <= begin_date
+                """;
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            String userEmail=user.getEmail();
+            statement.setString(1, userEmail);
+            statement.setString(2, userEmail);
+            statement.setTimestamp(3, Timestamp.valueOf(user.getLastLoginTime()));
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            Long l=resultSet.getLong(1);
+            toReturn=l.intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return toReturn;
+    }
+
     /**
      * gets the next Friendship from a given Result Set
      *
@@ -282,7 +343,7 @@ public class FriendshipDBRepository implements FriendshipRepositoryInterface {
     private Friendship getNextFromSet(ResultSet resultSet) throws SQLException {
         String email1 = resultSet.getString("first_user_email");
         String email2 = resultSet.getString("second_user_email");
-        LocalDate beginDate = resultSet.getDate("begin_date").toLocalDate();
+        LocalDateTime beginDate = resultSet.getTimestamp("begin_date").toLocalDateTime();
         return new Friendship(email1, email2, beginDate);
     }
 }

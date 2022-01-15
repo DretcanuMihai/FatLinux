@@ -1,22 +1,24 @@
 package com.map_toysocialnetworkgui.service;
 
 import com.map_toysocialnetworkgui.model.entities.Friendship;
+import com.map_toysocialnetworkgui.model.entities.User;
 import com.map_toysocialnetworkgui.model.validators.FriendshipValidator;
 import com.map_toysocialnetworkgui.model.validators.ValidationException;
 import com.map_toysocialnetworkgui.repository.paging.Page;
 import com.map_toysocialnetworkgui.repository.paging.Pageable;
 import com.map_toysocialnetworkgui.repository.skeletons.entity_based.FriendshipRepositoryInterface;
 import com.map_toysocialnetworkgui.utils.events.ChangeEventType;
-import com.map_toysocialnetworkgui.utils.events.EntityModificationEvent;
+import com.map_toysocialnetworkgui.utils.events.EntityModificationObsEvent;
 import com.map_toysocialnetworkgui.utils.observer.AbstractObservable;
 import com.map_toysocialnetworkgui.utils.structures.UnorderedPair;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * class that incorporates a service that works with friendship administration
  */
-public class FriendshipService extends AbstractObservable<EntityModificationEvent<UnorderedPair<String>>> {
+public class FriendshipService extends AbstractObservable<EntityModificationObsEvent<UnorderedPair<String>>> {
     /**
      * associated friendship repo
      */
@@ -48,12 +50,12 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
      * @throws AdministrationException - if the friendship already exists
      */
     public void addFriendship(String userEmail1, String userEmail2) throws ValidationException, AdministrationException {
-        Friendship friendship = new Friendship(userEmail1, userEmail2, LocalDate.now());
+        Friendship friendship = new Friendship(userEmail1, userEmail2, LocalDateTime.now());
         friendshipValidator.validateDefault(friendship);
         Friendship result = friendshipRepo.save(friendship);
         if (result != null)
             throw new AdministrationException("Error: users are already friends;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.ADD, friendship.getId()));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.ADD, friendship.getId()));
     }
 
     /**
@@ -89,7 +91,7 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
         Friendship result = friendshipRepo.delete(new UnorderedPair<>(userEmail1, userEmail2));
         if (result == null)
             throw new AdministrationException("Error: users weren't friends;\n");
-        notifyObservers(new EntityModificationEvent<>(ChangeEventType.DELETE, new UnorderedPair<>(userEmail1, userEmail2)));
+        notifyObservers(new EntityModificationObsEvent<>(ChangeEventType.DELETE, new UnorderedPair<>(userEmail1, userEmail2)));
     }
 
     /**
@@ -161,5 +163,23 @@ public class FriendshipService extends AbstractObservable<EntityModificationEven
         if (month < 1 || month > 12)
             throw new ValidationException("Error: Invalid month!\n");
         return friendshipRepo.getUserFriendshipsFromMonth(userEmail, month, pageable);
+    }
+
+    /**
+     * returns a page of all friendships of a user that were created in a specific month
+     *
+     * @param userEmail - email of user
+     * @param begin - begin of the interval
+     * @param end  - end of the interval
+     * @param pageable  - for paging
+     * @return a page of said friendships
+     * @throws ValidationException if month is invalid
+     */
+    public Page<Friendship> getUserFriendshipsFromInterval(String userEmail, LocalDate begin, LocalDate end, Pageable pageable) throws ValidationException {
+        return friendshipRepo.getUserFriendshipsFromInterval(userEmail,begin,end,pageable);
+    }
+
+    public int getUserNewFriendshipsCount(User user) {
+        return friendshipRepo.getUserNewFriendshipsCount(user);
     }
 }

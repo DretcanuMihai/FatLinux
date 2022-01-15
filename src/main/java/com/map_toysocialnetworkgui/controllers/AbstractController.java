@@ -34,4 +34,9 @@ public class AbstractController {
     public void setApplication(MainApplication application) {
         this.application = application;
     }
+
+    /**
+     * resets data on the window to default
+     */
+    public void reset() {}
 }

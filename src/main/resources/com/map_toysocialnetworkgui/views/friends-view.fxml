@@ -26,14 +26,24 @@
    <bottom>
       <Pane prefHeight="50.0" prefWidth="642.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="642.0" spacing="200.0">
+            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="642.0" spacing="30.0">
                <children>
-                  <Button fx:id="viewFriendsButton" mnemonicParsing="false" onAction="#viewAllFriends" prefHeight="32.0" prefWidth="120.0" styleClass="friendViewControlButtons" text="View Friends">
+                  <Button fx:id="viewFriendsButton" mnemonicParsing="false" onAction="#viewFriends" prefHeight="32.0" prefWidth="120.0" styleClass="friendViewControlButtons" text="View Friends">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="viewFriendRequestsButton" mnemonicParsing="false" onAction="#viewFriendRequests" prefHeight="32.0" prefWidth="120.0" styleClass="friendViewControlButtons" text="View Requests">
+                  <Button fx:id="previousFriendsPageButton" mnemonicParsing="false" styleClass="previousPageNavigationButton">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="nextFriendsPageButton" mnemonicParsing="false" styleClass="nextPageNavigationButton">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="viewFriendRequestsButton" mnemonicParsing="false" onAction="#viewRequests" prefHeight="32.0" prefWidth="120.0" styleClass="friendViewControlButtons" text="View Requests">
                      <font>
                         <Font size="13.0" />
                      </font>

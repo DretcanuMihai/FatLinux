@@ -17,7 +17,7 @@ public class FriendRequestDTO {
     /**
      * users info
      */
-    private final UserUIDTO sender, receiver;
+    private final UserDTO sender, receiver;
 
     /**
      * creates a FriendRequest DTO for a friendship between two users
@@ -29,8 +29,8 @@ public class FriendRequestDTO {
      */
     public FriendRequestDTO(FriendRequest friendRequest, User sender, User receiver) {
         this.sendTime = friendRequest.getSendTime();
-        this.sender = new UserUIDTO(sender);
-        this.receiver = new UserUIDTO(receiver);
+        this.sender = new UserDTO(sender);
+        this.receiver = new UserDTO(receiver);
     }
 
     /**
@@ -47,7 +47,7 @@ public class FriendRequestDTO {
      *
      * @return said DTO
      */
-    public UserUIDTO getSender() {
+    public UserDTO getSender() {
         return sender;
     }
 
@@ -56,7 +56,7 @@ public class FriendRequestDTO {
      *
      * @return said DTO
      */
-    public UserUIDTO getReceiver() {
+    public UserDTO getReceiver() {
         return receiver;
     }
 
