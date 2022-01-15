@@ -107,19 +107,10 @@ public class ComposeMessageController extends AbstractControllerWithTitleBar {
     }
 
     /**
-     * sets the autocomplete for the mail
-     */
-    private void setAutoComplete() {
-        List<UserDTO> list = StreamSupport.stream(service.filterUsers(toTextField.getText()).spliterator(), false).toList();
-        TextFields.bindAutoCompletion(toTextField, list.stream().map(UserDTO::getEmail).toList()).setVisibleRowCount(5);
-    }
-
-    /**
      * initiates compose message window based on its main functionality
      */
     public void init() {
         composeMessageBorderPane.setStyle("-fx-border-color: black; -fx-border-width: 1px");
-        setAutoComplete();
         messageTextArea.setWrapText(true);
         switch (this.primaryFunction) {
             case "Compose New" -> {
