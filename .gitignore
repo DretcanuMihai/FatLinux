@@ -1,12 +1,6 @@
-.idea/
-*.iml
-out/
-build/
-gradle/
 .gradle/
-data/
-build.gradle
+.idea/
+build
+gradle
 gradlew
 gradlew.bat
-settings.gradle
-*.pdf

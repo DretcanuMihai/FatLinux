@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="createEventBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fatlinux.controllers.CreateEventController">
+   <top>
+      <AnchorPane prefHeight="40.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <Pane fx:id="titleBar" prefHeight="40.0" prefWidth="600.0" style="-fx-background-color: #202020;">
+               <children>
+                  <ImageView fx:id="appExitButton" fitHeight="22.0" fitWidth="22.0" layoutX="564.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/closeNormal.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="appMaximizeButton" fitHeight="22.0" fitWidth="22.0" layoutX="533.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/maxNormal.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="appMinimizeButton" fitHeight="22.0" fitWidth="22.0" layoutX="502.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/minNormal.png" />
+                     </image>
+                  </ImageView>
+                  <Label layoutX="42.0" layoutY="11.0" text="FATLinux Create Event">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
+                  <ImageView fitHeight="22.0" fitWidth="22.0" layoutX="14.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/tuxAppIcon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </Pane>
+         </children>
+      </AnchorPane>
+   </top>
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="43.0" layoutY="76.0" text="Title:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="43.0" layoutY="34.0" text="Host:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="42.0" layoutY="118.0" text="Date:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="43.0" layoutY="155.0" text="Description:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <TextField fx:id="hostTextField" editable="false" layoutX="87.0" layoutY="28.0" prefHeight="30.0" prefWidth="426.0">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="titleTextField" layoutX="87.0" layoutY="70.0" prefHeight="30.0" prefWidth="426.0" promptText="Event title">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </TextField>
+            <DatePicker fx:id="dateDatePicker" layoutX="87.0" layoutY="112.0" prefHeight="30.0" prefWidth="426.0" promptText="Date of event" />
+            <TextArea fx:id="descriptionTextArea" layoutY="180.0" prefHeight="130.0" prefWidth="600.0" promptText="Description of event" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="44.0">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </TextArea>
+         </children>
+      </AnchorPane>
+   </center>
+   <bottom>
+      <Pane prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="125.0">
+               <children>
+                  <Button fx:id="createEventWindowButton" mnemonicParsing="false" onAction="#createNewEvent" prefHeight="30.0" prefWidth="130.0" text="Create event">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="closeCreateEventWindowButton" mnemonicParsing="false" onAction="#close" prefHeight="30.0" prefWidth="130.0" text="Close">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </Pane>
+   </bottom>
+</BorderPane>
