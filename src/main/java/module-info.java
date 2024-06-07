@@ -1,22 +1,20 @@
-module com.map_toysocialnetworkgui {
+module com.fatlinux {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.jfoenix;
 
     requires org.controlsfx.controls;
-    requires com.dlsc.formsfx;
-    requires org.kordamp.bootstrapfx.core;
     requires java.sql;
     requires de.mkammerer.argon2.nolibs;
-    requires com.sun.jna;
     requires org.apache.pdfbox;
+    requires com.sun.jna;
 
-    opens com.map_toysocialnetworkgui to javafx.fxml;
-    exports com.map_toysocialnetworkgui;
+    opens com.fatlinux to javafx.fxml;
+    exports com.fatlinux;
 
-    exports com.map_toysocialnetworkgui.controllers;
-    opens com.map_toysocialnetworkgui.controllers to javafx.fxml;
+    exports com.fatlinux.controllers;
+    opens com.fatlinux.controllers to javafx.fxml;
 
-    exports com.map_toysocialnetworkgui.model.entities_dto;
-    opens com.map_toysocialnetworkgui.model.entities_dto to javafx.fxml;
+    exports com.fatlinux.model.entities_dto;
+    opens com.fatlinux.model.entities_dto to javafx.fxml;
 }
